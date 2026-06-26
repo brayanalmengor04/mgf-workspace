@@ -8,11 +8,11 @@ app := compose + " exec app"
 default:
     @just --choose
 
-# Levantar contenedores con hot reload (PHP + Vite HMR)
+# Levantar contenedores
 up:
     {{compose}} up -d
 
-# Ver logs del servidor y Vite en vivo
+# Ver logs del servidor en vivo
 dev:
     {{compose}} up
 

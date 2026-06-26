@@ -59,19 +59,20 @@ The Laravel framework is open-sourced software licensed under the [MIT license](
 
 ## Docker (desarrollo)
 
-Stack mínimo: PHP 8.4 + MySQL 8.4.
+Stack mínimo: PHP 8.4 + MySQL 8.4. `vendor` y `node_modules` viven en volúmenes de Docker (más rápido en Windows).
 
 ```bash
-# Levantar servicios
+# Levantar servicios (primera vez tarda un poco: instala deps y compila assets)
 docker compose up -d --build
 
-# Artisan / Composer / NPM
+# Migrar
 docker compose exec app php artisan migrate
-docker compose exec app composer require filament/filament:"^5.0"
-docker compose exec app npm install
+
+# Si cambias CSS/JS, recompilar assets
 docker compose exec app npm run build
 
-# Crear usuario admin Filament
+# Artisan / Composer / NPM
+docker compose exec app composer require filament/filament:"^5.0"
 docker compose exec app php artisan make:filament-user
 
 # Ver logs
