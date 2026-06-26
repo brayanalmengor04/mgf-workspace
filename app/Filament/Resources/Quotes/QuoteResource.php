@@ -14,6 +14,7 @@ use Filament\Resources\Resource;
 use Filament\Schemas\Schema;
 use Filament\Support\Icons\Heroicon;
 use Filament\Tables\Table;
+use Illuminate\Database\Eloquent\Builder;
 use UnitEnum;
 
 class QuoteResource extends Resource
@@ -33,6 +34,14 @@ class QuoteResource extends Resource
     protected static ?string $navigationLabel = 'Cotizaciones';
 
     protected static ?string $recordTitleAttribute = 'quote_number';
+
+    public static function getEloquentQuery(): Builder
+    {
+        $query = parent::getEloquentQuery();
+        $user = auth()->user();
+
+        return $user ? $query->forUser($user) : $query;
+    }
 
     public static function form(Schema $schema): Schema
     {

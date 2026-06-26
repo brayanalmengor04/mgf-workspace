@@ -14,7 +14,7 @@ class QuoteTemplatePolicy
 
     public function view(User $user, QuoteTemplate $quoteTemplate): bool
     {
-        return true;
+        return $user->isAdmin() || $quoteTemplate->user_id === $user->id;
     }
 
     public function create(User $user): bool
@@ -24,11 +24,11 @@ class QuoteTemplatePolicy
 
     public function update(User $user, QuoteTemplate $quoteTemplate): bool
     {
-        return true;
+        return $user->isAdmin() || $quoteTemplate->user_id === $user->id;
     }
 
     public function delete(User $user, QuoteTemplate $quoteTemplate): bool
     {
-        return true;
+        return $user->isAdmin() || $quoteTemplate->user_id === $user->id;
     }
 }

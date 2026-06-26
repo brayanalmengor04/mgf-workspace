@@ -2,7 +2,9 @@
 
 namespace App\Models;
 
+use App\Enums\QuoteCurrency;
 use App\Enums\QuoteStatus;
+use Illuminate\Database\Eloquent\Builder;
 use Illuminate\Database\Eloquent\Model;
 use Illuminate\Database\Eloquent\Relations\BelongsTo;
 use Illuminate\Database\Eloquent\Relations\HasMany;
@@ -12,6 +14,10 @@ use Spatie\Activitylog\Support\LogOptions;
 class Quote extends Model
 {
     use HasActivity;
+
+    protected $attributes = [
+        'currency' => 'PAB',
+    ];
 
     protected $fillable = [
         'quote_template_id',
@@ -35,6 +41,7 @@ class Quote extends Model
         'bank_account_number',
         'yappy_id',
         'footer_notes',
+        'currency',
         'subtotal',
         'tax_amount',
         'total',
@@ -48,6 +55,7 @@ class Quote extends Model
     {
         return [
             'status' => QuoteStatus::class,
+            'currency' => QuoteCurrency::class,
             'issuer_has_dv' => 'boolean',
             'recipient_has_dv' => 'boolean',
             'subtotal' => 'decimal:2',
@@ -71,6 +79,19 @@ class Quote extends Model
     public function creator(): BelongsTo
     {
         return $this->belongsTo(User::class, 'created_by');
+    }
+
+    /**
+     * @param  Builder<static>  $query
+     * @return Builder<static>
+     */
+    public function scopeForUser(Builder $query, User $user): Builder
+    {
+        if ($user->isAdmin()) {
+            return $query;
+        }
+
+        return $query->where('created_by', $user->id);
     }
 
     public function isDraft(): bool

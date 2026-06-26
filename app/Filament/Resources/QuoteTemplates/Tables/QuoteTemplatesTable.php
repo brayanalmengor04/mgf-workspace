@@ -2,6 +2,7 @@
 
 namespace App\Filament\Resources\QuoteTemplates\Tables;
 
+use App\Enums\QuoteCurrency;
 use App\Enums\QuotePdfLayout;
 use App\Filament\Resources\Quotes\QuoteResource;
 use App\Models\QuoteTemplate;
@@ -26,6 +27,14 @@ class QuoteTemplatesTable
                 TextColumn::make('issuer_name')
                     ->label('Emisor')
                     ->searchable(),
+                TextColumn::make('owner.name')
+                    ->label('Proveedor')
+                    ->searchable()
+                    ->visible(fn (): bool => auth()->user()?->isAdmin() ?? false),
+                TextColumn::make('currency')
+                    ->label('Moneda')
+                    ->formatStateUsing(fn ($state): string => QuoteCurrency::resolve($state)->label())
+                    ->toggleable(),
                 TextColumn::make('pdf_layout')
                     ->label('Estilo PDF')
                     ->formatStateUsing(fn (?string $state): string => QuotePdfLayout::tryFrom((string) $state)?->label() ?? 'Clásico')

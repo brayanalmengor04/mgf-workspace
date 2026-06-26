@@ -13,6 +13,7 @@ use Filament\Resources\Resource;
 use Filament\Schemas\Schema;
 use Filament\Support\Icons\Heroicon;
 use Filament\Tables\Table;
+use Illuminate\Database\Eloquent\Builder;
 use UnitEnum;
 
 class QuoteTemplateResource extends Resource
@@ -30,6 +31,14 @@ class QuoteTemplateResource extends Resource
     protected static ?string $pluralModelLabel = 'Plantillas';
 
     protected static ?string $navigationLabel = 'Plantillas';
+
+    public static function getEloquentQuery(): Builder
+    {
+        $query = parent::getEloquentQuery();
+        $user = auth()->user();
+
+        return $user ? $query->forUser($user) : $query;
+    }
 
     public static function form(Schema $schema): Schema
     {

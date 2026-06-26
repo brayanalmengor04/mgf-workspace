@@ -2,9 +2,12 @@
 
 namespace App\Filament\Widgets;
 
+use App\Enums\QuoteCurrency;
 use App\Enums\QuoteStatus;
+use App\Filament\Resources\QuoteTemplates\QuoteTemplateResource;
 use App\Filament\Resources\Quotes\QuoteResource;
 use App\Models\Quote;
+use App\Models\QuoteTemplate;
 use Filament\Actions\Action;
 use Filament\Tables\Columns\TextColumn;
 use Filament\Tables\Table;
@@ -16,18 +19,25 @@ class QuotesOverviewWidget extends TableWidget
 
     protected int|string|array $columnSpan = 'full';
 
+    public static function canView(): bool
+    {
+        return auth()->check();
+    }
+
     public function table(Table $table): Table
     {
+        $user = auth()->user();
+
         return $table
-            ->heading('Cotizaciones recientes')
+            ->heading($user?->isProvider() ? 'Mis cotizaciones recientes' : 'Cotizaciones recientes')
             ->description(fn (): string => sprintf(
                 '%d este mes · %d borradores · %d emitidas',
-                Quote::query()->where('created_at', '>=', now()->startOfMonth())->count(),
-                Quote::query()->where('status', QuoteStatus::Draft)->count(),
-                Quote::query()->where('status', QuoteStatus::Issued)->count(),
+                Quote::query()->forUser($user)->where('created_at', '>=', now()->startOfMonth())->count(),
+                Quote::query()->forUser($user)->where('status', QuoteStatus::Draft)->count(),
+                Quote::query()->forUser($user)->where('status', QuoteStatus::Issued)->count(),
             ))
             ->query(
-                Quote::query()->latest()->limit(5)
+                Quote::query()->forUser($user)->latest()->limit(5)
             )
             ->columns([
                 TextColumn::make('quote_number')
@@ -41,7 +51,7 @@ class QuotesOverviewWidget extends TableWidget
                     ->formatStateUsing(fn (QuoteStatus $state): string => $state->label()),
                 TextColumn::make('total')
                     ->label('Total')
-                    ->money('USD'),
+                    ->money(fn (Quote $record): string => QuoteCurrency::resolve($record->currency)->value),
             ])
             ->paginated(false)
             ->headerActions([
@@ -49,6 +59,11 @@ class QuotesOverviewWidget extends TableWidget
                     ->label('Nueva cotización')
                     ->icon('heroicon-o-plus')
                     ->url(QuoteResource::getUrl('create')),
+                Action::make('templates')
+                    ->label('Mis plantillas')
+                    ->icon('heroicon-o-document-duplicate')
+                    ->url(QuoteTemplateResource::getUrl('index'))
+                    ->visible(fn (): bool => auth()->user()?->isProvider() ?? false),
             ]);
     }
 }

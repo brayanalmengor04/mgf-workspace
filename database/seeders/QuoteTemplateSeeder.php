@@ -2,15 +2,24 @@
 
 namespace Database\Seeders;
 
+use App\Enums\UserRole;
 use App\Models\QuoteTemplate;
+use App\Models\User;
 use Illuminate\Database\Seeder;
 
 class QuoteTemplateSeeder extends Seeder
 {
     public function run(): void
     {
+        $admin = User::query()->where('role', UserRole::Admin)->first()
+            ?? User::query()->first();
+
+        if ($admin === null) {
+            return;
+        }
+
         QuoteTemplate::query()->updateOrCreate(
-            ['name' => 'Plantilla demo Panamá'],
+            ['name' => 'Plantilla demo Panamá', 'user_id' => $admin->id],
             [
                 'is_default' => true,
                 'is_active' => true,
@@ -27,6 +36,7 @@ class QuoteTemplateSeeder extends Seeder
                 'footer_notes' => 'Cotización válida por 15 días. Precios sujetos a cambio sin previo aviso.',
                 'pdf_layout' => 'classic',
                 'primary_color' => '#d97706',
+                'currency' => 'PAB',
             ]
         );
     }

@@ -2,6 +2,7 @@
 
 namespace App\Filament\Resources\Quotes\Tables;
 
+use App\Enums\QuoteCurrency;
 use App\Enums\QuoteStatus;
 use App\Models\Quote;
 use App\Services\Quotes\QuotePdfService;
@@ -40,8 +41,12 @@ class QuotesTable
                     }),
                 TextColumn::make('total')
                     ->label('Total')
-                    ->money('USD')
+                    ->money(fn (Quote $record): string => QuoteCurrency::resolve($record->currency)->value)
                     ->sortable(),
+                TextColumn::make('currency')
+                    ->label('Moneda')
+                    ->formatStateUsing(fn ($state): string => QuoteCurrency::resolve($state)->label())
+                    ->toggleable(isToggledHiddenByDefault: true),
                 TextColumn::make('issued_at')
                     ->label('Emitida')
                     ->dateTime('d/m/Y H:i')

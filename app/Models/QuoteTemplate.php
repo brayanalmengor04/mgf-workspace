@@ -2,7 +2,10 @@
 
 namespace App\Models;
 
+use App\Enums\QuoteCurrency;
+use Illuminate\Database\Eloquent\Builder;
 use Illuminate\Database\Eloquent\Model;
+use Illuminate\Database\Eloquent\Relations\BelongsTo;
 use Illuminate\Database\Eloquent\Relations\HasMany;
 use Spatie\Activitylog\Models\Concerns\HasActivity;
 use Spatie\Activitylog\Support\LogOptions;
@@ -11,7 +14,12 @@ class QuoteTemplate extends Model
 {
     use HasActivity;
 
+    protected $attributes = [
+        'currency' => 'PAB',
+    ];
+
     protected $fillable = [
+        'user_id',
         'name',
         'is_default',
         'is_active',
@@ -26,6 +34,7 @@ class QuoteTemplate extends Model
         'bank_account_number',
         'yappy_id',
         'footer_notes',
+        'currency',
         'pdf_layout',
         'logo_path',
         'primary_color',
@@ -37,7 +46,26 @@ class QuoteTemplate extends Model
             'is_default' => 'boolean',
             'is_active' => 'boolean',
             'issuer_has_dv' => 'boolean',
+            'currency' => QuoteCurrency::class,
         ];
+    }
+
+    public function owner(): BelongsTo
+    {
+        return $this->belongsTo(User::class, 'user_id');
+    }
+
+    /**
+     * @param  Builder<static>  $query
+     * @return Builder<static>
+     */
+    public function scopeForUser(Builder $query, User $user): Builder
+    {
+        if ($user->isAdmin()) {
+            return $query;
+        }
+
+        return $query->where('user_id', $user->id);
     }
 
     public function quotes(): HasMany
@@ -56,11 +84,14 @@ class QuoteTemplate extends Model
     protected static function booted(): void
     {
         static::saving(function (QuoteTemplate $template): void {
-            if ($template->is_default) {
-                static::query()
-                    ->where('id', '!=', $template->id ?? 0)
-                    ->update(['is_default' => false]);
+            if (! $template->is_default) {
+                return;
             }
+
+            static::query()
+                ->where('user_id', $template->user_id)
+                ->where('id', '!=', $template->id ?? 0)
+                ->update(['is_default' => false]);
         });
     }
 }

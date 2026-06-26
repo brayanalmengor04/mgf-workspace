@@ -8,4 +8,11 @@ use Filament\Resources\Pages\CreateRecord;
 class CreateQuoteTemplate extends CreateRecord
 {
     protected static string $resource = QuoteTemplateResource::class;
+
+    protected function mutateFormDataBeforeCreate(array $data): array
+    {
+        $data['user_id'] = auth()->id();
+
+        return $data;
+    }
 }

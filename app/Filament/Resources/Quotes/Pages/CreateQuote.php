@@ -2,6 +2,7 @@
 
 namespace App\Filament\Resources\Quotes\Pages;
 
+use App\Enums\QuoteCurrency;
 use App\Enums\QuoteStatus;
 use App\Filament\Resources\Quotes\Concerns\RecalculatesQuoteTotals;
 use App\Filament\Resources\Quotes\QuoteResource;
@@ -22,7 +23,10 @@ class CreateQuote extends CreateRecord
         $templateId = request()->query('template_id');
 
         if ($templateId === null) {
-            $default = QuoteTemplate::query()->where('is_default', true)->first();
+            $default = QuoteTemplate::query()
+                ->forUser(auth()->user())
+                ->where('is_default', true)
+                ->first();
 
             if ($default !== null) {
                 $templateId = (string) $default->id;
@@ -33,7 +37,9 @@ class CreateQuote extends CreateRecord
             return;
         }
 
-        $template = QuoteTemplate::find($templateId);
+        $template = QuoteTemplate::query()
+            ->forUser(auth()->user())
+            ->find($templateId);
 
         if ($template === null) {
             return;
@@ -52,6 +58,7 @@ class CreateQuote extends CreateRecord
             'bank_account_number' => $template->bank_account_number,
             'yappy_id' => $template->yappy_id,
             'footer_notes' => $template->footer_notes,
+            'currency' => $template->currency?->value ?? QuoteCurrency::Pab->value,
         ]);
     }
 
@@ -60,6 +67,7 @@ class CreateQuote extends CreateRecord
         $data['quote_number'] = app(QuoteNumberGenerator::class)->generate();
         $data['status'] = QuoteStatus::Draft->value;
         $data['created_by'] = auth()->id();
+        $data['currency'] ??= QuoteCurrency::Pab->value;
 
         return $data;
     }
