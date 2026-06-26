@@ -10,12 +10,19 @@ use Filament\Schemas\Components\Utilities\Get;
 
 trait HasPartyFields
 {
+    protected static function isTemplateDataLocked(Get $get, string $operation): bool
+    {
+        return $operation === 'create'
+            && filled($get('quote_template_id'))
+            && ! (bool) $get('override_template_fields');
+    }
+
     /**
      * @return array<int, \Filament\Forms\Components\Component>
      */
-    protected static function partyFields(string $prefix, string $nameLabel): array
+    protected static function partyFields(string $prefix, string $nameLabel, bool $lockWhenFromTemplate = false): array
     {
-        return [
+        $fields = [
             TextInput::make("{$prefix}_name")
                 ->label($nameLabel)
                 ->required()
@@ -45,14 +52,25 @@ trait HasPartyFields
                 ->email()
                 ->maxLength(255),
         ];
+
+        if (! $lockWhenFromTemplate) {
+            return $fields;
+        }
+
+        return array_map(
+            fn ($field) => $field
+                ->disabled(fn (Get $get, string $operation): bool => static::isTemplateDataLocked($get, $operation))
+                ->dehydrated(true),
+            $fields,
+        );
     }
 
     /**
      * @return array<int, \Filament\Forms\Components\Component>
      */
-    protected static function footerFields(): array
+    protected static function footerFields(bool $lockWhenFromTemplate = false): array
     {
-        return [
+        $fields = [
             TextInput::make('bank_name')
                 ->label('Nombre del banco')
                 ->maxLength(255),
@@ -66,5 +84,16 @@ trait HasPartyFields
                 ->label('Notas al pie')
                 ->columnSpanFull(),
         ];
+
+        if (! $lockWhenFromTemplate) {
+            return $fields;
+        }
+
+        return array_map(
+            fn ($field) => $field
+                ->disabled(fn (Get $get, string $operation): bool => static::isTemplateDataLocked($get, $operation))
+                ->dehydrated(true),
+            $fields,
+        );
     }
 }

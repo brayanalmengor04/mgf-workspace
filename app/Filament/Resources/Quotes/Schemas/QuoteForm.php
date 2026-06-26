@@ -11,6 +11,7 @@ use Filament\Forms\Components\Placeholder;
 use Filament\Forms\Components\Repeater;
 use Filament\Forms\Components\Select;
 use Filament\Forms\Components\TextInput;
+use Filament\Forms\Components\Toggle;
 use Filament\Schemas\Components\Utilities\Get;
 use Filament\Schemas\Components\Wizard;
 use Filament\Schemas\Components\Wizard\Step;
@@ -42,6 +43,8 @@ class QuoteForm
                                 ->searchable()
                                 ->live()
                                 ->afterStateUpdated(function (?string $state, callable $set): void {
+                                    $set('override_template_fields', false);
+
                                     if ($state === null) {
                                         return;
                                     }
@@ -67,13 +70,23 @@ class QuoteForm
                                     $set('footer_notes', $template->footer_notes);
                                     $set('currency', $template->currency?->value ?? QuoteCurrency::Pab->value);
                                 }),
+                            Toggle::make('override_template_fields')
+                                ->label('Personalizar datos de la plantilla')
+                                ->helperText('Emisor, moneda y datos de pago se heredan de la plantilla. Activa esto para editarlos en esta cotización.')
+                                ->default(false)
+                                ->live()
+                                ->dehydrated(false)
+                                ->visible(fn (Get $get, string $operation): bool => $operation === 'create' && filled($get('quote_template_id')))
+                                ->columnSpanFull(),
                             Select::make('currency')
                                 ->label('Moneda')
                                 ->options(QuoteCurrency::options())
                                 ->default(QuoteCurrency::Pab->value)
                                 ->required()
                                 ->native(false)
-                                ->live(),
+                                ->live()
+                                ->disabled(fn (Get $get, string $operation): bool => static::isTemplateDataLocked($get, $operation))
+                                ->dehydrated(true),
                             TextInput::make('quote_number')
                                 ->label('Número')
                                 ->disabled()
@@ -84,7 +97,7 @@ class QuoteForm
                     Step::make('Emisor')
                         ->description('Datos de quien emite la cotización')
                         ->icon(Heroicon::OutlinedBuildingOffice)
-                        ->schema(static::partyFields('issuer', 'Nombre empresa / persona'))
+                        ->schema(static::partyFields('issuer', 'Nombre empresa / persona', lockWhenFromTemplate: true))
                         ->columns(2),
                     Step::make('Cliente')
                         ->description('Datos del destinatario')
@@ -159,7 +172,7 @@ class QuoteForm
                     Step::make('Cierre')
                         ->description('Banco, Yappy y notas al pie')
                         ->icon(Heroicon::OutlinedBanknotes)
-                        ->schema(static::footerFields())
+                        ->schema(static::footerFields(lockWhenFromTemplate: true))
                         ->columns(2),
                 ])
                     ->label('Cotización')
