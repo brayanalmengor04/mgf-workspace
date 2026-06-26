@@ -2,9 +2,11 @@
 
 namespace App\Filament\Resources\Quotes\Schemas;
 
+use App\Enums\QuoteCurrency;
 use App\Filament\Resources\Concerns\HasPartyFields;
 use App\Models\Quote;
 use App\Models\QuoteTemplate;
+use App\Support\MoneyFormatter;
 use Filament\Forms\Components\Placeholder;
 use Filament\Forms\Components\Repeater;
 use Filament\Forms\Components\Select;
@@ -25,13 +27,14 @@ class QuoteForm
             ->columns(1)
             ->components([
                 Wizard::make([
-                    Step::make('Plantilla')
-                        ->description('Seleccione la plantilla base')
+                    Step::make('Inicio')
+                        ->description('Plantilla base y moneda')
                         ->icon(Heroicon::OutlinedDocumentDuplicate)
                         ->schema([
                             Select::make('quote_template_id')
                                 ->label('Plantilla')
                                 ->options(fn (): array => QuoteTemplate::query()
+                                    ->forUser(auth()->user())
                                     ->where('is_active', true)
                                     ->orderBy('name')
                                     ->pluck('name', 'id')
@@ -43,7 +46,9 @@ class QuoteForm
                                         return;
                                     }
 
-                                    $template = QuoteTemplate::find($state);
+                                    $template = QuoteTemplate::query()
+                                        ->forUser(auth()->user())
+                                        ->find($state);
 
                                     if ($template === null) {
                                         return;
@@ -60,7 +65,15 @@ class QuoteForm
                                     $set('bank_account_number', $template->bank_account_number);
                                     $set('yappy_id', $template->yappy_id);
                                     $set('footer_notes', $template->footer_notes);
+                                    $set('currency', $template->currency?->value ?? QuoteCurrency::Pab->value);
                                 }),
+                            Select::make('currency')
+                                ->label('Moneda')
+                                ->options(QuoteCurrency::options())
+                                ->default(QuoteCurrency::Pab->value)
+                                ->required()
+                                ->native(false)
+                                ->live(),
                             TextInput::make('quote_number')
                                 ->label('Número')
                                 ->disabled()
@@ -73,17 +86,19 @@ class QuoteForm
                         ->icon(Heroicon::OutlinedBuildingOffice)
                         ->schema(static::partyFields('issuer', 'Nombre empresa / persona'))
                         ->columns(2),
-                    Step::make('Destinatario')
-                        ->description('Datos del cliente')
+                    Step::make('Cliente')
+                        ->description('Datos del destinatario')
                         ->icon(Heroicon::OutlinedUser)
                         ->schema(static::partyFields('recipient', 'Nombre empresa / persona'))
                         ->columns(2),
-                    Step::make('Items')
-                        ->description('Productos o servicios cotizados')
+                    Step::make('Detalle')
+                        ->description('Líneas, precios e ITBMS')
                         ->icon(Heroicon::OutlinedListBullet)
                         ->schema([
                             Repeater::make('items')
                                 ->relationship()
+                                ->collapsible()
+                                ->cloneable()
                                 ->schema([
                                     TextInput::make('quantity')
                                         ->label('Cantidad')
@@ -99,7 +114,7 @@ class QuoteForm
                                     TextInput::make('unit_price')
                                         ->label('Precio unitario')
                                         ->numeric()
-                                        ->prefix('$')
+                                        ->prefix(fn (Get $get): string => QuoteCurrency::resolve($get('../../currency'))->symbol())
                                         ->default(0)
                                         ->required()
                                         ->dehydrateStateUsing(fn (?string $state): float => filled($state) ? (float) $state : 0.0)
@@ -120,7 +135,7 @@ class QuoteForm
                                             $subtotal = $qty * $price;
                                             $total = $subtotal + ($subtotal * ($taxRate / 100));
 
-                                            return '$'.number_format($total, 2);
+                                            return MoneyFormatter::format($total, $get('../../currency'));
                                         }),
                                 ])
                                 ->columns(3)
@@ -130,27 +145,27 @@ class QuoteForm
                                 ->columnSpanFull(),
                             Placeholder::make('subtotal_display')
                                 ->label('Subtotal')
-                                ->content(fn (?Quote $record): string => '$'.number_format((float) ($record?->subtotal ?? 0), 2))
+                                ->content(fn (?Quote $record): string => MoneyFormatter::format((float) ($record?->subtotal ?? 0), $record?->currency))
                                 ->visibleOn('edit'),
                             Placeholder::make('tax_display')
                                 ->label('ITBMS')
-                                ->content(fn (?Quote $record): string => '$'.number_format((float) ($record?->tax_amount ?? 0), 2))
+                                ->content(fn (?Quote $record): string => MoneyFormatter::format((float) ($record?->tax_amount ?? 0), $record?->currency))
                                 ->visibleOn('edit'),
                             Placeholder::make('total_display')
                                 ->label('Total')
-                                ->content(fn (?Quote $record): string => '$'.number_format((float) ($record?->total ?? 0), 2))
+                                ->content(fn (?Quote $record): string => MoneyFormatter::format((float) ($record?->total ?? 0), $record?->currency))
                                 ->visibleOn('edit'),
-                        ])
-                        ->columns(3),
-                    Step::make('Pago y notas')
-                        ->description('Datos bancarios y notas al pie')
+                        ]),
+                    Step::make('Cierre')
+                        ->description('Banco, Yappy y notas al pie')
                         ->icon(Heroicon::OutlinedBanknotes)
                         ->schema(static::footerFields())
                         ->columns(2),
                 ])
+                    ->label('Cotización')
                     ->columnSpanFull()
-                    ->skippable()
-                    ->persistStepInQueryString('step'),
+                    ->contained()
+                    ->skippable(false),
             ]);
     }
 }
