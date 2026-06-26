@@ -18,7 +18,7 @@ return [
     |
     */
     'resource' => [
-        'class' => ActivityLogResource::class,
+        'class' => \App\Filament\ActivityLog\ActivityLogResource::class,
         'group' => null,
         'sort' => null,
         'default_sort_column' => 'created_at',
@@ -221,7 +221,7 @@ return [
          *
          * Example: 'App\Support\ActivityLogAuthorization' (class with __invoke(User $user): bool)
          */
-        'custom_authorization' => null,
+        'custom_authorization' => \App\Authorizers\ActivityLogAuthorizer::class,
 
         'view_any' => 'view_any_activity',
         'view' => 'view_activity',
@@ -242,7 +242,7 @@ return [
     */
     'pages' => [
         'user_activities' => [
-            'enabled' => true,
+            'enabled' => false,
             'class' => UserActivitiesPage::class,
             'navigation_label' => null, // null uses translation key
             'navigation_group' => null, // null uses resource group
@@ -263,10 +263,10 @@ return [
         'enabled' => true,
         'dashboard' => true,
         'widgets' => [
-            ActivityChartWidget::class,
-            LatestActivityWidget::class,
-            ActivityHeatmapWidget::class,
-            ActivityStatsWidget::class,
+            \App\Filament\Widgets\Activity\ScopedActivityChartWidget::class,
+            \App\Filament\Widgets\Activity\ScopedLatestActivityWidget::class,
+            \App\Filament\Widgets\Activity\ScopedActivityHeatmapWidget::class,
+            \App\Filament\Widgets\Activity\ScopedActivityStatsWidget::class,
         ],
 
         /**
@@ -274,7 +274,7 @@ return [
          */
         'activity_chart' => [
             'enabled' => true,
-            'heading' => 'Activity Over Time',
+            'heading' => 'Actividad en el tiempo',
             'sort' => 1,
             'max_height' => '300px',
             'polling_interval' => null, // e.g., '10s', '1m', null to disable

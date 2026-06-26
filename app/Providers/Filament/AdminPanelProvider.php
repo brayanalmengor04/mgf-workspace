@@ -3,6 +3,8 @@
 namespace App\Providers\Filament;
 
 use AlizHarb\ActivityLog\ActivityLogPlugin;
+use App\Filament\Widgets\PlatformStatsWidget;
+use App\Filament\Widgets\ProviderOnboardingWidget;
 use App\Filament\Widgets\QuotesOverviewWidget;
 use Filament\Http\Middleware\Authenticate;
 use Filament\Http\Middleware\AuthenticateSession;
@@ -19,6 +21,7 @@ use Illuminate\Foundation\Http\Middleware\PreventRequestForgery;
 use Illuminate\Routing\Middleware\SubstituteBindings;
 use Illuminate\Session\Middleware\StartSession;
 use Illuminate\View\Middleware\ShareErrorsFromSession;
+use Filament\View\PanelsRenderHook;
 
 class AdminPanelProvider extends PanelProvider
 {
@@ -34,9 +37,9 @@ class AdminPanelProvider extends PanelProvider
             ])
             ->plugins([
                 ActivityLogPlugin::make()
-                    ->label('Auditoría')
-                    ->pluralLabel('Auditoría')
-                    ->navigationGroup('Configuración')
+                    ->label(fn (): string => auth()->user()?->isProvider() ? 'Mi bitácora' : 'Auditoría')
+                    ->pluralLabel(fn (): string => auth()->user()?->isProvider() ? 'Mi bitácora' : 'Auditoría')
+                    ->navigationGroup(fn (): string => auth()->user()?->isProvider() ? 'Cotizaciones' : 'Configuración')
                     ->navigationSort(99),
             ])
             ->discoverResources(in: app_path('Filament/Resources'), for: 'App\Filament\Resources')
@@ -46,6 +49,8 @@ class AdminPanelProvider extends PanelProvider
             ])
             ->discoverWidgets(in: app_path('Filament/Widgets'), for: 'App\Filament\Widgets')
             ->widgets([
+                PlatformStatsWidget::class,
+                ProviderOnboardingWidget::class,
                 QuotesOverviewWidget::class,
                 AccountWidget::class,
             ])
@@ -62,6 +67,10 @@ class AdminPanelProvider extends PanelProvider
             ])
             ->authMiddleware([
                 Authenticate::class,
-            ]);
+            ])
+            ->renderHook(
+                PanelsRenderHook::HEAD_END,
+                fn (): string => '<link rel="stylesheet" href="'.asset('css/filament-wizard.css').'">',
+            );
     }
 }
