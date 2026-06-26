@@ -59,4 +59,9 @@ class User extends Authenticatable implements FilamentUser
     {
         return $this->hasMany(Quote::class, 'created_by');
     }
+
+    public function budgetPlans(): HasMany
+    {
+        return $this->hasMany(BudgetPlan::class, 'created_by');
+    }
 }

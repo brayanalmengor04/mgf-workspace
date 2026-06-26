@@ -3,6 +3,7 @@
 namespace App\Providers\Filament;
 
 use AlizHarb\ActivityLog\ActivityLogPlugin;
+use App\Filament\Widgets\BudgetPlansOverviewWidget;
 use App\Filament\Widgets\PlatformStatsWidget;
 use App\Filament\Widgets\ProviderOnboardingWidget;
 use App\Filament\Widgets\QuotesOverviewWidget;
@@ -52,6 +53,7 @@ class AdminPanelProvider extends PanelProvider
                 PlatformStatsWidget::class,
                 ProviderOnboardingWidget::class,
                 QuotesOverviewWidget::class,
+                BudgetPlansOverviewWidget::class,
                 AccountWidget::class,
             ])
             ->middleware([
