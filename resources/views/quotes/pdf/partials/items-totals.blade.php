@@ -1,3 +1,9 @@
+@php
+    use App\Support\MoneyFormatter;
+
+    $currency = $payload['currency'] ?? 'PAB';
+@endphp
+
 <table class="items">
     <thead>
         <tr>
@@ -14,10 +20,10 @@
             <tr>
                 <td>{{ number_format($item['quantity'], 2) }}</td>
                 <td>{{ $item['description'] }}</td>
-                <td class="text-right">${{ number_format($item['unit_price'], 2) }}</td>
+                <td class="text-right">{{ MoneyFormatter::format($item['unit_price'], $currency) }}</td>
                 <td class="text-right">{{ number_format($item['tax_rate'], 2) }}%</td>
-                <td class="text-right">${{ number_format($item['tax_amount'], 2) }}</td>
-                <td class="text-right">${{ number_format($item['line_total'], 2) }}</td>
+                <td class="text-right">{{ MoneyFormatter::format($item['tax_amount'], $currency) }}</td>
+                <td class="text-right">{{ MoneyFormatter::format($item['line_total'], $currency) }}</td>
             </tr>
         @endforeach
     </tbody>
@@ -26,14 +32,14 @@
 <table class="totals">
     <tr>
         <td>Subtotal:</td>
-        <td class="text-right">${{ number_format($payload['totals']['subtotal'], 2) }}</td>
+        <td class="text-right">{{ MoneyFormatter::format($payload['totals']['subtotal'], $currency) }}</td>
     </tr>
     <tr>
         <td>ITBMS:</td>
-        <td class="text-right">${{ number_format($payload['totals']['tax_amount'], 2) }}</td>
+        <td class="text-right">{{ MoneyFormatter::format($payload['totals']['tax_amount'], $currency) }}</td>
     </tr>
     <tr class="total">
-        <td>Total:</td>
-        <td class="text-right">${{ number_format($payload['totals']['total'], 2) }}</td>
+        <td>Total ({{ $payload['currency_label'] ?? $currency }}):</td>
+        <td class="text-right">{{ MoneyFormatter::format($payload['totals']['total'], $currency) }}</td>
     </tr>
 </table>

@@ -2,6 +2,7 @@
 
 namespace App\Services\Quotes;
 
+use App\Enums\QuoteCurrency;
 use App\Enums\QuotePdfLayout;
 use App\Enums\QuoteStatus;
 use App\Models\Quote;
@@ -87,6 +88,8 @@ class QuotePdfService
         return [
             'quote_number' => $quote->quote_number,
             'issued_at' => ($quote->issued_at ?? now())->toIso8601String(),
+            'currency' => QuoteCurrency::resolve($quote->currency)->value,
+            'currency_label' => QuoteCurrency::resolve($quote->currency)->label(),
             'issuer' => [
                 'name' => $quote->issuer_name,
                 'ruc' => $quote->issuer_ruc,
