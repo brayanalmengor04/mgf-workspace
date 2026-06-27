@@ -34,7 +34,7 @@ enum QuoteCurrency: string
     public function symbol(): string
     {
         return match ($this) {
-            self::Pab => 'B/.',
+            self::Pab => 'B:/',
             self::Usd => '$',
             self::Eur => '€',
             self::Crc => '₡',

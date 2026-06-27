@@ -11,6 +11,10 @@ class MoneyFormatter
     {
         $currency = QuoteCurrency::resolve($currency);
 
-        return Number::currency($amount, $currency->value, config('app.locale', 'es'));
+        return $currency->symbol().Number::format(
+            $amount,
+            precision: 2,
+            locale: config('app.locale', 'es'),
+        );
     }
 }

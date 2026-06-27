@@ -2,6 +2,8 @@
 # Uso: just          (selector interactivo)
 #      just build     (reconstruir y levantar)
 
+set shell := ["powershell.exe", "-c"]
+
 compose := "docker compose"
 app := compose + " exec app"
 
@@ -100,9 +102,19 @@ setup:
     {{app}} npm run build
     {{app}} php artisan migrate --force
 
-# Correr tests
+# Ejecutar tests
 test:
     {{app}} php artisan test
+
+# Crear un respaldo de la base de datos local (no se sube a git)
+backup:
+    if (-not (Test-Path database/backups)) { New-Item -ItemType Directory -Path database/backups | Out-Null }
+    $date = Get-Date -Format 'yyyy-MM-dd_HH-mm-ss'; cmd /c "docker compose exec -T mysql mysqldump --no-tablespaces -u laravel -psecret laravel > database/backups/$date.sql"; Write-Host "✅ Respaldo guardado en database/backups/$date.sql"
+
+# Restaurar la base de datos desde el respaldo local (pasar el nombre del archivo como argumento, ej: just restore 2026-06-27_11-50-00.sql)
+restore file:
+    cmd /c "docker compose exec -T mysql mysql -u laravel -psecret laravel < database/backups/{{file}}"
+    Write-Host "✅ Base de datos restaurada desde database/backups/{{file}}"
 
 # Limpiar cachés de Laravel
 clear:
