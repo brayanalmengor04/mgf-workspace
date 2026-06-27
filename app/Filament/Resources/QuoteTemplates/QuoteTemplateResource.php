@@ -5,6 +5,7 @@ namespace App\Filament\Resources\QuoteTemplates;
 use App\Filament\Resources\QuoteTemplates\Pages\CreateQuoteTemplate;
 use App\Filament\Resources\QuoteTemplates\Pages\EditQuoteTemplate;
 use App\Filament\Resources\QuoteTemplates\Pages\ListQuoteTemplates;
+use App\Filament\Resources\QuoteTemplates\Pages\PreviewQuoteTemplate;
 use App\Filament\Resources\QuoteTemplates\Schemas\QuoteTemplateForm;
 use App\Filament\Resources\QuoteTemplates\Tables\QuoteTemplatesTable;
 use App\Models\QuoteTemplate;
@@ -61,6 +62,7 @@ class QuoteTemplateResource extends Resource
             'index' => ListQuoteTemplates::route('/'),
             'create' => CreateQuoteTemplate::route('/create'),
             'edit' => EditQuoteTemplate::route('/{record}/edit'),
+            'preview' => PreviewQuoteTemplate::route('/{record}/preview'),
         ];
     }
 }

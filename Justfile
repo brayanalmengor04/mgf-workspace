@@ -16,9 +16,10 @@ up:
 dev:
     {{compose}} up
 
-# Construir imágenes y levantar
+# Construir imágenes, levantar y correr migraciones + seeders
 build:
     {{compose}} up -d --build
+    {{app}} php artisan migrate --seed
 
 # Reconstruir desde cero (sin caché de Docker)
 rebuild:
@@ -51,6 +52,10 @@ logs:
 # Logs de MySQL
 logs-mysql:
     {{compose}} logs -f mysql
+
+# Consola SQL interactiva (para revisar consultas en la BD)
+db:
+    {{app}} php artisan db
 
 # Shell dentro del contenedor app
 shell:

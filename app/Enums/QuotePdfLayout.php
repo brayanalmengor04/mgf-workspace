@@ -7,6 +7,9 @@ enum QuotePdfLayout: string
     case Classic = 'classic';
     case Modern = 'modern';
     case Minimal = 'minimal';
+    case Professional = 'professional';
+    case Compact = 'compact';
+    case Elegant = 'elegant';
 
     public function label(): string
     {
@@ -14,6 +17,9 @@ enum QuotePdfLayout: string
             self::Classic => 'Clásico',
             self::Modern => 'Moderno',
             self::Minimal => 'Minimalista',
+            self::Professional => 'Profesional',
+            self::Compact => 'Compacto',
+            self::Elegant => 'Elegante',
         };
     }
 
@@ -23,6 +29,9 @@ enum QuotePdfLayout: string
             self::Classic => 'Encabezado con acento de color y bloques De/Para.',
             self::Modern => 'Barra superior con logo y datos de la cotización.',
             self::Minimal => 'Diseño limpio en blanco y negro, ideal para impresión.',
+            self::Professional => 'Encabezado corporativo con barra lateral y secciones definidas.',
+            self::Compact => 'Formato denso con tablas ajustadas, ideal para muchos ítems.',
+            self::Elegant => 'Tipografía refinada con bordes dobles y composición centrada.',
         };
     }
 

@@ -7,6 +7,8 @@ use App\Filament\Resources\Concerns\HasPartyFields;
 use App\Models\Quote;
 use App\Models\QuoteTemplate;
 use App\Support\MoneyFormatter;
+use Filament\Actions\Action;
+use Filament\Schemas\Components\Actions;
 use Filament\Forms\Components\Placeholder;
 use Filament\Forms\Components\Repeater;
 use Filament\Forms\Components\Select;
@@ -17,6 +19,7 @@ use Filament\Schemas\Components\Wizard;
 use Filament\Schemas\Components\Wizard\Step;
 use Filament\Schemas\Schema;
 use Filament\Support\Icons\Heroicon;
+use Illuminate\Support\Str;
 
 class QuoteForm
 {
@@ -110,8 +113,21 @@ class QuoteForm
                         ->schema([
                             Repeater::make('items')
                                 ->relationship()
-                                ->collapsible()
                                 ->cloneable()
+                                ->collapsible()
+                                ->collapsed()
+                                ->itemLabel(function (array $state): ?string {
+                                    if (blank($state['description'] ?? null)) {
+                                        $qty = (float) ($state['quantity'] ?? 1);
+                                        $price = (float) ($state['unit_price'] ?? 0);
+
+                                        return $qty > 0 || $price > 0
+                                            ? 'Item sin descripción'
+                                            : 'Nuevo item';
+                                    }
+
+                                    return Str::limit((string) $state['description'], 50);
+                                })
                                 ->schema([
                                     TextInput::make('quantity')
                                         ->label('Cantidad')
@@ -119,11 +135,12 @@ class QuoteForm
                                         ->default(1)
                                         ->required()
                                         ->dehydrateStateUsing(fn (?string $state): float => filled($state) ? (float) $state : 1.0)
-                                        ->live(onBlur: true),
+                                        ->live(onBlur: true)
+                                        ->columnSpan(1),
                                     TextInput::make('description')
                                         ->label('Descripción')
                                         ->required()
-                                        ->columnSpan(2),
+                                        ->columnSpan(3),
                                     TextInput::make('unit_price')
                                         ->label('Precio unitario')
                                         ->numeric()
@@ -131,14 +148,16 @@ class QuoteForm
                                         ->default(0)
                                         ->required()
                                         ->dehydrateStateUsing(fn (?string $state): float => filled($state) ? (float) $state : 0.0)
-                                        ->live(onBlur: true),
+                                        ->live(onBlur: true)
+                                        ->columnSpan(2),
                                     TextInput::make('tax_rate')
                                         ->label('ITBMS %')
                                         ->numeric()
                                         ->default(7)
                                         ->dehydrateStateUsing(fn (?string $state): float => filled($state) ? (float) $state : 7.0)
                                         ->suffix('%')
-                                        ->live(onBlur: true),
+                                        ->live(onBlur: true)
+                                        ->columnSpan(1),
                                     Placeholder::make('line_preview')
                                         ->label('Total línea')
                                         ->content(function (Get $get): string {
@@ -149,9 +168,10 @@ class QuoteForm
                                             $total = $subtotal + ($subtotal * ($taxRate / 100));
 
                                             return MoneyFormatter::format($total, $get('../../currency'));
-                                        }),
+                                        })
+                                        ->columnSpan(2),
                                 ])
-                                ->columns(3)
+                                ->columns(9)
                                 ->defaultItems(1)
                                 ->reorderable()
                                 ->addActionLabel('Agregar item')
@@ -172,7 +192,67 @@ class QuoteForm
                     Step::make('Cierre')
                         ->description('Banco, Yappy y notas al pie')
                         ->icon(Heroicon::OutlinedBanknotes)
-                        ->schema(static::footerFields(lockWhenFromTemplate: true))
+                        ->schema(array_merge(static::footerFields(lockWhenFromTemplate: true), [
+                            Actions::make([
+                                Action::make('preview')
+                                    ->label('Ver Vista Previa de Cotización')
+                                    ->icon(Heroicon::OutlinedEye)
+                                    ->color('gray')
+                                    ->modalHeading('Vista Previa de Cotización')
+                                    ->modalSubmitAction(false)
+                                    ->modalCancelActionLabel('Cerrar')
+                                    ->modalWidth('4xl')
+                                    ->modalContent(function (Get $get) {
+                                        $items = $get('items') ?? [];
+                                        $subtotal = 0;
+                                        $taxAmount = 0;
+                                        
+                                        foreach ($items as $item) {
+                                            $qty = (float) ($item['quantity'] ?? 0);
+                                            $price = (float) ($item['unit_price'] ?? 0);
+                                            $taxRate = (float) ($item['tax_rate'] ?? 0);
+                                            $lineSubtotal = $qty * $price;
+                                            $lineTax = $lineSubtotal * ($taxRate / 100);
+                                            
+                                            $subtotal += $lineSubtotal;
+                                            $taxAmount += $lineTax;
+                                        }
+                                        
+                                        $total = $subtotal + $taxAmount;
+
+                                        $data = [
+                                            'quote_number' => $get('quote_number'),
+                                            'currency' => $get('currency'),
+                                            'issuer_name' => $get('issuer_name'),
+                                            'issuer_ruc' => $get('issuer_ruc'),
+                                            'issuer_has_dv' => $get('issuer_has_dv'),
+                                            'issuer_dv' => $get('issuer_dv'),
+                                            'issuer_address' => $get('issuer_address'),
+                                            'issuer_phone' => $get('issuer_phone'),
+                                            'issuer_email' => $get('issuer_email'),
+                                            'recipient_name' => $get('recipient_name'),
+                                            'recipient_ruc' => $get('recipient_ruc'),
+                                            'recipient_has_dv' => $get('recipient_has_dv'),
+                                            'recipient_dv' => $get('recipient_dv'),
+                                            'recipient_address' => $get('recipient_address'),
+                                            'recipient_phone' => $get('recipient_phone'),
+                                            'recipient_email' => $get('recipient_email'),
+                                            'bank_name' => $get('bank_name'),
+                                            'bank_account_number' => $get('bank_account_number'),
+                                            'yappy_id' => $get('yappy_id'),
+                                            'footer_notes' => $get('footer_notes'),
+                                            'items' => $items,
+                                            'totals' => [
+                                                'subtotal' => $subtotal,
+                                                'tax_amount' => $taxAmount,
+                                                'total' => $total,
+                                            ],
+                                        ];
+
+                                        return view('quotes.preview-modal', ['data' => $data]);
+                                    }),
+                            ])->columnSpanFull(),
+                        ]))
                         ->columns(2),
                 ])
                     ->label('Cotización')

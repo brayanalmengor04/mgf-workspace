@@ -39,7 +39,7 @@
         <td class="text-right">{{ MoneyFormatter::format($payload['totals']['tax_amount'], $currency) }}</td>
     </tr>
     <tr class="total">
-        <td>Total ({{ $payload['currency_label'] ?? $currency }}):</td>
+        <td>Total:</td>
         <td class="text-right">{{ MoneyFormatter::format($payload['totals']['total'], $currency) }}</td>
     </tr>
 </table>
