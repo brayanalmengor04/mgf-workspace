@@ -19,6 +19,8 @@ class BudgetPlan extends Model
     protected $attributes = [
         'currency' => 'PAB',
         'period' => 'biweekly',
+        'pdf_layout' => 'classic',
+        'primary_color' => '#0f172a',
     ];
 
     protected $fillable = [
@@ -30,6 +32,8 @@ class BudgetPlan extends Model
         'net_income',
         'income_notes',
         'currency',
+        'pdf_layout',
+        'primary_color',
         'total_allocated',
         'remaining_balance',
         'footer_notes',

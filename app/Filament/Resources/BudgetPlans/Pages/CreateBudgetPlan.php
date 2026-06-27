@@ -3,6 +3,7 @@
 namespace App\Filament\Resources\BudgetPlans\Pages;
 
 use App\Enums\BudgetPeriod;
+use App\Enums\BudgetPdfLayout;
 use App\Enums\BudgetStatus;
 use App\Enums\QuoteCurrency;
 use App\Filament\Resources\BudgetPlans\BudgetPlanResource;
@@ -27,6 +28,8 @@ class CreateBudgetPlan extends CreateRecord
         $data['period'] ??= BudgetPeriod::Biweekly->value;
         $data['title'] ??= BudgetPeriod::Biweekly->defaultTitle();
         $data['subtitle'] ??= BudgetPeriod::Biweekly->defaultSubtitle();
+        $data['pdf_layout'] ??= BudgetPdfLayout::Classic->value;
+        $data['primary_color'] ??= '#0f172a';
 
         return $data;
     }

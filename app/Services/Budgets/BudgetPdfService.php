@@ -3,6 +3,7 @@
 namespace App\Services\Budgets;
 
 use App\Enums\BudgetCategoryType;
+use App\Enums\BudgetPdfLayout;
 use App\Enums\BudgetPeriod;
 use App\Enums\BudgetStatus;
 use App\Enums\QuoteCurrency;
@@ -140,9 +141,12 @@ class BudgetPdfService
     {
         $filename = 'budgets/'.Str::slug($budgetPlan->budget_number).'-'.Str::uuid().'.pdf';
 
-        $pdf = Pdf::loadView('budgets.pdf.classic', [
+        $layout = BudgetPdfLayout::tryFrom((string) ($budgetPlan->pdf_layout ?? '')) ?? BudgetPdfLayout::Classic;
+
+        $pdf = Pdf::loadView($layout->view(), [
             'budgetPlan' => $budgetPlan,
             'payload' => $payload,
+            'primaryColor' => $budgetPlan->primary_color ?? '#0f172a',
         ])->setPaper('letter');
 
         Storage::disk('local')->put($filename, $pdf->output());

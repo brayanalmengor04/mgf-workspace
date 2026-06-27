@@ -3,22 +3,29 @@
 namespace App\Filament\Resources\BudgetPlans\Schemas;
 
 use App\Enums\BudgetCategoryType;
+use App\Enums\BudgetPdfLayout;
 use App\Enums\BudgetPeriod;
 use App\Enums\QuoteCurrency;
+use App\Filament\Resources\BudgetPlans\BudgetPlanResource;
 use App\Models\BudgetPlan;
 use App\Support\MoneyFormatter;
+use Filament\Forms\Components\ColorPicker;
 use Filament\Forms\Components\Placeholder;
 use Filament\Forms\Components\Repeater;
 use Filament\Forms\Components\Select;
 use Filament\Forms\Components\Textarea;
 use Filament\Forms\Components\TextInput;
+use Filament\Resources\Pages\EditRecord;
+use Filament\Schemas\Components\Actions;
 use Filament\Schemas\Components\Section;
 use Filament\Schemas\Components\Utilities\Get;
 use Filament\Schemas\Components\Wizard;
 use Filament\Schemas\Components\Wizard\Step;
 use Filament\Schemas\Schema;
 use Filament\Support\Icons\Heroicon;
+use Filament\Actions\Action;
 use Illuminate\Support\HtmlString;
+use Illuminate\Support\Str;
 
 class BudgetPlanForm
 {
@@ -67,6 +74,33 @@ class BudgetPlanForm
                                 ->required()
                                 ->native(false)
                                 ->live(),
+                            Select::make('pdf_layout')
+                                ->label('Estilo de PDF')
+                                ->options(BudgetPdfLayout::options())
+                                ->default(BudgetPdfLayout::Classic->value)
+                                ->required()
+                                ->native(false)
+                                ->live()
+                                ->helperText(fn (Get $get): string => BudgetPdfLayout::tryFrom((string) $get('pdf_layout'))?->description() ?? '')
+                                ->columnSpanFull(),
+                            ColorPicker::make('primary_color')
+                                ->label('Color principal')
+                                ->default('#0f172a')
+                                ->live(),
+                            Placeholder::make('preview_hint')
+                                ->label('Vista previa')
+                                ->content('Guarda el presupuesto y usa el botón «Vista previa del estilo» para ver cómo se verá el PDF.')
+                                ->visible(fn ($livewire): bool => ! ($livewire instanceof EditRecord))
+                                ->columnSpanFull(),
+                            Actions::make([
+                                Action::make('preview_layout')
+                                    ->label('Abrir vista previa del estilo')
+                                    ->icon(Heroicon::OutlinedEye)
+                                    ->color('gray')
+                                    ->url(fn (EditRecord $livewire): string => BudgetPlanResource::getUrl('preview', ['record' => $livewire->getRecord()]))
+                                    ->openUrlInNewTab()
+                                    ->visible(fn ($livewire): bool => $livewire instanceof EditRecord),
+                            ])->columnSpanFull(),
                             TextInput::make('budget_number')
                                 ->label('Número')
                                 ->disabled()
@@ -120,15 +154,18 @@ class BudgetPlanForm
                             Section::make('Gastos fijos')
                                 ->description('Pagos recurrentes del periodo: comida, transporte, servicios…')
                                 ->schema(static::categoryRepeater(BudgetCategoryType::FixedExpense))
-                                ->collapsible(),
+                                ->collapsible()
+                                ->collapsed(),
                             Section::make('Ahorros')
                                 ->description('Metas fijas o temporales: fondos, equipos, navidad…')
                                 ->schema(static::categoryRepeater(BudgetCategoryType::Savings))
-                                ->collapsible(),
+                                ->collapsible()
+                                ->collapsed(),
                             Section::make('Otros')
                                 ->description('Conceptos que no encajan en las categorías anteriores')
                                 ->schema(static::categoryRepeater(BudgetCategoryType::Other))
-                                ->collapsible(),
+                                ->collapsible()
+                                ->collapsed(),
                         ]),
                     Step::make('Resumen')
                         ->description('Balance y notas finales')
@@ -173,16 +210,33 @@ class BudgetPlanForm
         return [
             Repeater::make("items_{$category->value}")
                 ->label($category->label())
+                ->collapsible()
+                ->collapsed()
+                ->itemLabel(function (array $state) use ($category): ?string {
+                    if (blank($state['concept'] ?? null)) {
+                        return 'Nuevo concepto';
+                    }
+
+                    $concept = Str::limit((string) $state['concept'], 36);
+                    $amount = (float) ($state['amount'] ?? 0);
+
+                    if ($amount <= 0) {
+                        return $concept;
+                    }
+
+                    return "{$concept} · ".number_format($amount, 2);
+                })
                 ->schema([
                     TextInput::make('concept')
                         ->label('Concepto')
                         ->required()
                         ->maxLength(120)
-                        ->columnSpan(2),
+                        ->columnSpan(3),
                     TextInput::make('notes')
                         ->label('Notas')
                         ->placeholder('Gasto quincenal, Ahorro fijo…')
-                        ->maxLength(120),
+                        ->maxLength(120)
+                        ->columnSpan(2),
                     TextInput::make('amount')
                         ->label('Monto')
                         ->numeric()
@@ -191,7 +245,8 @@ class BudgetPlanForm
                         ->minValue(0)
                         ->prefix(fn (Get $get): string => QuoteCurrency::resolve($get('../../currency'))->symbol())
                         ->dehydrateStateUsing(fn (?string $state): float => filled($state) ? (float) $state : 0.0)
-                        ->live(onBlur: true),
+                        ->live(onBlur: true)
+                        ->columnSpan(2),
                     Placeholder::make('percentage_preview')
                         ->label('% del ingreso')
                         ->content(function (Get $get): string {
@@ -203,13 +258,14 @@ class BudgetPlanForm
                             }
 
                             return number_format(($amount / $netIncome) * 100, 1).'%';
-                        }),
+                        })
+                        ->columnSpan(1),
                     Select::make('category_type')
                         ->default($category->value)
                         ->dehydrated(true)
                         ->hidden(),
                 ])
-                ->columns(3)
+                ->columns(8)
                 ->defaultItems(0)
                 ->reorderable(false)
                 ->addActionLabel("Agregar {$category->label()}")

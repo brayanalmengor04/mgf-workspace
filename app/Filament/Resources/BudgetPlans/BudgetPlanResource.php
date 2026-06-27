@@ -6,6 +6,7 @@ use AlizHarb\ActivityLog\RelationManagers\ActivitiesRelationManager;
 use App\Filament\Resources\BudgetPlans\Pages\CreateBudgetPlan;
 use App\Filament\Resources\BudgetPlans\Pages\EditBudgetPlan;
 use App\Filament\Resources\BudgetPlans\Pages\ListBudgetPlans;
+use App\Filament\Resources\BudgetPlans\Pages\PreviewBudgetPlan;
 use App\Filament\Resources\BudgetPlans\Schemas\BudgetPlanForm;
 use App\Filament\Resources\BudgetPlans\Tables\BudgetPlansTable;
 use App\Models\BudgetPlan;
@@ -66,6 +67,7 @@ class BudgetPlanResource extends Resource
             'index' => ListBudgetPlans::route('/'),
             'create' => CreateBudgetPlan::route('/create'),
             'edit' => EditBudgetPlan::route('/{record}/edit'),
+            'preview' => PreviewBudgetPlan::route('/{record}/preview'),
         ];
     }
 }
