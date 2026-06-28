@@ -24,4 +24,6 @@ WORKDIR /var/www/html
 COPY docker/entrypoint.sh /usr/local/bin/entrypoint.sh
 RUN chmod +x /usr/local/bin/entrypoint.sh
 
+COPY . .
+
 ENTRYPOINT ["entrypoint.sh"]

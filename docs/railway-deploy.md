@@ -15,11 +15,37 @@ El workflow [`.github/workflows/railway-deploy.yml`](../.github/workflows/railwa
 
 El token debe pertenecer al mismo proyecto donde está el servicio `mgf-workspace`.
 
+## Variables de entorno en Railway
+
+`.env.PRD` es solo referencia local (está en `.gitignore` y **no** se sube al repo). En producción, Laravel lee las variables que configures en Railway.
+
+1. Railway → proyecto → servicio **mgf-workspace** → pestaña **Variables**.
+2. Copia cada clave de tu `.env.PRD` local (valores reales de producción).
+3. Mínimo necesario:
+
+| Variable | Notas |
+|----------|--------|
+| `APP_ENV` | `production` |
+| `APP_KEY` | Mismo valor que en `.env.PRD` |
+| `APP_DEBUG` | `false` |
+| `APP_URL` | URL pública del servicio Railway |
+| `DB_CONNECTION` | `mysql` |
+| `DB_HOST` | `mysql.railway.internal` (o el host de tu plugin MySQL) |
+| `DB_PORT` | `3306` |
+| `DB_DATABASE` | Nombre de la base |
+| `DB_USERNAME` | Usuario MySQL |
+| `DB_PASSWORD` | Contraseña MySQL |
+| `SESSION_DRIVER` | `database` |
+| `CACHE_STORE` | `database` |
+| `QUEUE_CONNECTION` | `database` |
+
+Railway también puede inyectar `MYSQL_URL`, `MYSQLHOST`, etc. si tienes un servicio MySQL en el mismo proyecto; alinea `DB_*` con esos valores.
+
 ## Requisitos en Railway
 
 1. Servicio `mgf-workspace` creado en el entorno de producción.
 2. Builder: **Dockerfile** (`Dockerfile` en la raíz del repo).
-3. Variables de entorno de la app configuradas en el servicio (ver `.env.example`).
+3. Variables anteriores configuradas en el servicio.
 
 ## Verificación
 
