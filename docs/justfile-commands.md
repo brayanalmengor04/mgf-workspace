@@ -80,3 +80,16 @@ just clear
 - App: `http://localhost:8000`
 - Login admin: `http://localhost:8000/admin/login`
 - Raíz `/` redirige al login
+
+## Producción (Railway)
+
+Ver [railway-deploy.md](./railway-deploy.md). Atajos con Just:
+
+| Comando | Descripción |
+|---------|-------------|
+| `just prod migrate` | Migraciones en Railway |
+| `just prod migrate-seed` | Migrar + seeders |
+| `just prod backup` | Respaldo MySQL de producción |
+| `just prod restore <file>` | Restaurar backup |
+| `just prod artisan "..."` | Artisan remoto |
+| `just prod logs` | Logs del servicio |

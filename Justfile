@@ -119,3 +119,25 @@ restore file:
 # Limpiar cachés de Laravel
 clear:
     {{app}} php artisan optimize:clear
+
+# --- Producción (Railway CLI: npm i -g @railway/cli && railway login) ---
+
+# Comando genérico: just prod migrate | just prod backup | just prod artisan "migrate:status"
+prod *cmd:
+    powershell -NoProfile -File scripts/railway-prod.ps1 {{cmd}}
+
+# Migraciones en producción
+prod-migrate:
+    powershell -NoProfile -File scripts/railway-prod.ps1 migrate
+
+# Migraciones + seeders en producción
+prod-migrate-seed:
+    powershell -NoProfile -File scripts/railway-prod.ps1 migrate-seed
+
+# Respaldo MySQL de producción → database/backups/
+prod-backup:
+    powershell -NoProfile -File scripts/railway-prod.ps1 backup
+
+# Restaurar backup en producción (ej: just prod-restore prod_2026-06-27_12-00-00.sql)
+prod-restore file:
+    powershell -NoProfile -File scripts/railway-prod.ps1 restore {{file}}

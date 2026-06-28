@@ -26,7 +26,7 @@ El token debe pertenecer al mismo proyecto donde está el servicio `mgf-workspac
 | Variable | Notas |
 |----------|--------|
 | `APP_ENV` | `production` |
-| `APP_KEY` | Mismo valor que en `.env.PRD` |
+| `APP_KEY` | **Obligatorio.** Formato `base64:...` (copiar de `.env.PRD` sin comillas extra) |
 | `APP_DEBUG` | `false` |
 | `APP_URL` | URL pública del servicio Railway |
 | `DB_CONNECTION` | `mysql` |
@@ -40,6 +40,37 @@ El token debe pertenecer al mismo proyecto donde está el servicio `mgf-workspac
 | `QUEUE_CONNECTION` | `database` |
 
 Railway también puede inyectar `MYSQL_URL`, `MYSQLHOST`, etc. si tienes un servicio MySQL en el mismo proyecto; alinea `DB_*` con esos valores.
+
+### APP_KEY (MissingAppKeyException)
+
+Si ves `No application encryption key has been specified`:
+
+1. Railway → servicio **mgf-workspace** → **Variables** → confirma que `APP_KEY` existe y empieza con `base64:`.
+2. Sin comillas en el valor (Railway las guarda literal si las pones).
+3. Redeploy después de guardar.
+
+En cada arranque, el contenedor materializa un `.env` desde esas variables y ejecuta `migrate --force`.
+
+## Operaciones en producción
+
+Requisitos locales: [Railway CLI](https://docs.railway.com/develop/cli) instalado y `railway login`.
+
+Configura nombres de servicio en [`scripts/railway.config.json`](../scripts/railway.config.json) (`appService`, `mysqlService`).
+
+| Comando | Acción |
+|---------|--------|
+| `just prod migrate` | Migraciones pendientes |
+| `just prod migrate-seed` | Migrar + seeders |
+| `just prod seed` | Solo seeders |
+| `just prod backup` | Volcar MySQL a `database/backups/` |
+| `just prod restore <archivo.sql>` | Restaurar backup (pide confirmación) |
+| `just prod artisan "migrate:status"` | Cualquier comando artisan |
+| `just prod shell` | Shell en el contenedor |
+| `just prod logs` | Logs del servicio |
+| `just prod clear` | Limpiar cachés |
+| `just prod filament-user` | Crear usuario admin |
+
+Comandos destructivos (`fresh`, `fresh-seed`, `restore`) piden escribir `si` para confirmar.
 
 ## Requisitos en Railway
 
