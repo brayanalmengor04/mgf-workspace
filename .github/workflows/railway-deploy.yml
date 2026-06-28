@@ -4,15 +4,17 @@ on:
   push:
     branches:
       - main
+  workflow_dispatch:
 
 env:
-  # Debe coincidir exactamente con el nombre del servicio en Railway (Dashboard → servicio → Settings).
+  # Nombre exacto del servicio en Railway (Settings del servicio).
   RAILWAY_SERVICE: mgf-workspace
+  # ID del servicio (solo referencia / debug; el CLI usa --service con el nombre).
+  RAILWAY_SERVICE_ID: 1462a593-56ac-48cd-9fce-4f0af8dfa985
 
 jobs:
   deploy:
     runs-on: ubuntu-latest
-    # Imagen oficial del CLI (bervProject/railway-deploy tiene la imagen Docker rota: "railway: not found").
     container: ghcr.io/railwayapp/cli:latest
     env:
       RAILWAY_TOKEN: ${{ secrets.RAILWAY_TOKEN }}
@@ -20,5 +22,12 @@ jobs:
       - name: Checkout
         uses: actions/checkout@v4
 
+      - name: Debug Railway context
+        run: |
+          echo "Service name: ${{ env.RAILWAY_SERVICE }}"
+          echo "Service ID (reference): ${{ env.RAILWAY_SERVICE_ID }}"
+          railway --version
+          railway status --json || echo "railway status failed (token may not expose link context)"
+
       - name: Deploy to Railway
-        run: railway up --service=${{ env.RAILWAY_SERVICE }} --detach
+        run: railway up --service=${{ env.RAILWAY_SERVICE }} --detach --verbose
