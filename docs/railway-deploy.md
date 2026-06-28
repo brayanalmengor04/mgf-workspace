@@ -28,7 +28,7 @@ El token debe pertenecer al mismo proyecto donde está el servicio `mgf-workspac
 | `APP_ENV` | `production` |
 | `APP_KEY` | **Obligatorio.** Formato `base64:...` (copiar de `.env.PRD` sin comillas extra) |
 | `APP_DEBUG` | `false` |
-| `APP_URL` | URL pública del servicio Railway |
+| `APP_URL` | URL pública real del servicio (ej. `https://mgf-workspace-production.up.railway.app`). Si usas el placeholder `tu-dominio.railway.app`, los CSS/JS de Filament no cargarán. El entrypoint también la ajusta desde `RAILWAY_PUBLIC_DOMAIN` al arrancar. |
 | `DB_CONNECTION` | `mysql` |
 | `DB_HOST` | `mysql.railway.internal` (o el host de tu plugin MySQL) |
 | `DB_PORT` | `3306` |

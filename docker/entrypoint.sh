@@ -17,12 +17,31 @@ if [ ! -f .env ]; then
     fi
 fi
 
+if [ "$is_railway" = true ] && [ -n "${RAILWAY_PUBLIC_DOMAIN:-}" ]; then
+    app_url="https://${RAILWAY_PUBLIC_DOMAIN}"
+    if [ -f .env ]; then
+        if grep -q '^APP_URL=' .env; then
+            sed -i "s|^APP_URL=.*|APP_URL=${app_url}|" .env
+        else
+            printf '\nAPP_URL=%s\n' "$app_url" >> .env
+        fi
+    fi
+    export APP_URL="$app_url"
+fi
+
 if [ ! -f vendor/autoload.php ]; then
     composer install --no-interaction --prefer-dist --optimize-autoloader
 fi
 
-if [ ! -d node_modules/.bin ]; then
-    npm install
+if [ ! -d public/css/filament ] || [ ! -f public/build/manifest.json ]; then
+    if [ ! -d node_modules/.bin ]; then
+        npm install
+    fi
+    php artisan filament:upgrade --no-interaction
+    rm -f public/hot
+    if [ ! -f public/build/manifest.json ]; then
+        npm run build
+    fi
 fi
 
 needs_key=false
@@ -38,15 +57,10 @@ if [ "$needs_key" = true ]; then
     php artisan key:generate --force
 fi
 
-rm -f public/hot
-
-if [ ! -f public/build/manifest.json ]; then
-    npm run build
-fi
-
 if [ "$is_railway" = true ]; then
     php artisan migrate --force
     php artisan optimize:clear
 fi
 
-exec php artisan serve --host=0.0.0.0 --port=8000
+port="${PORT:-8000}"
+exec php artisan serve --host=0.0.0.0 --port="$port"
