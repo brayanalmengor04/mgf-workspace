@@ -6,6 +6,7 @@ on:
       - main
 
 env:
+  # Debe coincidir exactamente con el nombre del servicio en Railway (Dashboard → servicio → Settings).
   RAILWAY_SERVICE: mgf-workspace
 
 jobs:
@@ -16,8 +17,11 @@ jobs:
         uses: actions/checkout@v4
 
       - name: Deploy to Railway
-        uses: bervProject/railway-deploy@0.1.2-beta
+        uses: bervProject/railway-deploy@0.2.0-beta
         env:
+          # Project Token de Railway: Project → Settings → Tokens → Generate Project Token.
+          # Agrégalo en GitHub: repo → Settings → Secrets and variables → Actions → RAILWAY_TOKEN
           RAILWAY_TOKEN: ${{ secrets.RAILWAY_TOKEN }}
         with:
           service: ${{ env.RAILWAY_SERVICE }}
+          detach: true
