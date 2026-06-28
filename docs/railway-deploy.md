@@ -72,6 +72,14 @@ Configura nombres de servicio en [`scripts/railway.config.json`](../scripts/rail
 
 Comandos destructivos (`fresh`, `fresh-seed`, `restore`) piden escribir `si` para confirmar.
 
+### Error 502 (Application failed to respond)
+
+Railway espera que la app escuche en la variable `PORT` de inmediato. El entrypoint arranca el servidor primero y corre migraciones en segundo plano. Si persiste el 502:
+
+1. Revisa **Deploy Logs** (no Build Logs) y busca `Listening on 0.0.0.0:...`
+2. En Railway → servicio → **Settings → Networking**, confirma que el puerto expuesto coincide (Railway inyecta `PORT` automáticamente).
+3. Health check opcional: path `/up`
+
 ## Requisitos en Railway
 
 1. Servicio `mgf-workspace` creado en el entorno de producción.

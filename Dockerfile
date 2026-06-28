@@ -26,11 +26,16 @@ RUN chmod +x /usr/local/bin/entrypoint.sh
 
 COPY . .
 
-# Filament CSS/JS + Vite build baked into the image (not committed to git).
 ENV APP_KEY=base64:buildtimeplaceholderkey000000000000000=
+ENV PORT=8080
+
 RUN composer install --no-dev --no-interaction --prefer-dist --optimize-autoloader \
     && npm ci \
     && npm run build \
-    && php artisan filament:upgrade --no-interaction
+    && php artisan filament:upgrade --no-interaction \
+    && mkdir -p storage/framework/{cache/data,sessions,views} storage/logs bootstrap/cache \
+    && chmod -R 775 storage bootstrap/cache
+
+EXPOSE 8080
 
 ENTRYPOINT ["entrypoint.sh"]

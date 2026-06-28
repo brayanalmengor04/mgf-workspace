@@ -29,18 +29,21 @@ if [ "$is_railway" = true ] && [ -n "${RAILWAY_PUBLIC_DOMAIN:-}" ]; then
     export APP_URL="$app_url"
 fi
 
-if [ ! -f vendor/autoload.php ]; then
-    composer install --no-interaction --prefer-dist --optimize-autoloader
-fi
-
-if [ ! -d public/css/filament ] || [ ! -f public/build/manifest.json ]; then
-    if [ ! -d node_modules/.bin ]; then
-        npm install
+# Solo desarrollo local: vendor/assets no vienen en la imagen de Railway.
+if [ "$is_railway" != true ]; then
+    if [ ! -f vendor/autoload.php ]; then
+        composer install --no-interaction --prefer-dist --optimize-autoloader
     fi
-    php artisan filament:upgrade --no-interaction
-    rm -f public/hot
-    if [ ! -f public/build/manifest.json ]; then
-        npm run build
+
+    if [ ! -d public/css/filament ] || [ ! -f public/build/manifest.json ]; then
+        if [ ! -d node_modules/.bin ]; then
+            npm install
+        fi
+        php artisan filament:upgrade --no-interaction
+        rm -f public/hot
+        if [ ! -f public/build/manifest.json ]; then
+            npm run build
+        fi
     fi
 fi
 
@@ -57,10 +60,22 @@ if [ "$needs_key" = true ]; then
     php artisan key:generate --force
 fi
 
+# Migraciones en segundo plano: Railway hace health check antes de que migrate termine.
 if [ "$is_railway" = true ]; then
-    php artisan migrate --force
-    php artisan optimize:clear
+    (
+        i=0
+        while [ "$i" -lt 30 ]; do
+            if php artisan migrate --force --no-interaction; then
+                exit 0
+            fi
+            i=$((i + 1))
+            sleep 2
+        done
+        echo "migrate: no se pudo conectar a la BD tras 60s" >&2
+        exit 1
+    ) &
 fi
 
-port="${PORT:-8000}"
-exec php artisan serve --host=0.0.0.0 --port="$port"
+port="${PORT:-8080}"
+echo "Listening on 0.0.0.0:${port}" >&2
+exec php artisan serve --host=0.0.0.0 --port="${port}" --no-reload
