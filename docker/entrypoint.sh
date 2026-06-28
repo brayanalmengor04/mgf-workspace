@@ -38,10 +38,6 @@ if [ "$needs_key" = true ]; then
     php artisan key:generate --force
 fi
 
-if [ "$is_railway" = true ]; then
-    php artisan optimize:clear
-fi
-
 rm -f public/hot
 
 if [ ! -f public/build/manifest.json ]; then
@@ -50,6 +46,7 @@ fi
 
 if [ "$is_railway" = true ]; then
     php artisan migrate --force
+    php artisan optimize:clear
 fi
 
 exec php artisan serve --host=0.0.0.0 --port=8000
