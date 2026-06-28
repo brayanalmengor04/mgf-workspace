@@ -2,13 +2,13 @@
 # Uso: just          (selector interactivo)
 #      just build     (reconstruir y levantar)
 
-set shell := ["powershell.exe", "-c"]
+set shell := ["powershell.exe", "-ExecutionPolicy", "Bypass", "-c"]
 
 compose := "docker compose"
 app := compose + " exec app"
 
 default:
-    @just --choose
+    @just --choose --chooser "fzf --preview 'just --show {}'"
 
 # Levantar contenedores
 up:
@@ -120,24 +120,32 @@ restore file:
 clear:
     {{app}} php artisan optimize:clear
 
-# --- Producción (Railway CLI: npm i -g @railway/cli && railway login) ---
+# --- Comandos de Producción (Railway) ---
 
-# Comando genérico: just prod migrate | just prod backup | just prod artisan "migrate:status"
-prod *cmd:
-    powershell -NoProfile -File scripts/railway-prod.ps1 {{cmd}}
+# Ejecutar cualquier comando artisan en producción (ej: just prod-artisan migrate)
+prod-artisan *args:
+    railway run php artisan {{args}}
 
-# Migraciones en producción
+# Ejecutar migraciones en producción
 prod-migrate:
-    powershell -NoProfile -File scripts/railway-prod.ps1 migrate
+    railway run php artisan migrate --force
 
-# Migraciones + seeders en producción
-prod-migrate-seed:
-    powershell -NoProfile -File scripts/railway-prod.ps1 migrate-seed
+# Limpiar cachés en producción
+prod-clear:
+    railway run php artisan optimize:clear
 
-# Respaldo MySQL de producción → database/backups/
+# Abrir una terminal bash en el servidor de producción
+prod-shell:
+    railway shell
+
+# Ver logs de producción en vivo
+prod-logs:
+    railway logs
+
+# Crear un respaldo (backup) de la base de datos de producción y guardarlo localmente
 prod-backup:
-    powershell -NoProfile -File scripts/railway-prod.ps1 backup
+    if (-not (Test-Path database/backups)) { New-Item -ItemType Directory -Path database/backups | Out-Null }; $date = Get-Date -Format 'yyyy-MM-dd_HH-mm-ss'; $out = "database/backups/prod_$date.sql"; $err = "database/backups/prod_$date.err"; $v = (railway variables --service MySQL --json | ConvertFrom-Json); $pass = $v.MYSQLPASSWORD.Trim(); cmd /c "docker run --rm mysql:8.0 mysqldump --no-tablespaces --ssl-mode=REQUIRED -h $($v.RAILWAY_TCP_PROXY_DOMAIN) -P $($v.RAILWAY_TCP_PROXY_PORT) -u $($v.MYSQLUSER) -p$pass $($v.MYSQLDATABASE) > $out 2> $err"; if (-not (Test-Path $out) -or (Get-Item $out).Length -lt 100) { if (Test-Path $err) { Get-Content $err; Remove-Item $err -ErrorAction SilentlyContinue }; if (Test-Path $out) { Remove-Item $out }; throw 'Backup falló: archivo vacío o inválido' }; Remove-Item $err -ErrorAction SilentlyContinue; Write-Host "✅ Respaldo de producción guardado en $out"
 
-# Restaurar backup en producción (ej: just prod-restore prod_2026-06-27_12-00-00.sql)
+# Restaurar un respaldo (backup) en la base de datos de producción (ej: just prod-restore prod_2026-06-27_12-00-00.sql)
 prod-restore file:
-    powershell -NoProfile -File scripts/railway-prod.ps1 restore {{file}}
+    $v = (railway variables --service MySQL --json | ConvertFrom-Json); $pass = $v.MYSQLPASSWORD.Trim(); $file = "database/backups/{{file}}"; if (-not (Test-Path $file)) { throw "No existe el archivo: $file" }; cmd /c "docker run --rm -i mysql:8.0 mysql --ssl-mode=REQUIRED -h $($v.RAILWAY_TCP_PROXY_DOMAIN) -P $($v.RAILWAY_TCP_PROXY_PORT) -u $($v.MYSQLUSER) -p$pass $($v.MYSQLDATABASE) < $file"; Write-Host "✅ Base de datos de producción restaurada desde $file"
