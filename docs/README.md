@@ -7,6 +7,7 @@ Guías del módulo de cotizaciones y del panel Filament.
 | [architecture-pattern.md](./architecture-pattern.md) | Patrón de capas, convenciones y cómo escalar nuevos módulos |
 | [migrations-and-policies.md](./migrations-and-policies.md) | Migraciones del dominio, políticas y autorización |
 | [justfile-commands.md](./justfile-commands.md) | Comandos `just` para desarrollo con Docker |
+| [railway-deploy.md](./railway-deploy.md) | Deploy automático a Railway vía GitHub Actions |
 
 ## Usuarios demo (después de `just migrate-seed`)
 
