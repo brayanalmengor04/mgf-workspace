@@ -356,4 +356,5 @@ Copias detalladas en `docs/`:
 |-----------|-----------|
 | [docs/architecture-pattern.md](./docs/architecture-pattern.md) | Patrón de capas y convenciones |
 | [docs/migrations-and-policies.md](./docs/migrations-and-policies.md) | Migraciones y autorización |
+| [docs/seo.md](./docs/seo.md) | SEO, meta tags y sitemap |
 | [docs/justfile-commands.md](./docs/justfile-commands.md) | Comandos Just |
