@@ -8,6 +8,7 @@ use App\Enums\BudgetPeriod;
 use App\Enums\BudgetStatus;
 use App\Enums\QuoteCurrency;
 use App\Models\BudgetPlan;
+use App\Support\ActivityLogSilencer;
 use Barryvdh\DomPDF\Facade\Pdf;
 use Illuminate\Support\Facades\Storage;
 use Illuminate\Support\Str;
@@ -25,12 +26,14 @@ class BudgetPdfService
         $payload = $this->buildPayload($budgetPlan);
         $pdfPath = $this->renderPdf($budgetPlan, $payload);
 
-        $budgetPlan->forceFill([
-            'status' => BudgetStatus::Issued,
-            'generated_payload' => $payload,
-            'pdf_path' => $pdfPath,
-            'issued_at' => now(),
-        ])->save();
+        ActivityLogSilencer::withoutModelLogs(function () use ($budgetPlan, $payload, $pdfPath): void {
+            $budgetPlan->forceFill([
+                'status' => BudgetStatus::Issued,
+                'generated_payload' => $payload,
+                'pdf_path' => $pdfPath,
+                'issued_at' => now(),
+            ])->save();
+        });
 
         activity()
             ->performedOn($budgetPlan)
@@ -49,10 +52,12 @@ class BudgetPdfService
         $payload = $budgetPlan->generated_payload ?? $this->buildPayload($budgetPlan);
         $pdfPath = $this->renderPdf($budgetPlan, $payload);
 
-        $budgetPlan->forceFill([
-            'generated_payload' => $payload,
-            'pdf_path' => $pdfPath,
-        ])->save();
+        ActivityLogSilencer::withoutModelLogs(function () use ($budgetPlan, $payload, $pdfPath): void {
+            $budgetPlan->forceFill([
+                'generated_payload' => $payload,
+                'pdf_path' => $pdfPath,
+            ])->save();
+        });
 
         activity()
             ->performedOn($budgetPlan)

@@ -46,7 +46,7 @@ return [
      * These attributes will be excluded from logging for all models.
      * Model-specific exclusions via logExcept() are merged with these.
      */
-    'default_except_attributes' => [],
+    'default_except_attributes' => ['updated_at', 'created_at', 'remember_token'],
 
     /*
      * When enabled, activities are buffered in memory and inserted in a

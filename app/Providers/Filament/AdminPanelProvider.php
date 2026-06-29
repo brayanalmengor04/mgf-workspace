@@ -72,7 +72,7 @@ class AdminPanelProvider extends PanelProvider
             ])
             ->renderHook(
                 PanelsRenderHook::HEAD_END,
-                fn (): string => '<link rel="stylesheet" href="'.asset('css/filament-wizard.css').'">',
+                fn (): string => '<link rel="stylesheet" href="'.asset('css/filament-wizard.css?v=2').'">',
             );
     }
 }

@@ -60,6 +60,10 @@ if [ "$needs_key" = true ]; then
     php artisan key:generate --force
 fi
 
+if [ ! -e public/storage ]; then
+    php artisan storage:link --force 2>/dev/null || php artisan storage:link
+fi
+
 # Migraciones en segundo plano: Railway hace health check antes de que migrate termine.
 if [ "$is_railway" = true ]; then
     (

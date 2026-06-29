@@ -3,6 +3,7 @@
 namespace App\Models;
 
 use App\Enums\QuoteCurrency;
+use App\Models\Concerns\ConfiguresActivityLog;
 use Illuminate\Database\Eloquent\Builder;
 use Illuminate\Database\Eloquent\Model;
 use Illuminate\Database\Eloquent\Relations\BelongsTo;
@@ -12,7 +13,7 @@ use Spatie\Activitylog\Support\LogOptions;
 
 class QuoteTemplate extends Model
 {
-    use HasActivity;
+    use ConfiguresActivityLog, HasActivity;
 
     protected $attributes = [
         'currency' => 'PAB',
@@ -75,10 +76,26 @@ class QuoteTemplate extends Model
 
     public function getActivitylogOptions(): LogOptions
     {
-        return LogOptions::defaults()
-            ->logFillable()
-            ->logOnlyDirty()
-            ->dontLogEmptyChanges();
+        return static::activityLogOptionsFor([
+            'name',
+            'is_default',
+            'is_active',
+            'issuer_name',
+            'issuer_ruc',
+            'issuer_dv',
+            'issuer_has_dv',
+            'issuer_address',
+            'issuer_phone',
+            'issuer_email',
+            'bank_name',
+            'bank_account_number',
+            'yappy_id',
+            'footer_notes',
+            'currency',
+            'pdf_layout',
+            'logo_path',
+            'primary_color',
+        ]);
     }
 
     protected static function booted(): void

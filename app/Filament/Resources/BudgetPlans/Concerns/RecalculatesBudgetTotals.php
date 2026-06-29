@@ -4,10 +4,18 @@ namespace App\Filament\Resources\BudgetPlans\Concerns;
 
 use App\Models\BudgetPlan;
 use App\Services\Budgets\BudgetCalculator;
+use App\Support\ActivityLogSilencer;
 
 trait RecalculatesBudgetTotals
 {
     protected function recalculateBudgetTotals(BudgetPlan $budgetPlan): void
+    {
+        ActivityLogSilencer::withoutModelLogs(function () use ($budgetPlan): void {
+            $this->performBudgetTotalsRecalculation($budgetPlan);
+        });
+    }
+
+    protected function performBudgetTotalsRecalculation(BudgetPlan $budgetPlan): void
     {
         $budgetPlan->load('items');
 

@@ -124,7 +124,7 @@ class BudgetPlanForm
                                 ->helperText('Monto que realmente recibes después de descuentos.'),
                             TextInput::make('income_notes')
                                 ->label('Nota sobre ingresos')
-                                ->placeholder('Tras descuentos de ley (SS, SE, ISR)')
+                                ->default('Tras descuentos de ley (SS, SE, ISR)')
                                 ->maxLength(255)
                                 ->columnSpanFull(),
                             Placeholder::make('income_preview')

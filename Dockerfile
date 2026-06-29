@@ -26,10 +26,10 @@ RUN chmod +x /usr/local/bin/entrypoint.sh
 
 COPY . .
 
-ENV APP_KEY=base64:buildtimeplaceholderkey000000000000000=
 ENV PORT=8080
 
-RUN composer install --no-dev --no-interaction --prefer-dist --optimize-autoloader \
+RUN APP_KEY="base64:$(php -r 'echo base64_encode(random_bytes(32));')" \
+    composer install --no-dev --no-interaction --prefer-dist --optimize-autoloader \
     && npm ci \
     && npm run build \
     && php artisan filament:upgrade --no-interaction \

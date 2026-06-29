@@ -4,11 +4,16 @@ namespace App\Filament\Widgets\Activity;
 
 use AlizHarb\ActivityLog\Widgets\ActivityHeatmapWidget as BaseActivityHeatmapWidget;
 use App\Support\ActivityLogScope;
+use Carbon\Carbon;
 use Illuminate\Support\Facades\DB;
 use Spatie\Activitylog\Models\Activity;
 
 class ScopedActivityHeatmapWidget extends BaseActivityHeatmapWidget
 {
+    protected string $view = 'filament.widgets.activity-heatmap';
+
+    protected int | string | array $columnSpan = 'full';
+
     /**
      * @return array<string, mixed>
      */
@@ -29,11 +34,13 @@ class ScopedActivityHeatmapWidget extends BaseActivityHeatmapWidget
             ->where('created_at', '>=', now()->subDays($this->days))
             ->groupBy(DB::raw($dateExpression))
             ->get()
-            ->pluck('count', 'date');
+            ->mapWithKeys(fn ($row) => [
+                Carbon::parse($row->date)->toDateString() => (int) $row->count,
+            ]);
 
         return [
-            'data' => $data,
-            'max' => $data->max() ?: 1,
+            'data' => $data->all(),
+            'max' => (int) ($data->max() ?: 1),
         ];
     }
 }

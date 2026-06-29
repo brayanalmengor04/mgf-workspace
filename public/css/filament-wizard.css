@@ -1,44 +1,26 @@
-/* Evita scroll fantasma en pasos ocultos del wizard de cotizaciones. */
+/* Wizard: solo el paso activo es visible (evita cuadros blancos superpuestos). */
 .fi-main .fi-sc-wizard {
+    overflow: hidden;
     overflow-anchor: none;
 }
 
-.fi-main .fi-sc-wizard-step:not(.fi-active) {
+.fi-main .fi-sc-wizard .fi-sc-wizard-step {
     display: none !important;
-    position: static !important;
-    height: auto !important;
-    overflow: hidden !important;
-    visibility: hidden !important;
-    pointer-events: none !important;
-    margin: 0 !important;
-    padding: 0 !important;
 }
 
-.fi-main .fi-sc-wizard-step.fi-active {
-    overflow: visible;
+.fi-main .fi-sc-wizard .fi-sc-wizard-step.fi-active {
+    display: block !important;
+    visibility: visible !important;
+    opacity: 1 !important;
+    height: auto !important;
+    overflow: visible !important;
+    pointer-events: auto !important;
+    position: relative !important;
+    margin: 0 !important;
 }
 
 .fi-main .fi-sc-wizard.fi-contained {
     max-width: 100%;
-}
-
-.fi-main .fi-sc-wizard .fi-sc-wizard-header {
-    position: sticky;
-    top: 4rem;
-    z-index: 20;
-    background: inherit;
-}
-
-.fi-main .fi-sc-wizard .fi-sc-wizard-footer {
-    position: sticky;
-    bottom: 0;
-    z-index: 20;
-    padding-top: 1rem;
-    background: linear-gradient(to top, var(--fi-body-bg, #fff) 70%, transparent);
-}
-
-.dark .fi-main .fi-sc-wizard .fi-sc-wizard-footer {
-    background: linear-gradient(to top, var(--fi-body-bg, #111827) 70%, transparent);
 }
 
 .fi-main .fi-sc-wizard .fi-fo-repeater {
@@ -46,4 +28,14 @@
     overflow-y: auto;
     overscroll-behavior: contain;
     padding-right: 0.25rem;
+}
+
+/* Oculta paneles flotantes huérfanos de pasos inactivos. */
+.fi-main .fi-sc-wizard-step:not(.fi-active) .fi-dropdown-panel,
+.fi-main .fi-sc-wizard-step:not(.fi-active) .fi-select-input-dropdown,
+.fi-main .fi-sc-wizard-step:not(.fi-active) [data-select-dropdown],
+.fi-main .fi-sc-wizard-step:not(.fi-active) .choices__list--dropdown {
+    display: none !important;
+    visibility: hidden !important;
+    pointer-events: none !important;
 }

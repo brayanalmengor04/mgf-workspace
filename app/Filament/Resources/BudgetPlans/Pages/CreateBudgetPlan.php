@@ -6,6 +6,7 @@ use App\Enums\BudgetPeriod;
 use App\Enums\BudgetPdfLayout;
 use App\Enums\BudgetStatus;
 use App\Enums\QuoteCurrency;
+use App\Filament\Concerns\InteractsWithEmbeddedWizard;
 use App\Filament\Resources\BudgetPlans\BudgetPlanResource;
 use App\Filament\Resources\BudgetPlans\Concerns\RecalculatesBudgetTotals;
 use App\Filament\Resources\BudgetPlans\Schemas\BudgetPlanForm;
@@ -15,6 +16,7 @@ use Filament\Resources\Pages\CreateRecord;
 
 class CreateBudgetPlan extends CreateRecord
 {
+    use InteractsWithEmbeddedWizard;
     use RecalculatesBudgetTotals;
 
     protected static string $resource = BudgetPlanResource::class;
@@ -30,6 +32,7 @@ class CreateBudgetPlan extends CreateRecord
         $data['subtitle'] ??= BudgetPeriod::Biweekly->defaultSubtitle();
         $data['pdf_layout'] ??= BudgetPdfLayout::Classic->value;
         $data['primary_color'] ??= '#0f172a';
+        $data['income_notes'] ??= 'Tras descuentos de ley (SS, SE, ISR)';
 
         return $data;
     }

@@ -10,6 +10,8 @@ use Spatie\Activitylog\Models\Activity;
 
 class ScopedActivityChartWidget extends BaseActivityChartWidget
 {
+    protected int | string | array $columnSpan = 'full';
+
     protected function getData(): array
     {
         $days = config('filament-activity-log.widgets.activity_chart.days', 30);

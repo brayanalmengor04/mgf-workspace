@@ -4,6 +4,7 @@ namespace App\Models;
 
 use App\Enums\QuoteCurrency;
 use App\Enums\QuoteStatus;
+use App\Models\Concerns\ConfiguresActivityLog;
 use Illuminate\Database\Eloquent\Builder;
 use Illuminate\Database\Eloquent\Model;
 use Illuminate\Database\Eloquent\Relations\BelongsTo;
@@ -13,7 +14,7 @@ use Spatie\Activitylog\Support\LogOptions;
 
 class Quote extends Model
 {
-    use HasActivity;
+    use ConfiguresActivityLog, HasActivity;
 
     protected $attributes = [
         'currency' => 'PAB',
@@ -106,9 +107,31 @@ class Quote extends Model
 
     public function getActivitylogOptions(): LogOptions
     {
-        return LogOptions::defaults()
-            ->logFillable()
-            ->logOnlyDirty()
-            ->dontLogEmptyChanges();
+        return static::activityLogOptionsFor([
+            'status',
+            'quote_number',
+            'issuer_name',
+            'issuer_ruc',
+            'issuer_dv',
+            'issuer_has_dv',
+            'issuer_address',
+            'issuer_phone',
+            'issuer_email',
+            'recipient_name',
+            'recipient_ruc',
+            'recipient_dv',
+            'recipient_has_dv',
+            'recipient_address',
+            'recipient_phone',
+            'recipient_email',
+            'bank_name',
+            'bank_account_number',
+            'yappy_id',
+            'footer_notes',
+            'currency',
+            'subtotal',
+            'tax_amount',
+            'total',
+        ]);
     }
 }

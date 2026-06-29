@@ -2,6 +2,7 @@
 
 namespace App\Filament\Resources\QuoteTemplates\Pages;
 
+use App\Filament\Concerns\InteractsWithEmbeddedWizard;
 use App\Filament\Resources\QuoteTemplates\QuoteTemplateResource;
 use Filament\Actions\Action;
 use Filament\Actions\DeleteAction;
@@ -10,6 +11,8 @@ use Filament\Support\Icons\Heroicon;
 
 class EditQuoteTemplate extends EditRecord
 {
+    use InteractsWithEmbeddedWizard;
+
     protected static string $resource = QuoteTemplateResource::class;
 
     protected function getHeaderActions(): array

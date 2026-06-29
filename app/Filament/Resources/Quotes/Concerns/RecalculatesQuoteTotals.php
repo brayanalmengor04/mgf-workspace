@@ -4,10 +4,18 @@ namespace App\Filament\Resources\Quotes\Concerns;
 
 use App\Models\Quote;
 use App\Services\Quotes\QuoteCalculator;
+use App\Support\ActivityLogSilencer;
 
 trait RecalculatesQuoteTotals
 {
     protected function recalculateQuoteTotals(Quote $quote): void
+    {
+        ActivityLogSilencer::withoutModelLogs(function () use ($quote): void {
+            $this->performQuoteTotalsRecalculation($quote);
+        });
+    }
+
+    protected function performQuoteTotalsRecalculation(Quote $quote): void
     {
         $quote->load('items');
 

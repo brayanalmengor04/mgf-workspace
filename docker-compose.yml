@@ -8,6 +8,8 @@ services:
       - vendor:/var/www/html/vendor
       - node_modules:/var/www/html/node_modules
     environment:
+      PORT: "8000"
+      APP_KEY: ${APP_KEY}
       APP_ENV: local
       APP_DEBUG: "true"
       APP_URL: http://localhost:8000

@@ -4,6 +4,7 @@ namespace App\Filament\Resources\Quotes\Pages;
 
 use App\Enums\QuoteCurrency;
 use App\Enums\QuoteStatus;
+use App\Filament\Concerns\InteractsWithEmbeddedWizard;
 use App\Filament\Resources\Quotes\Concerns\RecalculatesQuoteTotals;
 use App\Filament\Resources\Quotes\QuoteResource;
 use App\Models\QuoteTemplate;
@@ -12,6 +13,7 @@ use Filament\Resources\Pages\CreateRecord;
 
 class CreateQuote extends CreateRecord
 {
+    use InteractsWithEmbeddedWizard;
     use RecalculatesQuoteTotals;
 
     protected static string $resource = QuoteResource::class;

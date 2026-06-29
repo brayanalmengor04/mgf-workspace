@@ -6,6 +6,7 @@ use App\Enums\QuoteCurrency;
 use App\Enums\QuotePdfLayout;
 use App\Enums\QuoteStatus;
 use App\Models\Quote;
+use App\Support\ActivityLogSilencer;
 use Barryvdh\DomPDF\Facade\Pdf;
 use Illuminate\Support\Facades\Storage;
 use Illuminate\Support\Str;
@@ -23,12 +24,14 @@ class QuotePdfService
         $payload = $this->buildPayload($quote);
         $pdfPath = $this->renderPdf($quote, $payload);
 
-        $quote->forceFill([
-            'status' => QuoteStatus::Issued,
-            'generated_payload' => $payload,
-            'pdf_path' => $pdfPath,
-            'issued_at' => now(),
-        ])->save();
+        ActivityLogSilencer::withoutModelLogs(function () use ($quote, $payload, $pdfPath): void {
+            $quote->forceFill([
+                'status' => QuoteStatus::Issued,
+                'generated_payload' => $payload,
+                'pdf_path' => $pdfPath,
+                'issued_at' => now(),
+            ])->save();
+        });
 
         activity()
             ->performedOn($quote)
@@ -47,10 +50,12 @@ class QuotePdfService
         $payload = $quote->generated_payload ?? $this->buildPayload($quote);
         $pdfPath = $this->renderPdf($quote, $payload);
 
-        $quote->forceFill([
-            'generated_payload' => $payload,
-            'pdf_path' => $pdfPath,
-        ])->save();
+        ActivityLogSilencer::withoutModelLogs(function () use ($quote, $payload, $pdfPath): void {
+            $quote->forceFill([
+                'generated_payload' => $payload,
+                'pdf_path' => $pdfPath,
+            ])->save();
+        });
 
         activity()
             ->performedOn($quote)

@@ -4,12 +4,14 @@ namespace App\Filament\Resources\BudgetPlans\Pages;
 
 use App\Enums\BudgetCategoryType;
 use App\Enums\BudgetStatus;
+use App\Filament\Concerns\InteractsWithEmbeddedWizard;
 use App\Filament\Resources\BudgetPlans\BudgetPlanResource;
 use App\Filament\Resources\BudgetPlans\Concerns\RecalculatesBudgetTotals;
 use App\Filament\Resources\BudgetPlans\Schemas\BudgetPlanForm;
 use App\Models\BudgetPlan;
 use App\Services\Budgets\BudgetNumberGenerator;
 use App\Services\Budgets\BudgetPdfService;
+use App\Support\ActivityLogSilencer;
 use Filament\Actions\Action;
 use Filament\Actions\DeleteAction;
 use Filament\Notifications\Notification;
@@ -18,6 +20,7 @@ use Illuminate\Support\Facades\Response;
 
 class EditBudgetPlan extends EditRecord
 {
+    use InteractsWithEmbeddedWizard;
     use RecalculatesBudgetTotals;
 
     protected static string $resource = BudgetPlanResource::class;
@@ -182,7 +185,9 @@ class EditBudgetPlan extends EditRecord
                 ->requiresConfirmation()
                 ->visible(fn (BudgetPlan $record): bool => $record->status !== BudgetStatus::Archived)
                 ->action(function (BudgetPlan $record): void {
-                    $record->update(['status' => BudgetStatus::Archived]);
+                    ActivityLogSilencer::withoutModelLogs(function () use ($record): void {
+                        $record->update(['status' => BudgetStatus::Archived]);
+                    });
 
                     activity()
                         ->performedOn($record)

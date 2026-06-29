@@ -61,6 +61,26 @@ return [
             'icon' => 'heroicon-m-arrow-uturn-left',
             'color' => 'gray',
         ],
+        'issued' => [
+            'icon' => 'heroicon-m-paper-airplane',
+            'color' => 'success',
+        ],
+        'regenerated' => [
+            'icon' => 'heroicon-m-arrow-path',
+            'color' => 'info',
+        ],
+        'cancelled' => [
+            'icon' => 'heroicon-m-x-circle',
+            'color' => 'danger',
+        ],
+        'duplicated' => [
+            'icon' => 'heroicon-m-document-duplicate',
+            'color' => 'gray',
+        ],
+        'archived' => [
+            'icon' => 'heroicon-m-archive-box',
+            'color' => 'warning',
+        ],
     ],
 
     /*

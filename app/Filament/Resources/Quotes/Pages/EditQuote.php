@@ -3,9 +3,11 @@
 namespace App\Filament\Resources\Quotes\Pages;
 
 use App\Enums\QuoteStatus;
+use App\Filament\Concerns\InteractsWithEmbeddedWizard;
 use App\Filament\Resources\Quotes\Concerns\RecalculatesQuoteTotals;
 use App\Filament\Resources\Quotes\QuoteResource;
 use App\Models\Quote;
+use App\Support\ActivityLogSilencer;
 use App\Services\Quotes\QuotePdfService;
 use Filament\Actions\Action;
 use Filament\Actions\DeleteAction;
@@ -15,6 +17,7 @@ use Illuminate\Support\Facades\Response;
 
 class EditQuote extends EditRecord
 {
+    use InteractsWithEmbeddedWizard;
     use RecalculatesQuoteTotals;
 
     protected static string $resource = QuoteResource::class;
@@ -127,7 +130,9 @@ class EditQuote extends EditRecord
                 ->requiresConfirmation()
                 ->visible(fn (Quote $record): bool => $record->status !== QuoteStatus::Cancelled)
                 ->action(function (Quote $record): void {
-                    $record->update(['status' => QuoteStatus::Cancelled]);
+                    ActivityLogSilencer::withoutModelLogs(function () use ($record): void {
+                        $record->update(['status' => QuoteStatus::Cancelled]);
+                    });
 
                     activity()
                         ->performedOn($record)
