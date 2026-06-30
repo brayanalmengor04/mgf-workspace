@@ -348,6 +348,31 @@ Complementos:
 
 ---
 
+## 🚀 Novedades de la Última Versión
+
+Se han incorporado potentes herramientas financieras para mejorar tu flujo de trabajo:
+
+- **Seguimiento de Pagos en Presupuestos:** Ahora puedes marcar cada ítem individual de tus presupuestos como **Pagado**.
+- **Fechas de Pago Precisas:** Al marcar un ítem como pagado, el sistema te solicitará la fecha exacta del pago, permitiéndote un seguimiento detallado de tus finanzas.
+- **Estado Global Automatizado:** El documento de presupuesto cambia automáticamente su estado a "Pagado" cuando todos sus ítems internos han sido saldados, eliminando el trabajo manual.
+- **Fechas Personalizadas en Cotizaciones:** Ahora puedes definir explícitamente la fecha de cada cotización, y hemos realizado un *backfill* seguro para preservar tu historial anterior.
+- **Generación de PDFs Dinámicos:** Los PDFs generados (para presupuestos y cotizaciones) han sido actualizados para reflejar estos nuevos estados y fechas con insignias visuales (como la marca verde de "PAGADO") que se actualizan automáticamente al regenerar el documento.
+
+---
+
+## 🤝 Comunidad y Contribuciones
+
+Para mantener el proyecto organizado y escuchar a la comunidad, hemos integrado soporte completo para **GitHub Discussions y Plantillas de Issues**:
+
+- **[GitHub Discussions](https://github.com/brayanalmengor04/mgf-workspace/discussions):** Únete a la conversación, haz preguntas, comparte ideas para nuevos módulos o ayuda a otros usuarios en la sección de discusiones.
+- **Plantillas de Issues Estandarizadas:** Encontrarás nuevas plantillas en el repositorio (`.github/ISSUE_TEMPLATE`) para facilitar tus reportes:
+  - 🐛 **Reporte de Error (`reporte-de-error.md`):** Para reportar bugs de forma estructurada (incluye pasos para reproducir, entorno, etc.).
+  - 💡 **Solicitud de Nueva Función (`solicitud-de-nueva-función.md`):** Para proponer nuevas ideas o módulos que aporten valor al ecosistema.
+
+¡Tus aportes y sugerencias son fundamentales para que la herramienta siga creciendo!
+
+---
+
 ## Documentación adicional
 
 Copias detalladas en `docs/`:
