@@ -15,6 +15,8 @@ env:
 jobs:
   deploy:
     runs-on: ubuntu-latest
+    # Builds Docker en Railway pueden tardar varios minutos.
+    timeout-minutes: 30
     container: ghcr.io/railwayapp/cli:latest
     env:
       RAILWAY_TOKEN: ${{ secrets.RAILWAY_TOKEN }}
@@ -22,12 +24,11 @@ jobs:
       - name: Checkout
         uses: actions/checkout@v4
 
-      - name: Debug Railway context
-        run: |
-          echo "Service name: ${{ env.RAILWAY_SERVICE }}"
-          echo "Service ID (reference): ${{ env.RAILWAY_SERVICE_ID }}"
-          railway --version
-          railway status --json || echo "railway status failed (token may not expose link context)"
-
       - name: Deploy to Railway
-        run: railway up --service=${{ env.RAILWAY_SERVICE }} --detach --verbose
+        run: |
+          railway --version
+          railway up \
+            --service="${{ env.RAILWAY_SERVICE }}" \
+            --ci \
+            --verbose \
+            -m "github@${{ github.sha }}"
