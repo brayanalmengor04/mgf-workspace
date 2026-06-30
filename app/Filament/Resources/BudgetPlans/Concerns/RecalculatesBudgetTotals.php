@@ -47,5 +47,7 @@ trait RecalculatesBudgetTotals
             'total_allocated' => $result['total_allocated'],
             'remaining_balance' => $result['remaining_balance'],
         ]);
+
+        $budgetPlan->syncPaymentStatus();
     }
 }

@@ -93,6 +93,18 @@ class BudgetPlan extends Model
         return $this->status === BudgetStatus::Issued;
     }
 
+    public function syncPaymentStatus(): void
+    {
+        $this->loadMissing('items');
+
+        $allPaid = $this->items->isNotEmpty()
+            && $this->items->every(fn (BudgetPlanItem $item): bool => $item->is_paid);
+
+        if ($this->is_paid !== $allPaid) {
+            $this->forceFill(['is_paid' => $allPaid])->save();
+        }
+    }
+
     public function getActivitylogOptions(): LogOptions
     {
         return static::activityLogOptionsFor([

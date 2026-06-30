@@ -5,6 +5,7 @@ namespace App\Providers\Filament;
 use AlizHarb\ActivityLog\ActivityLogPlugin;
 use App\Filament\Auth\Login;
 use App\Filament\Pages\Dashboard;
+use App\Filament\Widgets\BudgetOverviewWidget;
 use App\Filament\Widgets\BudgetPlansOverviewWidget;
 use App\Filament\Widgets\PlatformStatsWidget;
 use App\Filament\Widgets\ProviderOnboardingWidget;
@@ -55,6 +56,7 @@ class AdminPanelProvider extends PanelProvider
                 PlatformStatsWidget::class,
                 ProviderOnboardingWidget::class,
                 QuotesOverviewWidget::class,
+                BudgetOverviewWidget::class,
                 BudgetPlansOverviewWidget::class,
                 AccountWidget::class,
             ])
@@ -74,22 +76,8 @@ class AdminPanelProvider extends PanelProvider
             ])
             ->renderHook(
                 PanelsRenderHook::HEAD_END,
-                function (): string {
-                    $html = '<meta name="robots" content="noindex, nofollow">'
-                        .'<link rel="stylesheet" href="'.asset('css/filament-wizard.css?v=2').'">';
-
-                    if (request()->is('admin/login')) {
-                        $html .= '<link rel="stylesheet" href="'.asset('css/filament-login.css?v=2').'">';
-                    }
-
-                    return $html;
-                },
-            )
-            ->renderHook(
-                PanelsRenderHook::BODY_START,
-                fn (): string => request()->is('admin/login')
-                    ? '<script>document.body.classList.add("mgf-auth-login")</script>'
-                    : '',
+                fn (): string => '<meta name="robots" content="noindex, nofollow">'
+                    .'<link rel="stylesheet" href="'.asset('css/filament-wizard.css?v=2').'">',
             );
     }
 }

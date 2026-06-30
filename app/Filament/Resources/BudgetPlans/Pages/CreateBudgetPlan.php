@@ -50,13 +50,7 @@ class CreateBudgetPlan extends CreateRecord
         $state = $this->form->getRawState();
         $items = BudgetPlanForm::collectItemsFromState($state);
 
-        $allPaid = true;
-
         foreach ($items as $index => $item) {
-            if (!$item['is_paid']) {
-                $allPaid = false;
-            }
-
             $record->items()->create([
                 'category_type' => $item['category_type'],
                 'concept' => $item['concept'],
@@ -68,8 +62,6 @@ class CreateBudgetPlan extends CreateRecord
             ]);
         }
 
-        if (count($items) > 0) {
-            $record->update(['is_paid' => $allPaid]);
-        }
+        $record->syncPaymentStatus();
     }
 }

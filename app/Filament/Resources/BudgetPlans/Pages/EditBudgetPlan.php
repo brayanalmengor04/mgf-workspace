@@ -63,13 +63,7 @@ class EditBudgetPlan extends EditRecord
 
         $record->items()->delete();
 
-        $allPaid = true;
-
         foreach ($items as $index => $item) {
-            if (!$item['is_paid']) {
-                $allPaid = false;
-            }
-
             $record->items()->create([
                 'category_type' => $item['category_type'],
                 'concept' => $item['concept'],
@@ -81,9 +75,7 @@ class EditBudgetPlan extends EditRecord
             ]);
         }
 
-        if (count($items) > 0) {
-            $record->update(['is_paid' => $allPaid]);
-        }
+        $record->syncPaymentStatus();
     }
 
     protected function getHeaderActions(): array
