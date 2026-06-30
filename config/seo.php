@@ -14,13 +14,13 @@ return [
 
     'site_name' => env('SEO_SITE_NAME', env('APP_NAME', 'Laravel')),
 
-    'title' => env('SEO_TITLE', env('APP_NAME', 'Laravel')),
+    'title' => env('SEO_TITLE', 'Seguimiento Financiero Personal | '.env('APP_NAME', 'MGF Workspace')),
 
-    'description' => env('SEO_DESCRIPTION', 'Sistema de cotizaciones y presupuestos para tu negocio.'),
+    'description' => env('SEO_DESCRIPTION', 'Plataforma de seguimiento financiero personal. Controla presupuestos, cotizaciones y tus finanzas con una herramienta flexible para uso personal y comercial.'),
 
-    'keywords' => env('SEO_KEYWORDS'),
+    'keywords' => env('SEO_KEYWORDS', 'seguimiento financiero, finanzas personales, presupuestos, cotizaciones, gestión financiera'),
 
-    'image' => env('SEO_IMAGE', 'images/og-default.png'),
+    'image' => env('SEO_IMAGE', 'assets/graphs/web/opengraphs.png'),
 
     'twitter_card' => env('SEO_TWITTER_CARD', 'summary_large_image'),
 

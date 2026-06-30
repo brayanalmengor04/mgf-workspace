@@ -22,10 +22,10 @@ Copia estas claves en tu `.env` (ya están en `.env.example`):
 
 ```env
 SEO_SITE_NAME="${APP_NAME}"
-SEO_TITLE="${APP_NAME}"
-SEO_DESCRIPTION="Sistema de cotizaciones y presupuestos para tu negocio."
-SEO_KEYWORDS=
-SEO_IMAGE=images/og-default.png
+SEO_TITLE="Seguimiento Financiero Personal | ${APP_NAME}"
+SEO_DESCRIPTION="Plataforma de seguimiento financiero personal. Controla presupuestos, cotizaciones y tus finanzas con una herramienta flexible para uso personal y comercial."
+SEO_KEYWORDS="seguimiento financiero, finanzas personales, presupuestos, cotizaciones, gestión financiera"
+SEO_IMAGE=assets/graphs/web/opengraphs.png
 SEO_TWITTER_CARD=summary_large_image
 SEO_OG_TYPE=website
 SEO_ROBOTS_INDEX=true
@@ -117,12 +117,12 @@ Sin `$seo`, se usan los valores de `config/seo.php`.
 
 ## Imagen Open Graph
 
-Coloca una imagen en `public/images/og-default.png` (recomendado **1200×630 px**).
+La imagen por defecto está en `public/assets/graphs/web/opengraphs.png` (recomendado **1200×630 px**). La misma ruta se usa para Open Graph (Facebook, LinkedIn, WhatsApp) y Twitter Card (`twitter:image`).
 
 Puedes cambiar la ruta con `SEO_IMAGE` o por página:
 
 ```php
-Seo::make(['image' => 'images/landing-og.png'])
+Seo::make(['image' => 'assets/graphs/web/opengraphs.png'])
 ```
 
 URLs absolutas también funcionan:
