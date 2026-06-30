@@ -150,7 +150,7 @@
 
         <section class="home-panel">
             <div class="home-card">
-                <span class="home-badge">{{ config('seo.site_name') }}</span>
+                <span class="home-badge">{{ config('app.brand') }}</span>
                 <h2 class="home-title" style="font-size: clamp(1.75rem, 3vw, 2.25rem);">
                     Controla tus finanzas en un solo lugar
                 </h2>

@@ -12,9 +12,9 @@ return [
     |
     */
 
-    'site_name' => env('SEO_SITE_NAME', env('APP_NAME', 'MGF Workspace')),
+    'site_name' => env('SEO_SITE_NAME', env('APP_BRAND', 'MGF Workspace')),
 
-    'title' => env('SEO_TITLE', 'Seguimiento Financiero Personal | '.env('APP_NAME', 'MGF Workspace')),
+    'title' => env('SEO_TITLE', 'Seguimiento Financiero Personal | '.env('APP_BRAND', 'MGF Workspace')),
 
     'description' => env('SEO_DESCRIPTION', 'Plataforma de seguimiento financiero personal. Controla presupuestos, cotizaciones y tus finanzas con una herramienta flexible para uso personal y comercial.'),
 

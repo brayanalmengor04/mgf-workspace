@@ -66,6 +66,6 @@ final readonly class Seo
 
     public function siteName(): string
     {
-        return (string) config('seo.site_name', config('app.name'));
+        return (string) config('app.brand', config('seo.site_name', config('app.name')));
     }
 }

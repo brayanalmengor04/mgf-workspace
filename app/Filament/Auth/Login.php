@@ -19,6 +19,6 @@ class Login extends BaseLogin
 
     public function getSubHeading(): string|Htmlable|null
     {
-        return (string) config('seo.site_name', config('app.name'));
+        return (string) config('app.brand');
     }
 }

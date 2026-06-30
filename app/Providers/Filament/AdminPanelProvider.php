@@ -34,7 +34,7 @@ class AdminPanelProvider extends PanelProvider
             ->id('admin')
             ->path('admin')
             ->login(Login::class)
-            ->brandName(fn (): string => (string) config('seo.site_name', config('app.name')))
+            ->brandName(fn (): string => (string) config('app.brand'))
             ->colors([
                 'primary' => Color::Amber,
             ])
@@ -79,7 +79,7 @@ class AdminPanelProvider extends PanelProvider
                         .'<link rel="stylesheet" href="'.asset('css/filament-wizard.css?v=2').'">';
 
                     if (request()->is('admin/login')) {
-                        $html .= '<link rel="stylesheet" href="'.asset('css/filament-login.css?v=1').'">';
+                        $html .= '<link rel="stylesheet" href="'.asset('css/filament-login.css?v=2').'">';
                     }
 
                     return $html;

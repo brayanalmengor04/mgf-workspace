@@ -17,6 +17,18 @@ return [
 
     /*
     |--------------------------------------------------------------------------
+    | Marca visible (panel, login, SEO)
+    |--------------------------------------------------------------------------
+    |
+    | Independiente de APP_NAME para evitar mostrar "Laravel" en producción
+    | cuando APP_NAME no se ha actualizado en el hosting.
+    |
+    */
+
+    'brand' => env('APP_BRAND', 'MGF Workspace'),
+
+    /*
+    |--------------------------------------------------------------------------
     | Application Environment
     |--------------------------------------------------------------------------
     |
