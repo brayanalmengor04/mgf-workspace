@@ -1,0 +1,50 @@
+/* Login 50/50: imagen a la izquierda, formulario a la derecha (desktop). */
+@media (min-width: 1024px) {
+    body.mgf-auth-login .fi-simple-layout {
+        display: grid;
+        grid-template-columns: 1fr 1fr;
+        min-height: 100dvh;
+        max-width: none;
+        padding: 0;
+    }
+
+    body.mgf-auth-login .fi-simple-layout::before {
+        content: '';
+        grid-column: 1;
+        grid-row: 1;
+        background:
+            linear-gradient(180deg, rgba(10, 10, 10, 0.35) 0%, rgba(10, 10, 10, 0.75) 100%),
+            url('/assets/graphs/web/opengraphs.png') center / cover no-repeat;
+    }
+
+    body.mgf-auth-login .fi-simple-main-ctn {
+        grid-column: 2;
+        grid-row: 1;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        padding: 2rem;
+        width: 100%;
+        max-width: none;
+    }
+
+    body.mgf-auth-login .fi-simple-main {
+        width: 100%;
+        max-width: 28rem;
+    }
+
+    body.mgf-auth-login .fi-simple-page {
+        width: 100%;
+    }
+}
+
+@media (max-width: 1023px) {
+    body.mgf-auth-login .fi-simple-layout::before {
+        content: '';
+        display: block;
+        height: 12rem;
+        background:
+            linear-gradient(180deg, rgba(10, 10, 10, 0.2) 0%, rgba(10, 10, 10, 0.6) 100%),
+            url('/assets/graphs/web/opengraphs.png') center / cover no-repeat;
+    }
+}

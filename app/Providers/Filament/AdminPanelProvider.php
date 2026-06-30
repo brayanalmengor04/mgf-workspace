@@ -3,6 +3,8 @@
 namespace App\Providers\Filament;
 
 use AlizHarb\ActivityLog\ActivityLogPlugin;
+use App\Filament\Auth\Login;
+use App\Filament\Pages\Dashboard;
 use App\Filament\Widgets\BudgetPlansOverviewWidget;
 use App\Filament\Widgets\PlatformStatsWidget;
 use App\Filament\Widgets\ProviderOnboardingWidget;
@@ -11,10 +13,10 @@ use Filament\Http\Middleware\Authenticate;
 use Filament\Http\Middleware\AuthenticateSession;
 use Filament\Http\Middleware\DisableBladeIconComponents;
 use Filament\Http\Middleware\DispatchServingFilamentEvent;
-use Filament\Pages\Dashboard;
 use Filament\Panel;
 use Filament\PanelProvider;
 use Filament\Support\Colors\Color;
+use Filament\View\PanelsRenderHook;
 use Filament\Widgets\AccountWidget;
 use Illuminate\Cookie\Middleware\AddQueuedCookiesToResponse;
 use Illuminate\Cookie\Middleware\EncryptCookies;
@@ -22,7 +24,6 @@ use Illuminate\Foundation\Http\Middleware\PreventRequestForgery;
 use Illuminate\Routing\Middleware\SubstituteBindings;
 use Illuminate\Session\Middleware\StartSession;
 use Illuminate\View\Middleware\ShareErrorsFromSession;
-use Filament\View\PanelsRenderHook;
 
 class AdminPanelProvider extends PanelProvider
 {
@@ -32,7 +33,8 @@ class AdminPanelProvider extends PanelProvider
             ->default()
             ->id('admin')
             ->path('admin')
-            ->login()
+            ->login(Login::class)
+            ->brandName(fn (): string => (string) config('seo.site_name', config('app.name')))
             ->colors([
                 'primary' => Color::Amber,
             ])
@@ -72,8 +74,22 @@ class AdminPanelProvider extends PanelProvider
             ])
             ->renderHook(
                 PanelsRenderHook::HEAD_END,
-                fn (): string => '<meta name="robots" content="noindex, nofollow">'
-                    .'<link rel="stylesheet" href="'.asset('css/filament-wizard.css?v=2').'">',
+                function (): string {
+                    $html = '<meta name="robots" content="noindex, nofollow">'
+                        .'<link rel="stylesheet" href="'.asset('css/filament-wizard.css?v=2').'">';
+
+                    if (request()->is('admin/login')) {
+                        $html .= '<link rel="stylesheet" href="'.asset('css/filament-login.css?v=1').'">';
+                    }
+
+                    return $html;
+                },
+            )
+            ->renderHook(
+                PanelsRenderHook::BODY_START,
+                fn (): string => request()->is('admin/login')
+                    ? '<script>document.body.classList.add("mgf-auth-login")</script>'
+                    : '',
             );
     }
 }

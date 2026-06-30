@@ -12,7 +12,7 @@ return [
     |
     */
 
-    'site_name' => env('SEO_SITE_NAME', env('APP_NAME', 'Laravel')),
+    'site_name' => env('SEO_SITE_NAME', env('APP_NAME', 'MGF Workspace')),
 
     'title' => env('SEO_TITLE', 'Seguimiento Financiero Personal | '.env('APP_NAME', 'MGF Workspace')),
 
@@ -41,10 +41,10 @@ return [
 
     'sitemap' => [
         'urls' => [
-            // '/' => [
-            //     'changefreq' => 'weekly',
-            //     'priority' => '1.0',
-            // ],
+            '/' => [
+                'changefreq' => 'weekly',
+                'priority' => '1.0',
+            ],
         ],
     ],
 
