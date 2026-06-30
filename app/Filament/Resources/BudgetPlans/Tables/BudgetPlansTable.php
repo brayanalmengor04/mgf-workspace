@@ -12,8 +12,10 @@ use Filament\Actions\BulkActionGroup;
 use Filament\Actions\DeleteBulkAction;
 use Filament\Actions\EditAction;
 use Filament\Notifications\Notification;
+use Filament\Tables\Columns\IconColumn;
 use Filament\Tables\Columns\TextColumn;
 use Filament\Tables\Filters\SelectFilter;
+use Filament\Tables\Filters\TernaryFilter;
 use Filament\Tables\Table;
 use Illuminate\Support\Facades\Response;
 
@@ -45,6 +47,10 @@ class BudgetPlansTable
                         BudgetStatus::Issued => 'success',
                         BudgetStatus::Archived => 'warning',
                     }),
+                IconColumn::make('is_paid')
+                    ->label('Pagado')
+                    ->boolean()
+                    ->sortable(),
                 TextColumn::make('net_income')
                     ->label('Ingreso neto')
                     ->money(fn (BudgetPlan $record): string => QuoteCurrency::resolve($record->currency)->value)
@@ -73,6 +79,11 @@ class BudgetPlansTable
                 SelectFilter::make('period')
                     ->label('Periodo')
                     ->options(BudgetPeriod::options()),
+                TernaryFilter::make('is_paid')
+                    ->label('Pagado')
+                    ->placeholder('Todos')
+                    ->trueLabel('Pagados')
+                    ->falseLabel('Pendientes'),
             ])
             ->recordActions([
                 Action::make('download')

@@ -49,7 +49,7 @@ class BudgetPdfService
     {
         $budgetPlan->load('items');
 
-        $payload = $budgetPlan->generated_payload ?? $this->buildPayload($budgetPlan);
+        $payload = $this->buildPayload($budgetPlan);
         $pdfPath = $this->renderPdf($budgetPlan, $payload);
 
         ActivityLogSilencer::withoutModelLogs(function () use ($budgetPlan, $payload, $pdfPath): void {
@@ -90,6 +90,8 @@ class BudgetPdfService
             'concept' => $item->concept,
             'notes' => $item->notes,
             'amount' => (float) $item->amount,
+            'is_paid' => (bool) $item->is_paid,
+            'paid_at' => $item->paid_at?->format('Y-m-d'),
         ])->all();
 
         $calculated = $this->calculator->calculate($netIncome, $itemsInput);
@@ -135,6 +137,7 @@ class BudgetPdfService
                 'remaining_balance' => $calculated['remaining_balance'],
                 'allocation_rate' => $calculated['allocation_rate'],
             ],
+            'is_paid' => $budgetPlan->is_paid,
             'footer_notes' => $budgetPlan->footer_notes,
         ];
     }

@@ -10,6 +10,7 @@ use App\Support\MoneyFormatter;
 use Filament\Actions\Action;
 use Filament\Schemas\Components\Actions;
 use Filament\Forms\Components\Placeholder;
+use Filament\Forms\Components\DatePicker;
 use Filament\Forms\Components\Repeater;
 use Filament\Forms\Components\Select;
 use Filament\Forms\Components\TextInput;
@@ -95,6 +96,10 @@ class QuoteForm
                                 ->disabled()
                                 ->dehydrated(false)
                                 ->visibleOn('edit'),
+                            DatePicker::make('quote_date')
+                                ->label('Fecha de Cotización')
+                                ->default(now())
+                                ->required(),
                         ])
                         ->columns(2),
                     Step::make('Emisor')
@@ -222,6 +227,7 @@ class QuoteForm
 
                                         $data = [
                                             'quote_number' => $get('quote_number'),
+                                            'quote_date' => $get('quote_date'),
                                             'currency' => $get('currency'),
                                             'issuer_name' => $get('issuer_name'),
                                             'issuer_ruc' => $get('issuer_ruc'),

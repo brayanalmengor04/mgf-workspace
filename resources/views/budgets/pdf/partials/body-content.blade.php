@@ -16,7 +16,17 @@
             </tr>
             @foreach($section['items'] as $item)
                 <tr>
-                    <td><span class="concept">{{ $item['concept'] }}</span></td>
+                    <td>
+                        <span class="concept">{{ $item['concept'] }}</span>
+                        @if(!empty($item['is_paid']))
+                            <div style="margin-top: 2px;">
+                                <span style="font-size: 8px; font-weight: bold; color: #16a34a; border: 1px solid #16a34a; padding: 1px 4px; border-radius: 3px;">PAGADO</span>
+                                @if(!empty($item['paid_at']))
+                                    <span style="font-size: 8px; color: #64748b; margin-left: 4px;">{{ \Carbon\Carbon::parse($item['paid_at'])->format('d/m/Y') }}</span>
+                                @endif
+                            </div>
+                        @endif
+                    </td>
                     <td><span class="notes">{{ $item['notes'] ?? '—' }}</span></td>
                     <td class="col-amount amount">-{{ $payload['currency_symbol'] }}{{ number_format($item['amount'], 2) }}</td>
                     <td class="col-pct pct">{{ number_format($item['percentage'], 1) }}%</td>
@@ -32,6 +42,14 @@
         @endforeach
     </tbody>
 </table>
+
+@if(!empty($payload['is_paid']))
+    <div style="text-align: center; margin: 20px 0;">
+        <span style="display: inline-block; padding: 10px 20px; font-size: 20px; font-weight: bold; color: #16a34a; border: 3px solid #16a34a; border-radius: 8px; text-transform: uppercase; letter-spacing: 0.1em; transform: rotate(-5deg);">
+            PAGADO
+        </span>
+    </div>
+@endif
 
 <div class="summary">
     <table class="summary-table">

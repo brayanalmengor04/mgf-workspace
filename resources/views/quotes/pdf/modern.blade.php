@@ -43,7 +43,7 @@
                         <div class="banner-title">COTIZACIÓN</div>
                     @endif
                     <div class="banner-meta"><strong>{{ $payload['quote_number'] }}</strong></div>
-                    <div class="banner-meta">Fecha: {{ \Carbon\Carbon::parse($payload['issued_at'])->format('d/m/Y') }}</div>
+                    <div class="banner-meta">Fecha: {{ \Carbon\Carbon::parse($payload['quote_date'])->format('d/m/Y') }}</div>
                 </td>
             </tr>
         </table>

@@ -46,7 +46,7 @@
                             <td class="text-right">
                                 <div class="title">Cotización</div>
                                 <div class="meta"><strong>{{ $payload['quote_number'] }}</strong></div>
-                                <div class="meta">Fecha: {{ \Carbon\Carbon::parse($payload['issued_at'])->format('d/m/Y') }}</div>
+                                <div class="meta">Fecha: {{ \Carbon\Carbon::parse($payload['quote_date'])->format('d/m/Y') }}</div>
                             </td>
                         </tr>
                     </table>

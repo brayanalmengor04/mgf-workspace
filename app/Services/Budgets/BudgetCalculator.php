@@ -45,6 +45,8 @@ class BudgetCalculator
                 'notes' => $item['notes'] ?? null,
                 'amount' => $amount,
                 'percentage' => $percentage,
+                'is_paid' => (bool) ($item['is_paid'] ?? false),
+                'paid_at' => $item['paid_at'] ?? null,
             ];
         }
 

@@ -10,11 +10,13 @@ use App\Filament\Resources\BudgetPlans\BudgetPlanResource;
 use App\Models\BudgetPlan;
 use App\Support\MoneyFormatter;
 use Filament\Forms\Components\ColorPicker;
+use Filament\Forms\Components\DatePicker;
 use Filament\Forms\Components\Placeholder;
 use Filament\Forms\Components\Repeater;
 use Filament\Forms\Components\Select;
 use Filament\Forms\Components\Textarea;
 use Filament\Forms\Components\TextInput;
+use Filament\Forms\Components\Toggle;
 use Filament\Resources\Pages\EditRecord;
 use Filament\Schemas\Components\Actions;
 use Filament\Schemas\Components\Section;
@@ -66,6 +68,12 @@ class BudgetPlanForm
                                 ->label('Subtítulo')
                                 ->default(BudgetPeriod::Biweekly->defaultSubtitle())
                                 ->maxLength(160)
+                                ->columnSpanFull(),
+                            Toggle::make('is_paid')
+                                ->label('¿Presupuesto Pagado?')
+                                ->disabled()
+                                ->dehydrated(false)
+                                ->helperText('Se marca automáticamente cuando todos los ítems individuales están pagados.')
                                 ->columnSpanFull(),
                             Select::make('currency')
                                 ->label('Moneda')
@@ -260,12 +268,22 @@ class BudgetPlanForm
                             return number_format(($amount / $netIncome) * 100, 1).'%';
                         })
                         ->columnSpan(1),
+                    Toggle::make('is_paid')
+                        ->label('Pagado')
+                        ->inline(false)
+                        ->live()
+                        ->columnSpan(1),
+                    DatePicker::make('paid_at')
+                        ->label('Fecha de pago')
+                        ->visible(fn (Get $get): bool => $get('is_paid') === true)
+                        ->required(fn (Get $get): bool => $get('is_paid') === true)
+                        ->columnSpan(2),
                     Select::make('category_type')
                         ->default($category->value)
                         ->dehydrated(true)
                         ->hidden(),
                 ])
-                ->columns(8)
+                ->columns(11)
                 ->defaultItems(0)
                 ->reorderable(false)
                 ->addActionLabel("Agregar {$category->label()}")
@@ -355,6 +373,8 @@ class BudgetPlanForm
                     'concept' => (string) $row['concept'],
                     'notes' => filled($row['notes'] ?? null) ? (string) $row['notes'] : null,
                     'amount' => (float) ($row['amount'] ?? 0),
+                    'is_paid' => (bool) ($row['is_paid'] ?? false),
+                    'paid_at' => filled($row['paid_at'] ?? null) ? (string) $row['paid_at'] : null,
                 ];
             }
         }

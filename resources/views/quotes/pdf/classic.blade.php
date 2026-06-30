@@ -34,14 +34,14 @@
                     <td class="text-right">
                         <div class="title">COTIZACIÓN</div>
                         <div><strong>{{ $payload['quote_number'] }}</strong></div>
-                        <div class="muted">Fecha: {{ \Carbon\Carbon::parse($payload['issued_at'])->format('d/m/Y') }}</div>
+                        <div class="muted">Fecha: {{ \Carbon\Carbon::parse($payload['quote_date'])->format('d/m/Y') }}</div>
                     </td>
                 </tr>
             </table>
         @else
             <div class="title">COTIZACIÓN</div>
             <div><strong>{{ $payload['quote_number'] }}</strong></div>
-            <div class="muted">Fecha: {{ \Carbon\Carbon::parse($payload['issued_at'])->format('d/m/Y') }}</div>
+            <div class="muted">Fecha: {{ \Carbon\Carbon::parse($payload['quote_date'])->format('d/m/Y') }}</div>
         @endif
     </div>
 

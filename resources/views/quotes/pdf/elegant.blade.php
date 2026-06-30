@@ -37,7 +37,7 @@
                 <div class="subtitle">
                     <strong>{{ $payload['quote_number'] }}</strong>
                     &nbsp;·&nbsp;
-                    {{ \Carbon\Carbon::parse($payload['issued_at'])->format('d/m/Y') }}
+                    {{ \Carbon\Carbon::parse($payload['quote_date'])->format('d/m/Y') }}
                 </div>
             </div>
 

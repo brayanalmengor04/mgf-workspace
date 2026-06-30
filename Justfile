@@ -23,6 +23,10 @@ build:
     {{compose}} up -d --build
     {{app}} php artisan migrate --seed
 
+build-migrate:
+    {{compose}} up -d --build
+    {{app}} php artisan migrate
+
 # Reconstruir desde cero (sin caché de Docker)
 rebuild:
     {{compose}} down

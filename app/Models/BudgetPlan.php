@@ -27,6 +27,7 @@ class BudgetPlan extends Model
     protected $fillable = [
         'budget_number',
         'status',
+        'is_paid',
         'title',
         'subtitle',
         'period',
@@ -48,6 +49,7 @@ class BudgetPlan extends Model
     {
         return [
             'status' => BudgetStatus::class,
+            'is_paid' => 'boolean',
             'period' => BudgetPeriod::class,
             'currency' => QuoteCurrency::class,
             'net_income' => 'decimal:2',
@@ -95,6 +97,7 @@ class BudgetPlan extends Model
     {
         return static::activityLogOptionsFor([
             'status',
+            'is_paid',
             'title',
             'subtitle',
             'period',

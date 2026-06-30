@@ -23,6 +23,7 @@ class Quote extends Model
     protected $fillable = [
         'quote_template_id',
         'quote_number',
+        'quote_date',
         'status',
         'issuer_name',
         'issuer_ruc',
@@ -56,6 +57,7 @@ class Quote extends Model
     {
         return [
             'status' => QuoteStatus::class,
+            'quote_date' => 'date',
             'currency' => QuoteCurrency::class,
             'issuer_has_dv' => 'boolean',
             'recipient_has_dv' => 'boolean',
@@ -109,6 +111,7 @@ class Quote extends Model
     {
         return static::activityLogOptionsFor([
             'status',
+            'quote_date',
             'quote_number',
             'issuer_name',
             'issuer_ruc',

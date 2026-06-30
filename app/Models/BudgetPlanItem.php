@@ -23,6 +23,8 @@ class BudgetPlanItem extends Model
         'notes',
         'amount',
         'percentage',
+        'is_paid',
+        'paid_at',
     ];
 
     protected function casts(): array
@@ -31,6 +33,8 @@ class BudgetPlanItem extends Model
             'category_type' => BudgetCategoryType::class,
             'amount' => 'decimal:2',
             'percentage' => 'decimal:1',
+            'is_paid' => 'boolean',
+            'paid_at' => 'date',
         ];
     }
 

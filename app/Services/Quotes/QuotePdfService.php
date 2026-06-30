@@ -47,7 +47,7 @@ class QuotePdfService
     {
         $quote->load(['items', 'template']);
 
-        $payload = $quote->generated_payload ?? $this->buildPayload($quote);
+        $payload = $this->buildPayload($quote);
         $pdfPath = $this->renderPdf($quote, $payload);
 
         ActivityLogSilencer::withoutModelLogs(function () use ($quote, $payload, $pdfPath): void {
@@ -92,6 +92,7 @@ class QuotePdfService
 
         return [
             'quote_number' => $quote->quote_number,
+            'quote_date' => ($quote->quote_date ?? $quote->issued_at ?? now())->toIso8601String(),
             'issued_at' => ($quote->issued_at ?? now())->toIso8601String(),
             'currency' => QuoteCurrency::resolve($quote->currency)->value,
             'issuer' => [

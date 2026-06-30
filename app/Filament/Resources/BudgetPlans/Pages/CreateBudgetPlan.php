@@ -50,14 +50,26 @@ class CreateBudgetPlan extends CreateRecord
         $state = $this->form->getRawState();
         $items = BudgetPlanForm::collectItemsFromState($state);
 
+        $allPaid = true;
+
         foreach ($items as $index => $item) {
+            if (!$item['is_paid']) {
+                $allPaid = false;
+            }
+
             $record->items()->create([
                 'category_type' => $item['category_type'],
                 'concept' => $item['concept'],
                 'notes' => $item['notes'],
                 'amount' => $item['amount'],
+                'is_paid' => $item['is_paid'],
+                'paid_at' => $item['paid_at'] ?? null,
                 'sort_order' => $index,
             ]);
+        }
+
+        if (count($items) > 0) {
+            $record->update(['is_paid' => $allPaid]);
         }
     }
 }
