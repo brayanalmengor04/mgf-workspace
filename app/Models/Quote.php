@@ -90,7 +90,7 @@ class Quote extends Model
      */
     public function scopeForUser(Builder $query, User $user): Builder
     {
-        if ($user->isAdmin()) {
+        if ($user->viewsAsAdmin()) {
             return $query;
         }
 

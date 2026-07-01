@@ -39,3 +39,67 @@
     visibility: hidden !important;
     pointer-events: none !important;
 }
+
+/* Vista previa proveedor: callout Filament a ancho completo encima del topbar. */
+.fi-admin-preview-banner {
+    position: sticky;
+    top: 0;
+    z-index: 40;
+    width: 100%;
+}
+
+.fi-admin-preview-banner .fi-admin-preview-banner-callout {
+    width: 100%;
+    max-width: none;
+    border-radius: 0;
+    box-shadow: none;
+    padding-block: 0.625rem;
+    padding-inline: 1rem;
+    justify-content: center;
+    text-align: center;
+    background-color: color-mix(in oklab, var(--warning-500) 10%, transparent) !important;
+    border-bottom: 1px solid color-mix(in oklab, var(--warning-500) 30%, transparent);
+    --tw-ring-color: transparent;
+}
+
+.fi-admin-preview-banner .fi-admin-preview-banner-callout .fi-callout-heading {
+    color: var(--warning-700);
+}
+
+.fi-admin-preview-banner .fi-admin-preview-banner-callout .fi-callout-description {
+    color: var(--warning-600);
+    opacity: 1;
+}
+
+.fi-admin-preview-banner .fi-admin-preview-banner-callout .fi-callout-icon {
+    color: var(--warning-500) !important;
+}
+
+.dark .fi-admin-preview-banner .fi-admin-preview-banner-callout {
+    background-color: color-mix(in oklab, var(--warning-500) 10%, var(--gray-900)) !important;
+    border-bottom-color: color-mix(in oklab, var(--warning-500) 30%, transparent);
+}
+
+.dark .fi-admin-preview-banner .fi-admin-preview-banner-callout .fi-callout-heading {
+    color: var(--warning-300);
+}
+
+.dark .fi-admin-preview-banner .fi-admin-preview-banner-callout .fi-callout-description {
+    color: var(--warning-400);
+}
+
+.dark .fi-admin-preview-banner .fi-admin-preview-banner-callout .fi-callout-icon {
+    color: var(--warning-400) !important;
+}
+
+.fi-admin-preview-banner .fi-admin-preview-banner-callout .fi-callout-main {
+    flex: 0 1 auto;
+}
+
+.fi-admin-preview-banner .fi-admin-preview-banner-callout .fi-callout-text {
+    text-align: center;
+}
+
+body:has(.fi-admin-preview-banner) .fi-topbar-ctn {
+    top: var(--fi-admin-preview-banner-height, 3.75rem);
+}

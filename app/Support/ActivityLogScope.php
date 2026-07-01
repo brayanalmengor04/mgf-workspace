@@ -16,7 +16,7 @@ class ActivityLogScope
     {
         $user ??= auth()->user();
 
-        if ($user === null || $user->isAdmin()) {
+        if ($user === null || $user->viewsAsAdmin()) {
             return $query;
         }
 

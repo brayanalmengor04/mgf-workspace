@@ -29,7 +29,7 @@ class QuotesOverviewWidget extends TableWidget
         $user = auth()->user();
 
         return $table
-            ->heading($user?->isProvider() ? 'Mis cotizaciones recientes' : 'Cotizaciones recientes')
+            ->heading($user?->viewsAsProvider() ? 'Mis cotizaciones recientes' : 'Cotizaciones recientes')
             ->description(fn (): string => sprintf(
                 '%d este mes · %d borradores · %d emitidas',
                 Quote::query()->forUser($user)->where('created_at', '>=', now()->startOfMonth())->count(),
@@ -63,7 +63,7 @@ class QuotesOverviewWidget extends TableWidget
                     ->label('Mis plantillas')
                     ->icon('heroicon-o-document-duplicate')
                     ->url(QuoteTemplateResource::getUrl('index'))
-                    ->visible(fn (): bool => auth()->user()?->isProvider() ?? false),
+                    ->visible(fn (): bool => auth()->user()?->viewsAsProvider() ?? false),
             ]);
     }
 }

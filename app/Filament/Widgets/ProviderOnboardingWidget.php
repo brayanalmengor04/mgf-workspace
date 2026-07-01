@@ -21,7 +21,7 @@ class ProviderOnboardingWidget extends StatsOverviewWidget
 
     public static function canView(): bool
     {
-        return auth()->user()?->isProvider() ?? false;
+        return auth()->user()?->viewsAsProvider() ?? false;
     }
 
     protected function getStats(): array

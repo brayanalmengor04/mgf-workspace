@@ -3,6 +3,7 @@
 namespace App\Models;
 
 use App\Enums\UserRole;
+use App\Support\AdminViewMode;
 use Database\Factories\UserFactory;
 use Filament\Models\Contracts\FilamentUser;
 use Filament\Panel;
@@ -48,6 +49,16 @@ class User extends Authenticatable implements FilamentUser
     public function isProvider(): bool
     {
         return $this->role === UserRole::Provider;
+    }
+
+    public function viewsAsProvider(): bool
+    {
+        return $this->isProvider() || AdminViewMode::isProviderPreview();
+    }
+
+    public function viewsAsAdmin(): bool
+    {
+        return $this->isAdmin() && ! AdminViewMode::isProviderPreview();
     }
 
     public function quoteTemplates(): HasMany

@@ -38,6 +38,11 @@ class UserResource extends Resource
         return auth()->user()?->isAdmin() ?? false;
     }
 
+    public static function shouldRegisterNavigation(): bool
+    {
+        return auth()->user()?->viewsAsAdmin() ?? false;
+    }
+
     public static function form(Schema $schema): Schema
     {
         return UserForm::configure($schema);
