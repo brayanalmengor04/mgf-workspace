@@ -4,11 +4,13 @@
     "type": "module",
     "scripts": {
         "build": "vite build",
-        "dev": "vite"
+        "dev": "vite",
+        "pwa:icons": "node scripts/generate-pwa-icons.mjs"
     },
     "devDependencies": {
         "@tailwindcss/vite": "^4.0.0",
         "laravel-vite-plugin": "^3.1",
+        "sharp": "^0.34.5",
         "tailwindcss": "^4.0.0",
         "vite": "^8.0.0"
     }

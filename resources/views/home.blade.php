@@ -39,7 +39,7 @@
                 {{ config('seo.description', 'Centraliza tu control de presupuestos, almacena tus facturas y gestiona cotizaciones en una arquitectura moderna y robusta.') }}
             </p>
 
-            <div class="mb-24 flex w-full flex-col items-center justify-center gap-4 sm:w-auto sm:flex-row">
+            <div class="mb-24 flex w-full flex-col items-center justify-center gap-4 sm:w-auto sm:flex-row sm:flex-wrap">
                 <a
                     href="{{ url('/admin/login') }}"
                     class="flex w-full items-center justify-center gap-2 rounded-xl bg-amber-500 px-8 py-3.5 text-sm font-bold text-neutral-950 transition-all hover:-translate-y-0.5 hover:bg-amber-400 hover:shadow-xl hover:shadow-amber-500/30 sm:w-auto"
@@ -49,6 +49,8 @@
                     </svg>
                     Iniciar sesión
                 </a>
+
+                <x-pwa-install-guide />
 
                 <a
                     href="https://github.com/brayanalmengor04"

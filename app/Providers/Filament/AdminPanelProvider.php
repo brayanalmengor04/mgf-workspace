@@ -25,6 +25,7 @@ use Illuminate\Foundation\Http\Middleware\PreventRequestForgery;
 use Illuminate\Routing\Middleware\SubstituteBindings;
 use Illuminate\Session\Middleware\StartSession;
 use Illuminate\View\Middleware\ShareErrorsFromSession;
+use JeffersonGoncalves\Filament\Pwa\FilamentPwaPlugin;
 
 class AdminPanelProvider extends PanelProvider
 {
@@ -40,6 +41,9 @@ class AdminPanelProvider extends PanelProvider
                 'primary' => Color::Amber,
             ])
             ->plugins([
+                FilamentPwaPlugin::make()
+                    ->themeColor('#f59e0b')
+                    ->appTitle((string) config('app.brand')),
                 ActivityLogPlugin::make()
                     ->label(fn (): string => auth()->user()?->isProvider() ? 'Mi bitácora' : 'Auditoría')
                     ->pluralLabel(fn (): string => auth()->user()?->isProvider() ? 'Mi bitácora' : 'Auditoría')
@@ -78,6 +82,13 @@ class AdminPanelProvider extends PanelProvider
                 PanelsRenderHook::HEAD_END,
                 fn (): string => '<meta name="robots" content="noindex, nofollow">'
                     .'<link rel="stylesheet" href="'.asset('css/filament-wizard.css?v=2').'">',
+            )
+            ->renderHook(
+                PanelsRenderHook::BODY_END,
+                fn (): string => (request()->is('admin/login')
+                    ? view('filament.pwa.install-snippet')->render()
+                    : '')
+                    .view('filament.pwa.service-worker')->render(),
             );
     }
 }
