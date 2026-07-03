@@ -34,13 +34,20 @@ class UsersTable
                 IconColumn::make('is_active')
                     ->label('Activo')
                     ->boolean(),
-                TextColumn::make('quoteTemplates_count')
+                TextColumn::make('quote_templates_count')
                     ->label('Plantillas')
                     ->counts('quoteTemplates')
+                    ->sortable()
                     ->toggleable(),
                 TextColumn::make('quotes_count')
                     ->label('Cotizaciones')
                     ->counts('quotes')
+                    ->sortable()
+                    ->toggleable(),
+                TextColumn::make('budget_plans_count')
+                    ->label('Presupuestos')
+                    ->counts('budgetPlans')
+                    ->sortable()
                     ->toggleable(),
                 TextColumn::make('created_at')
                     ->label('Registrado')

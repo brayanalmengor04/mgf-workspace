@@ -104,6 +104,76 @@ class BudgetPlansTable
 
                         return Response::download($path, "{$record->budget_number}.pdf");
                     }),
+                Action::make('change_payment_status')
+                    ->label('Cambiar estado')
+                    ->icon('heroicon-o-currency-dollar')
+                    ->color('info')
+                    ->modalHeading('Actualizar estado de pagos')
+                    ->modalWidth('4xl')
+                    ->fillForm(function (BudgetPlan $record): array {
+                        return [
+                            'items' => $record->items->map(function ($item) {
+                                return [
+                                    'id' => $item->id,
+                                    'concept' => $item->concept,
+                                    'is_paid' => $item->is_paid,
+                                    'paid_at' => $item->paid_at,
+                                ];
+                            })->toArray(),
+                        ];
+                    })
+                    ->form([
+                        \Filament\Forms\Components\Repeater::make('items')
+                            ->label('Ítems del presupuesto')
+                            ->schema([
+                                \Filament\Forms\Components\Hidden::make('id'),
+                                \Filament\Forms\Components\TextInput::make('concept')
+                                    ->label('Concepto')
+                                    ->readOnly()
+                                    ->columnSpan(2),
+                                \Filament\Forms\Components\DatePicker::make('paid_at')
+                                    ->label('Fecha de pago')
+                                    ->required(fn ($get) => $get('is_paid'))
+                                    ->columnSpan(1),
+                                \Filament\Forms\Components\Toggle::make('is_paid')
+                                    ->label('Pagado')
+                                    ->inline(false)
+                                    ->live()
+                                    ->columnSpan(1),
+                            ])
+                            ->columns(4)
+                            ->addable(false)
+                            ->deletable(false)
+                            ->reorderable(false)
+                            ->collapsible()
+                            ->collapsed()
+                            ->itemLabel(fn (array $state): ?string => $state['concept'] ?? 'Ítem')
+                            ->extraAttributes([
+                                'class' => 'max-h-96 overflow-y-auto p-2 border border-gray-200 dark:border-gray-800 rounded-lg shadow-inner',
+                            ]),
+                    ])
+                    ->action(function (array $data, BudgetPlan $record): void {
+                        foreach ($data['items'] as $itemData) {
+                            $updateData = [
+                                'is_paid' => $itemData['is_paid'],
+                            ];
+                            
+                            if ($itemData['is_paid']) {
+                                $updateData['paid_at'] = $itemData['paid_at'];
+                            } else {
+                                $updateData['paid_at'] = null;
+                            }
+
+                            $record->items()->where('id', $itemData['id'])->update($updateData);
+                        }
+                        
+                        $record->syncPaymentStatus();
+                        
+                        Notification::make()
+                            ->title('Estado de pagos actualizado')
+                            ->success()
+                            ->send();
+                    }),
                 EditAction::make(),
             ])
             ->toolbarActions([
