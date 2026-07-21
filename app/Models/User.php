@@ -75,4 +75,9 @@ class User extends Authenticatable implements FilamentUser
     {
         return $this->hasMany(BudgetPlan::class, 'created_by');
     }
+
+    public function budgetItemTemplates(): HasMany
+    {
+        return $this->hasMany(BudgetItemTemplate::class);
+    }
 }
