@@ -7,17 +7,17 @@ return [
     'manifest' => [
         'id' => '/admin',
         'name' => config('app.brand'),
-        'short_name' => config('app.brand'),
-        'description' => 'Panel de cotizaciones y presupuestos.',
+        'short_name' => 'MGF',
+        'description' => 'Cotizaciones, presupuestos y finanzas personales en un solo panel.',
         'start_url' => '/admin?source=pwa',
         'scope' => '/',
         'display' => 'standalone',
         'orientation' => 'any',
         'theme_color' => '#f59e0b',
-        'background_color' => '#fffbeb',
+        'background_color' => '#0f172a',
         'lang' => 'es',
         'dir' => 'ltr',
-        'categories' => ['business', 'productivity'],
+        'categories' => ['business', 'productivity', 'finance'],
         'icons' => [
             '36' => '0.75',
             '48' => '1.0',
@@ -32,7 +32,7 @@ return [
 
     'browserconfig_url' => '/browserconfig.xml',
 
-    'tile_color' => '#f59e0b',
+    'tile_color' => '#0f172a',
 
     'apple_status_bar_style' => 'black-translucent',
 ];

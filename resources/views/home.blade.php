@@ -21,7 +21,14 @@
                 </svg>
             </a>
 
-            <div class="mb-4 flex animate-fade-in-up items-center justify-center">
+            <div class="mb-6 flex animate-fade-in-up flex-col items-center justify-center gap-3">
+                <img
+                    src="{{ asset('images/brand/mgf-mark.svg') }}"
+                    alt="{{ config('app.brand') }}"
+                    width="72"
+                    height="72"
+                    class="h-16 w-16 rounded-2xl shadow-lg shadow-amber-500/25 ring-1 ring-amber-400/30"
+                >
                 <span class="rounded-full bg-amber-500/10 px-4 py-1 text-sm font-bold uppercase tracking-widest text-amber-400 shadow-lg shadow-amber-500/20 ring-1 ring-inset ring-amber-500/20">
                     {{ config('app.brand') }}
                 </span>

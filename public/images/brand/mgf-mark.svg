@@ -1,0 +1,30 @@
+<svg width="128" height="128" viewBox="0 0 128 128" xmlns="http://www.w3.org/2000/svg">
+  <defs>
+    <linearGradient id="amberGrad" x1="0%" y1="100%" x2="100%" y2="0%">
+      <stop offset="0%" stop-color="#d97706"/>
+      <stop offset="55%" stop-color="#f59e0b"/>
+      <stop offset="100%" stop-color="#fbbf24"/>
+    </linearGradient>
+    <radialGradient id="glow" cx="50%" cy="62%" r="55%">
+      <stop offset="0%" stop-color="#f59e0b" stop-opacity="0.35"/>
+      <stop offset="70%" stop-color="#f59e0b" stop-opacity="0.08"/>
+      <stop offset="100%" stop-color="#f59e0b" stop-opacity="0"/>
+    </radialGradient>
+  </defs>
+  <rect width="128" height="128" fill="#0f172a"/>
+  <rect x="0" y="0" width="128" height="128" rx="28.16" fill="#0f172a"/>
+  <circle cx="64" cy="74.24" r="70.40" fill="url(#glow)"/>
+  <rect x="33.92" y="56.32" width="15.36" height="35.84" rx="4.30" fill="url(#amberGrad)"/><rect x="56.32" y="38.40" width="15.36" height="53.76" rx="4.30" fill="url(#amberGrad)"/><rect x="78.72" y="17.92" width="15.36" height="74.24" rx="4.30" fill="url(#amberGrad)"/>
+  
+        <path d="M 41.60 56.32
+                 L 64.00 33.28
+                 L 86.40 17.92"
+              fill="none" stroke="#fffbeb" stroke-width="5.76"
+              stroke-linecap="round" stroke-linejoin="round" opacity="0.95"/>
+        <circle cx="86.40" cy="17.92" r="4.90" fill="#fffbeb"/>
+    
+  <text x="64" y="115.20" text-anchor="middle"
+                font-family="ui-sans-serif, system-ui, -apple-system, Segoe UI, sans-serif"
+                font-weight="800" font-size="14.08"
+                letter-spacing="5.12" fill="#fde68a">MGF</text>
+</svg>

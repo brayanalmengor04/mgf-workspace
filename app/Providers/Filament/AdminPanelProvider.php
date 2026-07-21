@@ -5,7 +5,6 @@ namespace App\Providers\Filament;
 use AlizHarb\ActivityLog\ActivityLogPlugin;
 use App\Filament\Auth\Login;
 use App\Filament\Pages\Dashboard;
-use App\Support\AdminViewMode;
 use App\Filament\Widgets\AvailableBalanceTrendChartWidget;
 use App\Filament\Widgets\FinancialHealthWidget;
 use App\Filament\Widgets\FinancialOverviewWidget;
@@ -14,6 +13,7 @@ use App\Filament\Widgets\PaidAmountTrendChartWidget;
 use App\Filament\Widgets\PlatformStatsWidget;
 use App\Filament\Widgets\ProviderOnboardingWidget;
 use App\Filament\Widgets\QuotesOverviewWidget;
+use App\Support\AdminViewMode;
 use Filament\Actions\Action;
 use Filament\Http\Middleware\Authenticate;
 use Filament\Http\Middleware\AuthenticateSession;
@@ -42,6 +42,10 @@ class AdminPanelProvider extends PanelProvider
             ->path('admin')
             ->login(Login::class)
             ->brandName(fn (): string => (string) config('app.brand'))
+            ->brandLogo(asset('images/brand/mgf-logo.svg'))
+            ->darkModeBrandLogo(asset('images/brand/mgf-logo-dark.svg'))
+            ->brandLogoHeight('2.25rem')
+            ->favicon(asset('favicon.ico'))
             ->colors([
                 'primary' => Color::Amber,
             ])
