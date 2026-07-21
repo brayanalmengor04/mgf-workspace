@@ -12,6 +12,11 @@ class ScopedActivityChartWidget extends BaseActivityChartWidget
 {
     protected int | string | array $columnSpan = 'full';
 
+    public static function getSort(): int
+    {
+        return (int) config('filament-activity-log.widgets.activity_chart.sort', 8);
+    }
+
     protected function getData(): array
     {
         $days = config('filament-activity-log.widgets.activity_chart.days', 30);

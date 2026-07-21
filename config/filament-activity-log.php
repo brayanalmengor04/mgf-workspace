@@ -284,9 +284,7 @@ return [
         'dashboard' => true,
         'widgets' => [
             \App\Filament\Widgets\Activity\ScopedActivityChartWidget::class,
-            \App\Filament\Widgets\Activity\ScopedLatestActivityWidget::class,
             \App\Filament\Widgets\Activity\ScopedActivityHeatmapWidget::class,
-            \App\Filament\Widgets\Activity\ScopedActivityStatsWidget::class,
         ],
 
         /**
@@ -295,7 +293,7 @@ return [
         'activity_chart' => [
             'enabled' => true,
             'heading' => 'Actividad en el tiempo',
-            'sort' => 1,
+            'sort' => 8,
             'max_height' => '300px',
             'polling_interval' => null, // e.g., '10s', '1m', null to disable
             'days' => 30,
@@ -327,9 +325,9 @@ return [
          * Latest Activity Widget Configuration
          */
         'latest_activity' => [
-            'enabled' => true,
+            'enabled' => false,
             'heading' => null, // null uses translation key
-            'sort' => 2,
+            'sort' => 21,
             'polling_interval' => null, // e.g., '10s', '1m', null to disable
             'limit' => 10,
             'paginated' => false,

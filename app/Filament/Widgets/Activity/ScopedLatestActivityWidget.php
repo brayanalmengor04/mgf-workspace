@@ -9,6 +9,16 @@ use Spatie\Activitylog\Models\Activity;
 
 class ScopedLatestActivityWidget extends BaseLatestActivityWidget
 {
+    public static function canView(): bool
+    {
+        return false;
+    }
+
+    public static function getSort(): int
+    {
+        return (int) config('filament-activity-log.widgets.latest_activity.sort', 21);
+    }
+
     public function table(Table $table): Table
     {
         return parent::table($table)

@@ -11,6 +11,16 @@ use Spatie\Activitylog\Models\Activity;
 
 class ScopedActivityStatsWidget extends BaseActivityStatsWidget
 {
+    public static function canView(): bool
+    {
+        return false;
+    }
+
+    public static function getSort(): int
+    {
+        return 22;
+    }
+
     /**
      * @return array<Stat>
      */

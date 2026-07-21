@@ -15,7 +15,7 @@ use Filament\Widgets\TableWidget;
 
 class QuotesOverviewWidget extends TableWidget
 {
-    protected static ?int $sort = 1;
+    protected static ?int $sort = 10;
 
     protected int|string|array $columnSpan = 'full';
 

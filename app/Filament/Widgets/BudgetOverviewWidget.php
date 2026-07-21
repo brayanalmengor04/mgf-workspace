@@ -14,6 +14,11 @@ class BudgetOverviewWidget extends StatsOverviewWidget
 
     protected ?string $heading = 'Pagos de presupuestos';
 
+    public static function canView(): bool
+    {
+        return false;
+    }
+
     protected function getStats(): array
     {
         $user = auth()->user();

@@ -11,9 +11,14 @@ use Filament\Widgets\StatsOverviewWidget\Stat;
 
 class BudgetPlansOverviewWidget extends StatsOverviewWidget
 {
-    protected static ?int $sort = 3;
+    protected static ?int $sort = 4;
 
     protected ?string $heading = 'Mis presupuestos';
+
+    public static function canView(): bool
+    {
+        return false;
+    }
 
     protected function getStats(): array
     {
