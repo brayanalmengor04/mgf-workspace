@@ -6,8 +6,11 @@ use AlizHarb\ActivityLog\ActivityLogPlugin;
 use App\Filament\Auth\Login;
 use App\Filament\Pages\Dashboard;
 use App\Support\AdminViewMode;
-use App\Filament\Widgets\BudgetOverviewWidget;
-use App\Filament\Widgets\BudgetPlansOverviewWidget;
+use App\Filament\Widgets\AvailableBalanceTrendChartWidget;
+use App\Filament\Widgets\FinancialHealthWidget;
+use App\Filament\Widgets\FinancialOverviewWidget;
+use App\Filament\Widgets\NetIncomeTrendChartWidget;
+use App\Filament\Widgets\PaidAmountTrendChartWidget;
 use App\Filament\Widgets\PlatformStatsWidget;
 use App\Filament\Widgets\ProviderOnboardingWidget;
 use App\Filament\Widgets\QuotesOverviewWidget;
@@ -21,7 +24,6 @@ use Filament\PanelProvider;
 use Filament\Support\Colors\Color;
 use Filament\Support\Icons\Heroicon;
 use Filament\View\PanelsRenderHook;
-use Filament\Widgets\AccountWidget;
 use Illuminate\Cookie\Middleware\AddQueuedCookiesToResponse;
 use Illuminate\Cookie\Middleware\EncryptCookies;
 use Illuminate\Foundation\Http\Middleware\PreventRequestForgery;
@@ -78,10 +80,12 @@ class AdminPanelProvider extends PanelProvider
             ->widgets([
                 PlatformStatsWidget::class,
                 ProviderOnboardingWidget::class,
+                FinancialOverviewWidget::class,
+                FinancialHealthWidget::class,
+                NetIncomeTrendChartWidget::class,
+                AvailableBalanceTrendChartWidget::class,
+                PaidAmountTrendChartWidget::class,
                 QuotesOverviewWidget::class,
-                BudgetOverviewWidget::class,
-                BudgetPlansOverviewWidget::class,
-                AccountWidget::class,
             ])
             ->middleware([
                 EncryptCookies::class,
