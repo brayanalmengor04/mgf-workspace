@@ -17,4 +17,11 @@ class MoneyFormatter
             locale: config('app.locale', 'es'),
         );
     }
+
+    public static function formatSigned(float $amount, QuoteCurrency|string|null $currency = null): string
+    {
+        $prefix = $amount > 0 ? '+' : '';
+
+        return $prefix.self::format($amount, $currency);
+    }
 }
