@@ -1,15 +1,15 @@
 <svg width="220" height="48" viewBox="0 0 220 48" xmlns="http://www.w3.org/2000/svg" role="img" aria-label="MGF Workspace">
   <defs>
-    <linearGradient id="g" x1="0%" y1="100%" x2="100%" y2="0%">
+    <linearGradient id="gd" x1="0%" y1="100%" x2="100%" y2="0%">
       <stop offset="0%" stop-color="#d97706"/>
       <stop offset="55%" stop-color="#f59e0b"/>
       <stop offset="100%" stop-color="#fbbf24"/>
     </linearGradient>
   </defs>
   <rect x="0" y="0" width="48" height="48" rx="12" fill="#0f172a"/>
-  <rect x="14" y="24" width="5.5" height="12" rx="1.6" fill="url(#g)"/>
-  <rect x="21.5" y="18" width="5.5" height="18" rx="1.6" fill="url(#g)"/>
-  <rect x="29" y="12" width="5.5" height="24" rx="1.6" fill="url(#g)"/>
+  <rect x="14" y="24" width="5.5" height="12" rx="1.6" fill="url(#gd)"/>
+  <rect x="21.5" y="18" width="5.5" height="18" rx="1.6" fill="url(#gd)"/>
+  <rect x="29" y="12" width="5.5" height="24" rx="1.6" fill="url(#gd)"/>
   <path d="M16.7 24 L24.2 15.5 L34.5 12" fill="none" stroke="#fffbeb" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round"/>
   <circle cx="34.5" cy="12" r="2" fill="#fffbeb"/>
   <text x="60" y="22" font-family="ui-sans-serif, system-ui, -apple-system, Segoe UI, sans-serif"

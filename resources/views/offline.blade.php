@@ -3,7 +3,7 @@
     <head>
         <meta charset="utf-8">
         <meta name="viewport" content="width=device-width, initial-scale=1">
-        <meta name="theme-color" content="#f59e0b">
+        <meta name="theme-color" content="#0f172a">
         <link rel="icon" href="{{ asset('favicon.ico') }}">
         <title>Sin conexión — {{ config('app.brand') }}</title>
         <style>

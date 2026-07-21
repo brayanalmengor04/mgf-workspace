@@ -13,7 +13,7 @@ return [
         'scope' => '/',
         'display' => 'standalone',
         'orientation' => 'any',
-        'theme_color' => '#f59e0b',
+        'theme_color' => '#0f172a',
         'background_color' => '#0f172a',
         'lang' => 'es',
         'dir' => 'ltr',

@@ -22,7 +22,9 @@ class PwaTest extends TestCase
         $this->assertSame('/admin?source=pwa', $manifest['start_url']);
         $this->assertSame('/', $manifest['scope']);
         $this->assertSame('standalone', $manifest['display']);
-        $this->assertSame('#f59e0b', $manifest['theme_color']);
+        $this->assertSame('#0f172a', $manifest['theme_color']);
+        $this->assertSame('#0f172a', $manifest['background_color']);
+        $this->assertSame('MGF', $manifest['short_name']);
     }
 
     public function test_service_worker_keeps_admin_and_livewire_online_first(): void
@@ -40,6 +42,8 @@ class PwaTest extends TestCase
             'resources/favicon/android-icon-192x192.png',
             'resources/favicon/icon-512x512.png',
             'resources/favicon/icon-512x512-maskable.png',
+            'resources/favicon/apple-splash-1170x2532.png',
+            'resources/favicon/apple-splash-1290x2796.png',
             'public/favicon.ico',
         ];
 
@@ -49,11 +53,12 @@ class PwaTest extends TestCase
         }
     }
 
-    public function test_home_page_includes_favicon_links(): void
+    public function test_home_page_includes_favicon_and_apple_splash_links(): void
     {
         $response = $this->get(route('home'));
 
         $response->assertOk();
         $response->assertSee('rel="icon"', false);
+        $response->assertSee('apple-touch-startup-image', false);
     }
 }

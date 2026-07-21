@@ -67,7 +67,7 @@ class AdminPanelProvider extends PanelProvider
             ])
             ->plugins([
                 FilamentPwaPlugin::make()
-                    ->themeColor('#f59e0b')
+                    ->themeColor('#0f172a')
                     ->appTitle((string) config('app.brand')),
                 ActivityLogPlugin::make()
                     ->label(fn (): string => auth()->user()?->viewsAsProvider() ? 'Mi bitácora' : 'Auditoría')

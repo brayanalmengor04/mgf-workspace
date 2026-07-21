@@ -5,26 +5,25 @@
       <stop offset="55%" stop-color="#f59e0b"/>
       <stop offset="100%" stop-color="#fbbf24"/>
     </linearGradient>
-    <radialGradient id="glow" cx="50%" cy="62%" r="55%">
-      <stop offset="0%" stop-color="#f59e0b" stop-opacity="0.35"/>
-      <stop offset="70%" stop-color="#f59e0b" stop-opacity="0.08"/>
+    <radialGradient id="glow" cx="50%" cy="48%" r="52%">
+      <stop offset="0%" stop-color="#f59e0b" stop-opacity="0.32"/>
+      <stop offset="65%" stop-color="#f59e0b" stop-opacity="0.08"/>
       <stop offset="100%" stop-color="#f59e0b" stop-opacity="0"/>
     </radialGradient>
   </defs>
   <rect width="128" height="128" fill="#0f172a"/>
-  <rect x="0" y="0" width="128" height="128" rx="28.16" fill="#0f172a"/>
-  <circle cx="64" cy="74.24" r="70.40" fill="url(#glow)"/>
-  <rect x="33.92" y="56.32" width="15.36" height="35.84" rx="4.30" fill="url(#amberGrad)"/><rect x="56.32" y="38.40" width="15.36" height="53.76" rx="4.30" fill="url(#amberGrad)"/><rect x="78.72" y="17.92" width="15.36" height="74.24" rx="4.30" fill="url(#amberGrad)"/>
+  <circle cx="64" cy="53.76" r="64.00" fill="url(#glow)"/>
+  <rect x="31.36" y="38.40" width="16.64" height="38.40" rx="4.99" fill="url(#amberGrad)"/><rect x="55.68" y="20.48" width="16.64" height="56.32" rx="4.99" fill="url(#amberGrad)"/><rect x="80.00" y="2.56" width="16.64" height="74.24" rx="4.99" fill="url(#amberGrad)"/>
   
-        <path d="M 41.60 56.32
-                 L 64.00 33.28
-                 L 86.40 17.92"
-              fill="none" stroke="#fffbeb" stroke-width="5.76"
-              stroke-linecap="round" stroke-linejoin="round" opacity="0.95"/>
-        <circle cx="86.40" cy="17.92" r="4.90" fill="#fffbeb"/>
+        <path d="M 39.68 38.40
+                 L 64.00 14.08
+                 L 88.32 2.56"
+              fill="none" stroke="#fffbeb" stroke-width="6.40"
+              stroke-linecap="round" stroke-linejoin="round"/>
+        <circle cx="88.32" cy="2.56" r="5.76" fill="#fffbeb"/>
     
-  <text x="64" y="115.20" text-anchor="middle"
+  <text x="64" y="112.64" text-anchor="middle"
                 font-family="ui-sans-serif, system-ui, -apple-system, Segoe UI, sans-serif"
-                font-weight="800" font-size="14.08"
-                letter-spacing="5.12" fill="#fde68a">MGF</text>
+                font-weight="800" font-size="15.36"
+                letter-spacing="6.40" fill="#fde68a">MGF</text>
 </svg>
