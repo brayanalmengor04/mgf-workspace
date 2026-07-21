@@ -9,8 +9,9 @@ use App\Filament\Resources\BudgetPlans\BudgetPlanResource;
 use App\Filament\Resources\BudgetPlans\Concerns\RecalculatesBudgetTotals;
 use App\Filament\Resources\BudgetPlans\Schemas\BudgetPlanForm;
 use App\Models\BudgetPlan;
-use App\Services\Budgets\BudgetNumberGenerator;
+use App\Services\Budgets\BudgetItemTemplateSync;
 use App\Services\Budgets\BudgetPdfService;
+use App\Services\Budgets\BudgetPlanDuplicator;
 use App\Support\ActivityLogSilencer;
 use Filament\Actions\Action;
 use Filament\Actions\DeleteAction;
@@ -138,44 +139,32 @@ class EditBudgetPlan extends EditRecord
 
                     return Response::download($path, "{$record->budget_number}.pdf");
                 }),
+            Action::make('save_to_catalog')
+                ->label('Guardar en catálogo')
+                ->icon('heroicon-o-bookmark')
+                ->color('gray')
+                ->requiresConfirmation()
+                ->modalDescription('Los conceptos de este presupuesto se guardarán o actualizarán en tus conceptos frecuentes.')
+                ->action(function (BudgetPlan $record): void {
+                    $user = auth()->user();
+
+                    if ($user === null) {
+                        return;
+                    }
+
+                    $synced = app(BudgetItemTemplateSync::class)->syncFromPlan($record, $user);
+
+                    Notification::make()
+                        ->title('Catálogo actualizado')
+                        ->body("Se guardaron {$synced} concepto(s) frecuentes.")
+                        ->success()
+                        ->send();
+                }),
             Action::make('duplicate')
                 ->label('Duplicar')
                 ->icon('heroicon-o-document-duplicate')
                 ->action(function (BudgetPlan $record): void {
-                    $duplicate = $record->replicate([
-                        'budget_number',
-                        'status',
-                        'generated_payload',
-                        'pdf_path',
-                        'issued_at',
-                        'total_allocated',
-                        'remaining_balance',
-                    ]);
-
-                    $duplicate->budget_number = app(BudgetNumberGenerator::class)->generate();
-                    $duplicate->status = BudgetStatus::Draft;
-                    $duplicate->created_by = auth()->id();
-                    $duplicate->save();
-
-                    foreach ($record->items as $item) {
-                        $duplicate->items()->create($item->only([
-                            'category_type',
-                            'sort_order',
-                            'concept',
-                            'notes',
-                            'amount',
-                            'percentage',
-                        ]));
-                    }
-
-                    $this->recalculateBudgetTotals($duplicate);
-
-                    activity()
-                        ->performedOn($duplicate)
-                        ->causedBy(auth()->user())
-                        ->event('duplicated')
-                        ->withProperties(['source_budget' => $record->budget_number])
-                        ->log('Presupuesto duplicado');
+                    $duplicate = app(BudgetPlanDuplicator::class)->duplicate($record);
 
                     Notification::make()
                         ->title('Presupuesto duplicado')

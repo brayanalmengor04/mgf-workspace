@@ -8,10 +8,16 @@ use App\Enums\QuoteCurrency;
 use App\Filament\Resources\BudgetPlans\BudgetPlanResource;
 use App\Models\BudgetPlan;
 use App\Services\Budgets\BudgetPdfService;
+use App\Services\Budgets\BudgetPlanDuplicator;
 use Filament\Actions\Action;
 use Filament\Actions\BulkActionGroup;
 use Filament\Actions\DeleteBulkAction;
 use Filament\Actions\EditAction;
+use Filament\Forms\Components\DatePicker;
+use Filament\Forms\Components\Hidden;
+use Filament\Forms\Components\Repeater;
+use Filament\Forms\Components\TextInput;
+use Filament\Forms\Components\Toggle;
 use Filament\Notifications\Notification;
 use Filament\Tables\Columns\IconColumn;
 use Filament\Tables\Columns\TextColumn;
@@ -92,6 +98,22 @@ class BudgetPlansTable
                     ->icon('heroicon-o-chart-pie')
                     ->color('warning')
                     ->url(fn (BudgetPlan $record): string => BudgetPlanResource::getUrl('charts', ['record' => $record])),
+                Action::make('duplicate')
+                    ->label('Duplicar')
+                    ->icon('heroicon-o-document-duplicate')
+                    ->color('gray')
+                    ->requiresConfirmation()
+                    ->modalDescription('Se creará un borrador nuevo con los mismos conceptos e ingresos, sin estados de pago ni PDF.')
+                    ->action(function (BudgetPlan $record) {
+                        $duplicate = app(BudgetPlanDuplicator::class)->duplicate($record->load('items'));
+
+                        Notification::make()
+                            ->title('Presupuesto duplicado')
+                            ->success()
+                            ->send();
+
+                        return redirect(BudgetPlanResource::getUrl('edit', ['record' => $duplicate]));
+                    }),
                 Action::make('download')
                     ->label('PDF')
                     ->icon('heroicon-o-arrow-down-tray')
@@ -129,19 +151,19 @@ class BudgetPlansTable
                         ];
                     })
                     ->form([
-                        \Filament\Forms\Components\Repeater::make('items')
+                        Repeater::make('items')
                             ->label('Ítems del presupuesto')
                             ->schema([
-                                \Filament\Forms\Components\Hidden::make('id'),
-                                \Filament\Forms\Components\TextInput::make('concept')
+                                Hidden::make('id'),
+                                TextInput::make('concept')
                                     ->label('Concepto')
                                     ->readOnly()
                                     ->columnSpan(2),
-                                \Filament\Forms\Components\DatePicker::make('paid_at')
+                                DatePicker::make('paid_at')
                                     ->label('Fecha de pago')
                                     ->required(fn ($get) => $get('is_paid'))
                                     ->columnSpan(1),
-                                \Filament\Forms\Components\Toggle::make('is_paid')
+                                Toggle::make('is_paid')
                                     ->label('Pagado')
                                     ->inline(false)
                                     ->live()
@@ -163,7 +185,7 @@ class BudgetPlansTable
                             $updateData = [
                                 'is_paid' => $itemData['is_paid'],
                             ];
-                            
+
                             if ($itemData['is_paid']) {
                                 $updateData['paid_at'] = $itemData['paid_at'];
                             } else {
@@ -172,9 +194,9 @@ class BudgetPlansTable
 
                             $record->items()->where('id', $itemData['id'])->update($updateData);
                         }
-                        
+
                         $record->syncPaymentStatus();
-                        
+
                         Notification::make()
                             ->title('Estado de pagos actualizado')
                             ->success()

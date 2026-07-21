@@ -6,9 +6,15 @@ use App\Enums\BudgetCategoryType;
 use App\Enums\BudgetPdfLayout;
 use App\Enums\BudgetPeriod;
 use App\Enums\QuoteCurrency;
+use App\Filament\Resources\BudgetItemTemplates\BudgetItemTemplateResource;
 use App\Filament\Resources\BudgetPlans\BudgetPlanResource;
+use App\Models\BudgetItemTemplate;
 use App\Models\BudgetPlan;
+use App\Services\Budgets\BudgetCalculator;
+use App\Services\Budgets\BudgetItemTemplateSync;
 use App\Support\MoneyFormatter;
+use Filament\Actions\Action;
+use Filament\Forms\Components\CheckboxList;
 use Filament\Forms\Components\ColorPicker;
 use Filament\Forms\Components\DatePicker;
 use Filament\Forms\Components\Placeholder;
@@ -17,6 +23,8 @@ use Filament\Forms\Components\Select;
 use Filament\Forms\Components\Textarea;
 use Filament\Forms\Components\TextInput;
 use Filament\Forms\Components\Toggle;
+use Filament\Notifications\Notification;
+use Filament\Resources\Pages\CreateRecord;
 use Filament\Resources\Pages\EditRecord;
 use Filament\Schemas\Components\Actions;
 use Filament\Schemas\Components\Section;
@@ -25,7 +33,6 @@ use Filament\Schemas\Components\Wizard;
 use Filament\Schemas\Components\Wizard\Step;
 use Filament\Schemas\Schema;
 use Filament\Support\Icons\Heroicon;
-use Filament\Actions\Action;
 use Illuminate\Support\HtmlString;
 use Illuminate\Support\Str;
 
@@ -159,6 +166,20 @@ class BudgetPlanForm
                         ->description('Gastos fijos, ahorros y otros conceptos')
                         ->icon(Heroicon::OutlinedChartPie)
                         ->schema([
+                            Placeholder::make('reuse_hint')
+                                ->hiddenLabel()
+                                ->content(new HtmlString(
+                                    '<p style="margin:0;font-size:13px;color:#64748b;">'
+                                    .'Evita reescribir lo mismo cada quincena: copia el presupuesto anterior o agrega conceptos de tu catálogo. '
+                                    .'<a href="'.e(BudgetItemTemplateResource::getUrl('index')).'" style="color:#0f766e;text-decoration:underline;">Administrar conceptos frecuentes</a>'
+                                    .'</p>'
+                                ))
+                                ->columnSpanFull(),
+                            Actions::make([
+                                static::copyPreviousItemsAction(),
+                                static::importCatalogItemsAction(),
+                                static::saveItemsToCatalogAction(),
+                            ])->columnSpanFull(),
                             Section::make('Gastos fijos')
                                 ->description('Pagos recurrentes del periodo: comida, transporte, servicios…')
                                 ->schema(static::categoryRepeater(BudgetCategoryType::FixedExpense))
@@ -210,6 +231,217 @@ class BudgetPlanForm
             ]);
     }
 
+    private static function copyPreviousItemsAction(): Action
+    {
+        return Action::make('copy_previous_items')
+            ->label('Copiar del anterior')
+            ->icon(Heroicon::OutlinedDocumentDuplicate)
+            ->color('gray')
+            ->requiresConfirmation()
+            ->modalHeading('Copiar ítems del presupuesto anterior')
+            ->modalDescription('Se reemplazarán los conceptos actuales con los del último presupuesto. Los estados de pago no se copian.')
+            ->action(function (callable $set, Get $get): void {
+                $user = auth()->user();
+
+                if ($user === null) {
+                    return;
+                }
+
+                $previous = BudgetPlan::query()
+                    ->forUser($user)
+                    ->with('items')
+                    ->latest('created_at')
+                    ->first();
+
+                if ($previous === null || $previous->items->isEmpty()) {
+                    Notification::make()
+                        ->title('No hay un presupuesto anterior con ítems')
+                        ->warning()
+                        ->send();
+
+                    return;
+                }
+
+                $groups = app(BudgetItemTemplateSync::class)
+                    ->itemsToFormGroups($previous->items);
+
+                foreach ($groups as $key => $rows) {
+                    $set($key, $rows);
+                }
+
+                if (blank($get('net_income')) || (float) $get('net_income') <= 0) {
+                    $set('net_income', (float) $previous->net_income);
+                }
+
+                if (blank($get('income_notes'))) {
+                    $set('income_notes', $previous->income_notes);
+                }
+
+                Notification::make()
+                    ->title('Ítems copiados')
+                    ->body("Se importaron {$previous->items->count()} conceptos desde {$previous->budget_number}.")
+                    ->success()
+                    ->send();
+            });
+    }
+
+    private static function importCatalogItemsAction(): Action
+    {
+        return Action::make('import_catalog_items')
+            ->label('Agregar del catálogo')
+            ->icon(Heroicon::OutlinedBookmarkSquare)
+            ->color('primary')
+            ->modalHeading('Agregar conceptos frecuentes')
+            ->modalDescription('Se agregarán al formulario sin borrar los que ya tienes. Se omiten conceptos duplicados.')
+            ->form([
+                CheckboxList::make('template_ids')
+                    ->label('Conceptos')
+                    ->options(function (): array {
+                        $user = auth()->user();
+
+                        if ($user === null) {
+                            return [];
+                        }
+
+                        return BudgetItemTemplate::query()
+                            ->forUser($user)
+                            ->active()
+                            ->orderBy('sort_order')
+                            ->orderBy('concept')
+                            ->get()
+                            ->mapWithKeys(function (BudgetItemTemplate $template): array {
+                                $amount = number_format((float) $template->default_amount, 2);
+                                $label = "{$template->category_type->label()} · {$template->concept} (\${$amount})";
+
+                                return [$template->id => $label];
+                            })
+                            ->all();
+                    })
+                    ->searchable()
+                    ->bulkToggleable()
+                    ->columns(1)
+                    ->required()
+                    ->helperText(function (): ?string {
+                        $user = auth()->user();
+
+                        if ($user === null) {
+                            return null;
+                        }
+
+                        $hasTemplates = BudgetItemTemplate::query()
+                            ->forUser($user)
+                            ->active()
+                            ->exists();
+
+                        return $hasTemplates
+                            ? null
+                            : 'Aún no tienes conceptos frecuentes. Créalos en Finanzas personales → Conceptos frecuentes, o guarda los de un presupuesto existente.';
+                    }),
+            ])
+            ->action(function (array $data, callable $set, Get $get): void {
+                $user = auth()->user();
+                $ids = $data['template_ids'] ?? [];
+
+                if ($user === null || blank($ids)) {
+                    return;
+                }
+
+                $templates = BudgetItemTemplate::query()
+                    ->forUser($user)
+                    ->active()
+                    ->whereIn('id', $ids)
+                    ->orderBy('sort_order')
+                    ->orderBy('concept')
+                    ->get();
+
+                if ($templates->isEmpty()) {
+                    Notification::make()
+                        ->title('No se encontraron conceptos')
+                        ->warning()
+                        ->send();
+
+                    return;
+                }
+
+                $sync = app(BudgetItemTemplateSync::class);
+                $incoming = $sync->templatesToFormGroups($templates);
+                $current = [];
+
+                foreach (BudgetCategoryType::cases() as $category) {
+                    $key = "items_{$category->value}";
+                    $current[$key] = $get($key) ?? [];
+                }
+
+                $merged = $sync->mergeFormGroups($current, $incoming);
+
+                foreach ($merged as $key => $rows) {
+                    $set($key, $rows);
+                }
+
+                Notification::make()
+                    ->title('Conceptos agregados')
+                    ->body("Se agregaron {$templates->count()} concepto(s) del catálogo.")
+                    ->success()
+                    ->send();
+            });
+    }
+
+    private static function saveItemsToCatalogAction(): Action
+    {
+        return Action::make('save_items_to_catalog')
+            ->label('Guardar en catálogo')
+            ->icon(Heroicon::OutlinedBookmark)
+            ->color('gray')
+            ->requiresConfirmation()
+            ->modalHeading('Guardar conceptos en el catálogo')
+            ->modalDescription('Se crearán o actualizarán tus conceptos frecuentes con los montos actuales del formulario.')
+            ->visible(fn ($livewire): bool => $livewire instanceof CreateRecord || $livewire instanceof EditRecord)
+            ->action(function (Get $get): void {
+                $user = auth()->user();
+
+                if ($user === null) {
+                    return;
+                }
+
+                $items = static::collectItemsFromState($get);
+
+                if ($items === []) {
+                    Notification::make()
+                        ->title('No hay conceptos para guardar')
+                        ->warning()
+                        ->send();
+
+                    return;
+                }
+
+                $synced = 0;
+
+                foreach ($items as $index => $item) {
+                    BudgetItemTemplate::query()->updateOrCreate(
+                        [
+                            'user_id' => $user->id,
+                            'category_type' => $item['category_type'],
+                            'concept' => $item['concept'],
+                        ],
+                        [
+                            'notes' => $item['notes'],
+                            'default_amount' => $item['amount'],
+                            'sort_order' => $index,
+                            'is_active' => true,
+                        ]
+                    );
+
+                    $synced++;
+                }
+
+                Notification::make()
+                    ->title('Catálogo actualizado')
+                    ->body("Se guardaron {$synced} concepto(s) frecuentes.")
+                    ->success()
+                    ->send();
+            });
+    }
+
     /**
      * @return array<int, Repeater>
      */
@@ -220,7 +452,7 @@ class BudgetPlanForm
                 ->label($category->label())
                 ->collapsible()
                 ->collapsed()
-                ->itemLabel(function (array $state) use ($category): ?string {
+                ->itemLabel(function (array $state): ?string {
                     if (blank($state['concept'] ?? null)) {
                         return 'Nuevo concepto';
                     }
@@ -298,7 +530,7 @@ class BudgetPlanForm
         $currency = $get('currency');
 
         $allItems = static::collectItemsFromState($get);
-        $calculator = app(\App\Services\Budgets\BudgetCalculator::class);
+        $calculator = app(BudgetCalculator::class);
         $result = $calculator->calculate($netIncome, $allItems);
 
         $remaining = $result['remaining_balance'];
