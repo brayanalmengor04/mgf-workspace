@@ -21,6 +21,14 @@ class Dashboard extends BaseDashboard
         return 'Escritorio';
     }
 
+    /**
+     * @return int | array<string, ?int>
+     */
+    public function getColumns(): int | array
+    {
+        return 2;
+    }
+
     protected function getHeaderActions(): array
     {
         return [
