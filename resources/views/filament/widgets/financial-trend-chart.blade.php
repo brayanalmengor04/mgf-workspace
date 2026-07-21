@@ -21,19 +21,31 @@
 
 <x-filament-widgets::widget class="fi-wi-chart">
     <x-filament::section
-        :description="$description"
         :heading="$heading"
         :collapsible="$isCollapsible"
     >
-        <x-slot name="afterHeader">
+        <div
+            class="fi-wi-financial-trend-toolbar"
+            style="display: flex; flex-direction: column; gap: 0.75rem; margin-bottom: 1rem;"
+        >
+            @if (filled($description))
+                <p
+                    class="fi-wi-financial-trend-description text-sm text-gray-500 dark:text-gray-400"
+                    style="margin: 0; line-height: 1.45; overflow-wrap: anywhere; word-break: break-word;"
+                >
+                    {{ $description }}
+                </p>
+            @endif
+
             <div
                 class="fi-wi-financial-trend-filters"
-                style="display: flex; flex-wrap: nowrap; align-items: center; gap: 0.5rem;"
+                style="display: flex; flex-wrap: wrap; align-items: center; gap: 0.5rem;"
             >
                 <x-filament::input.wrapper
                     inline-prefix
                     wire:target="range"
-                    style="width: max-content; margin: 0;"
+                    class="fi-wi-financial-trend-filter"
+                    style="width: auto; min-width: 8.5rem; margin: 0; flex: 1 1 8.5rem;"
                 >
                     <x-filament::input.select
                         inline-prefix
@@ -51,7 +63,8 @@
                     <x-filament::input.wrapper
                         inline-prefix
                         wire:target="filter"
-                        style="width: max-content; margin: 0;"
+                        class="fi-wi-financial-trend-filter"
+                        style="width: auto; min-width: 8.5rem; margin: 0; flex: 1 1 8.5rem;"
                     >
                         <x-filament::input.select
                             inline-prefix
@@ -66,7 +79,7 @@
                     </x-filament::input.wrapper>
                 @endif
             </div>
-        </x-slot>
+        </div>
 
         <div wire:key="financial-trend-{{ $filter }}-{{ $range }}">
             <div style="position: relative;">
@@ -104,7 +117,6 @@
                 </div>
 
                 @if (count($pointDeltas) > 0 && $pointCount > 1)
-                    {{-- Labels verde/rojo a mitad de camino entre puntos (overlay fijo, sin depender de Alpine/Chart) --}}
                     <div
                         aria-label="Variaciones entre presupuestos"
                         style="

@@ -102,11 +102,11 @@ abstract class FinancialTrendChartWidget extends ChartWidget
         }
 
         $count = count($values);
-        $parts = ['Últimos '.$count.' presupuestos emitidos (máx. '.$this->seriesLimit().')'];
+        $parts = ['Últimos '.$count.' presupuestos (máx. '.$this->seriesLimit().')'];
 
         if ($count >= 2) {
             $delta = round($values[$count - 1] - $values[0], 2);
-            $parts[] = 'Variación total: '.MoneyFormatter::formatSigned($delta, $series['currency']);
+            $parts[] = 'Variación: '.MoneyFormatter::formatSigned($delta, $series['currency']);
         }
 
         return implode(' · ', $parts);
