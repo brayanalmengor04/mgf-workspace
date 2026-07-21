@@ -5,6 +5,7 @@ namespace App\Filament\Resources\BudgetPlans\Tables;
 use App\Enums\BudgetPeriod;
 use App\Enums\BudgetStatus;
 use App\Enums\QuoteCurrency;
+use App\Filament\Resources\BudgetPlans\BudgetPlanResource;
 use App\Models\BudgetPlan;
 use App\Services\Budgets\BudgetPdfService;
 use Filament\Actions\Action;
@@ -86,6 +87,11 @@ class BudgetPlansTable
                     ->falseLabel('Pendientes'),
             ])
             ->recordActions([
+                Action::make('charts')
+                    ->label('Ver métricas')
+                    ->icon('heroicon-o-chart-pie')
+                    ->color('warning')
+                    ->url(fn (BudgetPlan $record): string => BudgetPlanResource::getUrl('charts', ['record' => $record])),
                 Action::make('download')
                     ->label('PDF')
                     ->icon('heroicon-o-arrow-down-tray')

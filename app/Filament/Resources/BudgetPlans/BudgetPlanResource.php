@@ -3,6 +3,7 @@
 namespace App\Filament\Resources\BudgetPlans;
 
 use AlizHarb\ActivityLog\RelationManagers\ActivitiesRelationManager;
+use App\Filament\Resources\BudgetPlans\Pages\ChartsBudgetPlan;
 use App\Filament\Resources\BudgetPlans\Pages\CreateBudgetPlan;
 use App\Filament\Resources\BudgetPlans\Pages\EditBudgetPlan;
 use App\Filament\Resources\BudgetPlans\Pages\ListBudgetPlans;
@@ -68,6 +69,7 @@ class BudgetPlanResource extends Resource
             'create' => CreateBudgetPlan::route('/create'),
             'edit' => EditBudgetPlan::route('/{record}/edit'),
             'preview' => PreviewBudgetPlan::route('/{record}/preview'),
+            'charts' => ChartsBudgetPlan::route('/{record}/charts'),
         ];
     }
 }
