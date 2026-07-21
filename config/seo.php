@@ -20,7 +20,7 @@ return [
 
     'keywords' => env('SEO_KEYWORDS', 'seguimiento financiero, finanzas personales, presupuestos, cotizaciones, gestión financiera'),
 
-    'image' => env('SEO_IMAGE', 'assets/graphs/web/opengraphs.png'),
+    'image' => env('SEO_IMAGE', 'assets/graphs/web/opengraphs-v2.png'),
 
     'twitter_card' => env('SEO_TWITTER_CARD', 'summary_large_image'),
 

@@ -45,6 +45,7 @@ class PwaTest extends TestCase
             'resources/favicon/apple-splash-1170x2532.png',
             'resources/favicon/apple-splash-1290x2796.png',
             'public/favicon.ico',
+            'public/assets/graphs/web/opengraphs-v2.png',
         ];
 
         foreach ($required as $path) {

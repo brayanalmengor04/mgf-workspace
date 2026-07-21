@@ -96,21 +96,106 @@ function appIconSvg(size, { maskable = false, showWordmark = null } = {}) {
 </svg>`;
 }
 
-/** Splash: dark canvas + centered mark (no wordmark — reads clean on launch). */
+/** Splash: dark canvas + oversized growth mark (fills the viewport). */
 function splashSvg(width, height) {
-    const mark = Math.round(Math.min(width, height) * 0.28);
-    const x = Math.round((width - mark) / 2);
-    const y = Math.round((height - mark) / 2 - height * 0.02);
+    const chartW = Math.round(Math.min(width * 0.9, height * 0.45));
+    const chartH = chartW;
+    const cx = width / 2;
+    const cy = height / 2 - height * 0.03;
+
+    const barW = chartW * 0.18;
+    const gap = chartW * 0.075;
+    const baseY = cy + chartH * 0.3;
+    const heights = [chartH * 0.42, chartH * 0.62, chartH * 0.82];
+    const totalW = barW * 3 + gap * 2;
+    const startX = cx - totalW / 2;
+
+    const bars = heights
+        .map((h, i) => {
+            const x = startX + i * (barW + gap);
+            const y = baseY - h;
+            const r = Math.max(4, barW * 0.32);
+
+            return `<rect x="${x.toFixed(2)}" y="${y.toFixed(2)}" width="${barW.toFixed(2)}" height="${h.toFixed(2)}" rx="${r.toFixed(2)}" fill="url(#splashGrad)"/>`;
+        })
+        .join('');
+
+    const p0x = startX + barW * 0.5;
+    const p0y = baseY - heights[0];
+    const p1x = startX + barW + gap + barW * 0.5;
+    const p1y = baseY - heights[1] - chartH * 0.05;
+    const p2x = startX + 2 * (barW + gap) + barW * 0.5;
+    const p2y = baseY - heights[2];
+    const stroke = Math.max(6, chartW * 0.055);
+
+    const labelY = baseY + chartH * 0.18;
+    const labelSize = Math.round(chartW * 0.15);
+
+    return `<svg width="${width}" height="${height}" viewBox="0 0 ${width} ${height}" xmlns="http://www.w3.org/2000/svg">
+  <defs>
+    <linearGradient id="splashGrad" x1="0%" y1="100%" x2="100%" y2="0%">
+      <stop offset="0%" stop-color="#d97706"/>
+      <stop offset="55%" stop-color="#f59e0b"/>
+      <stop offset="100%" stop-color="#fbbf24"/>
+    </linearGradient>
+    <radialGradient id="splashGlow" cx="50%" cy="46%" r="42%">
+      <stop offset="0%" stop-color="#f59e0b" stop-opacity="0.4"/>
+      <stop offset="60%" stop-color="#f59e0b" stop-opacity="0.1"/>
+      <stop offset="100%" stop-color="#f59e0b" stop-opacity="0"/>
+    </radialGradient>
+  </defs>
+  <rect width="${width}" height="${height}" fill="${BG}"/>
+  <circle cx="${cx}" cy="${cy}" r="${(chartW * 0.62).toFixed(2)}" fill="url(#splashGlow)"/>
+  ${bars}
+  <path d="M ${p0x.toFixed(2)} ${p0y.toFixed(2)}
+           L ${p1x.toFixed(2)} ${p1y.toFixed(2)}
+           L ${p2x.toFixed(2)} ${p2y.toFixed(2)}"
+        fill="none" stroke="#fffbeb" stroke-width="${stroke.toFixed(2)}"
+        stroke-linecap="round" stroke-linejoin="round"/>
+  <circle cx="${p2x.toFixed(2)}" cy="${p2y.toFixed(2)}" r="${(stroke * 0.95).toFixed(2)}" fill="#fffbeb"/>
+  <text x="${cx}" y="${labelY}" text-anchor="middle"
+        font-family="ui-sans-serif, system-ui, -apple-system, Segoe UI, sans-serif"
+        font-weight="800" font-size="${labelSize}"
+        letter-spacing="${Math.round(labelSize * 0.3)}" fill="#fde68a">MGF</text>
+</svg>`;
+}
+
+/** Open Graph / WhatsApp link preview — 1200×630 branded card with MGF mark. */
+function openGraphSvg() {
+    const width = 1200;
+    const height = 630;
+    const mark = 280;
+    const markX = 120;
+    const markY = Math.round((height - mark) / 2);
     const markInner = appIconSvg(mark, { maskable: false, showWordmark: false })
         .replace(/<\?xml[^>]*>/, '')
         .replace(/<svg[^>]*>/, '')
         .replace('</svg>', '');
 
     return `<svg width="${width}" height="${height}" viewBox="0 0 ${width} ${height}" xmlns="http://www.w3.org/2000/svg">
+  <defs>
+    <radialGradient id="ogGlow" cx="28%" cy="50%" r="45%">
+      <stop offset="0%" stop-color="#f59e0b" stop-opacity="0.28"/>
+      <stop offset="55%" stop-color="#f59e0b" stop-opacity="0.08"/>
+      <stop offset="100%" stop-color="#f59e0b" stop-opacity="0"/>
+    </radialGradient>
+    <linearGradient id="ogBar" x1="0%" y1="0%" x2="100%" y2="0%">
+      <stop offset="0%" stop-color="#d97706"/>
+      <stop offset="100%" stop-color="#fbbf24"/>
+    </linearGradient>
+  </defs>
   <rect width="${width}" height="${height}" fill="${BG}"/>
-  <svg x="${x}" y="${y}" width="${mark}" height="${mark}" viewBox="0 0 ${mark} ${mark}">
+  <rect width="${width}" height="${height}" fill="url(#ogGlow)"/>
+  <rect x="0" y="0" width="12" height="${height}" fill="url(#ogBar)"/>
+  <svg x="${markX}" y="${markY}" width="${mark}" height="${mark}" viewBox="0 0 ${mark} ${mark}">
     ${markInner}
   </svg>
+  <text x="460" y="250" font-family="ui-sans-serif, system-ui, -apple-system, Segoe UI, sans-serif"
+        font-weight="800" font-size="72" letter-spacing="2" fill="#fffbeb">MGF Workspace</text>
+  <text x="460" y="320" font-family="ui-sans-serif, system-ui, -apple-system, Segoe UI, sans-serif"
+        font-weight="600" font-size="28" letter-spacing="4" fill="#fbbf24">SEGUIMIENTO FINANCIERO</text>
+  <text x="460" y="390" font-family="ui-sans-serif, system-ui, -apple-system, Segoe UI, sans-serif"
+        font-weight="500" font-size="26" fill="#94a3b8">Presupuestos · Cotizaciones · Finanzas personales</text>
 </svg>`;
 }
 
@@ -237,4 +322,10 @@ copyFileSync(join(outDir, 'apple-icon-180x180.png'), join(publicDir, 'apple-touc
 copyFileSync(join(outDir, 'icon-512x512.png'), join(brandDir, 'mgf-icon-512.png'));
 copyFileSync(join(outDir, 'icon-512x512-maskable.png'), join(brandDir, 'mgf-icon-512-maskable.png'));
 
-console.log('PWA icons, maskable mark, Apple splash screens, and brand logos generated.');
+const ogDir = join(publicDir, 'assets', 'graphs', 'web');
+mkdirSync(ogDir, { recursive: true });
+await sharp(Buffer.from(openGraphSvg())).png().toFile(join(ogDir, 'opengraphs-v2.png'));
+copyFileSync(join(ogDir, 'opengraphs-v2.png'), join(ogDir, 'opengraphs.png'));
+copyFileSync(join(ogDir, 'opengraphs-v2.png'), join(brandDir, 'mgf-opengraph.png'));
+
+console.log('PWA icons, Apple splash screens, Open Graph preview, and brand logos generated.');

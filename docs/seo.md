@@ -117,7 +117,7 @@ Sin `$seo`, se usan los valores de `config/seo.php`.
 
 ## Imagen Open Graph
 
-La imagen por defecto está en `public/assets/graphs/web/opengraphs.png` (recomendado **1200×630 px**). La misma ruta se usa para Open Graph (Facebook, LinkedIn, WhatsApp) y Twitter Card (`twitter:image`).
+La imagen por defecto está en `public/assets/graphs/web/opengraphs-v2.png` (recomendado **1200×630 px**). La misma ruta se usa para Open Graph (Facebook, LinkedIn, WhatsApp) y Twitter Card (`twitter:image`).
 
 Puedes cambiar la ruta con `SEO_IMAGE` o por página:
 
