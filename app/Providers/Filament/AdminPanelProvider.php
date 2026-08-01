@@ -118,10 +118,16 @@ class AdminPanelProvider extends PanelProvider
             )
             ->renderHook(
                 PanelsRenderHook::BODY_END,
-                fn (): string => (request()->is('admin/login')
-                    ? view('filament.pwa.install-snippet')->render()
-                    : '')
-                    .view('filament.pwa.service-worker')->render(),
+                function (): string {
+                    $html = '';
+                    if (request()->is('admin/login')) {
+                        $html .= view('filament.pwa.install-snippet')->render();
+                    } else {
+                        $html .= \Illuminate\Support\Facades\Blade::render("@livewire('chatbot-widget')");
+                    }
+                    $html .= view('filament.pwa.service-worker')->render();
+                    return $html;
+                }
             );
     }
 }

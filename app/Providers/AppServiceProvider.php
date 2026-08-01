@@ -21,5 +21,6 @@ class AppServiceProvider extends ServiceProvider
     public function boot(): void
     {
         Carbon::setLocale(config('app.locale'));
+        \Livewire\Livewire::component('chatbot-widget', \App\Livewire\ChatbotWidget::class);
     }
 }
