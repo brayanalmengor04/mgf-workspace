@@ -9,11 +9,10 @@ class GeminiService
 {
     protected string $apiKey;
     protected string $baseUrl = 'https://generativelanguage.googleapis.com/v1beta/models';
-    protected string $model = 'gemini-2.5-flash';
-
     public function __construct()
     {
         $this->apiKey = env('GEMINI_API_KEY', '');
+        $this->model = env('GEMINI_MODEL', 'gemini-2.5-flash');
     }
 
     /**
