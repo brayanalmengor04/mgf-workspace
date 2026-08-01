@@ -95,7 +95,7 @@ class FinancialCalendar extends Page
                 ");
             })
             ->modalSubmitActionLabel('Eliminar Pago')
-            ->modalSubmitAction(fn (\Filament\Actions\StaticAction $action) => $action->color('danger')->icon('heroicon-o-trash'))
+            ->modalSubmitAction(fn (Action $action) => $action->color('danger')->icon('heroicon-o-trash'))
             ->action(function (array $arguments) {
                 $eventId = $arguments['eventId'] ?? null;
                 if ($eventId) {
