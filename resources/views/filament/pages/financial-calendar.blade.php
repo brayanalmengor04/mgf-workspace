@@ -21,7 +21,7 @@
             events: eventsData,
             eventColor: '#2563eb',
             eventClick: function(info) {
-                $wire.mountAction('deleteEventAction', { eventId: info.event.id });
+                $wire.mountAction('viewEventAction', { eventId: info.event.id });
             }
         });
         calendar.render();
