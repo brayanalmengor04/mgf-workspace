@@ -4,6 +4,7 @@ namespace App\Livewire;
 
 use App\Models\BudgetPlan;
 use App\Models\BudgetPlanItem;
+use App\Services\AssistantResponseNormalizer;
 use App\Services\FinancialContextService;
 use App\Services\GeminiService;
 use Illuminate\Support\Facades\Auth;
@@ -40,43 +41,64 @@ class ChatbotWidget extends Component
         ];
         
         $this->message = '';
+        $this->isLoading = true;
 
         // Trigger AI processing in a separate request so the UI updates instantly
         $this->dispatch('trigger-api');
     }
 
     #[\Livewire\Attributes\On('trigger-api')]
-    public function fetchAiResponse(GeminiService $geminiService, FinancialContextService $contextService, \App\Services\FinancialSystemPrompt $promptService)
-    {
-        // API format history
-        $apiHistory = [];
-        foreach ($this->chatHistory as $msg) {
-            // Only send past messages that are actually from the conversation
-            $role = $msg['role'] === 'user' ? 'user' : 'model';
-            $apiHistory[] = [
-                'role' => $role,
-                'parts' => [['text' => $msg['content']]]
+    public function fetchAiResponse(
+        GeminiService $geminiService,
+        FinancialContextService $contextService,
+        \App\Services\FinancialSystemPrompt $promptService,
+        AssistantResponseNormalizer $responseNormalizer,
+    ) {
+        try {
+            // API format history
+            $apiHistory = [];
+            foreach ($this->chatHistory as $msg) {
+                // Only send past messages that are actually from the conversation
+                $role = $msg['role'] === 'user' ? 'user' : 'model';
+                $apiHistory[] = [
+                    'role' => $role,
+                    'parts' => [['text' => $msg['content']]]
+                ];
+            }
+
+            // Add Financial Context as System Instruction
+            $user = Auth::user();
+            $financialSummary = $user ? $contextService->getFourMonthSummary($user) : 'No hay datos de usuario disponibles.';
+            
+            $systemInstruction = $promptService->getSystemInstruction($user) . "\n\nResumen Histórico del Usuario:\n" . $financialSummary;
+
+            $response = $geminiService->generateContent($apiHistory, $systemInstruction);
+
+            // Get user's original query
+            $userMessage = '';
+            for ($i = count($this->chatHistory) - 1; $i >= 0; $i--) {
+                if ($this->chatHistory[$i]['role'] === 'user') {
+                    $userMessage = $this->chatHistory[$i]['content'];
+                    break;
+                }
+            }
+
+            // Process potential JSON action
+            $processedResponse = $this->processResponseAction($response);
+
+            $processedResponse = $responseNormalizer->normalize($processedResponse);
+
+            if ($processedResponse === '') {
+                $processedResponse = $this->generateFallbackResponse($userMessage);
+            }
+
+            $this->chatHistory[] = [
+                'role' => 'model',
+                'content' => $processedResponse
             ];
+        } finally {
+            $this->isLoading = false;
         }
-
-        // The very last message in apiHistory is the user's latest query
-        // The one we just added in sendMessage()
-
-        // Add Financial Context as System Instruction
-        $user = Auth::user();
-        $financialSummary = $user ? $contextService->getFourMonthSummary($user) : 'No hay datos de usuario disponibles.';
-        
-        $systemInstruction = $promptService->getSystemInstruction($user) . "\n\nResumen Histórico del Usuario:\n" . $financialSummary;
-
-        $response = $geminiService->generateContent($apiHistory, $systemInstruction);
-
-        // Process potential JSON action
-        $processedResponse = $this->processResponseAction($response);
-
-        $this->chatHistory[] = [
-            'role' => 'model',
-            'content' => $processedResponse
-        ];
     }
 
     protected function processResponseAction(string $response): string
@@ -213,6 +235,34 @@ class ChatbotWidget extends Component
         });
 
         return true;
+    }
+
+    protected function generateFallbackResponse(string $userQuery): string
+    {
+        $query = mb_strtolower(trim($userQuery));
+
+        if (preg_match('/(en qu[eé] puedes ayudarme|qu[eé] puedes hacer|qu[eé] sabes hacer|help|ayuda)/i', $query)) {
+            return "Puedo ayudarte con:\n\n"
+                ."• **Presupuestos quincenales** (crear o ampliar comprobantes)\n"
+                ."• **Ahorro universitario** (calcular cuánto guardar por quincena)\n"
+                ."• **Calendario financiero** (agendar pagos y recordatorios)\n"
+                ."• **Análisis** de tus últimos presupuestos\n\n"
+                ."Escribe `/help` para ver todos los comandos.";
+        }
+
+        if (preg_match('/(hola|buenas|buenos dias|tardes|noches|saludos|hello|hi)/i', $query)) {
+            return "¡Hola! Soy tu asistente financiero de MGF. Estoy aquí para ayudarte con presupuestos, ahorros y tu calendario. ¿En qué te puedo ayudar hoy? Escribe `/help` para ver los comandos.";
+        }
+
+        if (preg_match('/(presupuesto|budget|gastar|gasto|ahorro|ahorrar)/i', $query)) {
+            return "Puedo ayudarte a estructurar un presupuesto quincenal o calcular tu plan de ahorros universitarios. ¿Quieres crear uno nuevo o revisar tus gastos recientes?";
+        }
+
+        if (preg_match('/(calendario|evento|agendar|fecha|pago)/i', $query)) {
+            return "Puedo agendar tus pagos en el Calendario Financiero. Indícame fecha, descripción y monto para programarlo.";
+        }
+
+        return "Como tu asistente de MGF, puedo ayudarte con presupuestos, ahorros universitarios y tu calendario. Escribe `/help` para ver opciones o cuéntame qué necesitas.";
     }
 
     public function render()

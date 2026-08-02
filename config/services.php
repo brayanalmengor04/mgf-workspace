@@ -35,4 +35,17 @@ return [
         ],
     ],
 
+    'gemini' => [
+        'api_key' => env('GEMINI_API_KEY'),
+        'model' => env('GEMINI_MODEL', 'gemini-3.1-flash-lite'),
+        'thinking_level' => env('GEMINI_THINKING_LEVEL', 'minimal'),
+        'translate_fallback' => env('GEMINI_TRANSLATE_FALLBACK', true),
+        'rate_limits' => [
+            // Ajusta según tu panel de AI Studio (Rate limits)
+            'rpm' => (int) env('GEMINI_RATE_LIMIT_RPM', 15),
+            'tpm' => (int) env('GEMINI_RATE_LIMIT_TPM', 250_000),
+            'rpd' => (int) env('GEMINI_RATE_LIMIT_RPD', 1_500),
+        ],
+    ],
+
 ];
