@@ -68,7 +68,7 @@ class UserInvitationService
                 ],
                 default => [
                     'success' => false,
-                    'message' => 'No se pudo enviar el correo. Verifica la configuración SMTP.',
+                    'message' => 'No se pudo enviar el correo. Verifica la configuración de correo (Brevo/Resend en Railway).',
                 ],
             };
 
@@ -94,8 +94,8 @@ class UserInvitationService
             return [
                 'success' => false,
                 'message' => config('app.debug')
-                    ? 'Error SMTP: '.$exception->getMessage()
-                    : 'No se pudo enviar el correo. Verifica la configuración SMTP.',
+                    ? 'Error de correo: '.$exception->getMessage()
+                    : 'No se pudo enviar el correo. Verifica la configuración de correo (Brevo/Resend en Railway).',
             ];
         } finally {
             UserInvitationNotification::clearContext();
