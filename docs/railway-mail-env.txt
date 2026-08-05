@@ -1,37 +1,28 @@
 # Correo en Railway — MGF Workspace
 #
 # Railway BLOQUEA SMTP saliente (Gmail 465/587 → Connection timed out).
-# Tu portfolio en Netlify SÍ puede usar Gmail/Nodemailer; Railway NO.
-#
-# Solución en Railway: Resend (API HTTPS, 3.000 correos/mes gratis).
-# Local: sigue usando Gmail SMTP como siempre.
-#
-# Guía Railway: https://railway.com/deploy/send-emails-on-railway-without-smtp-resend-api-starter--resend-email-railway
+# Solución recomendada (gratis): Brevo + Gmail verificado como remitente.
+# Local: sigue usando Gmail SMTP.
 
 # =============================================================================
-# RAILWAY (producción) — Resend
+# RAILWAY (producción) — Brevo + Gmail verificado
 # =============================================================================
 #
-# 1. https://resend.com → cuenta gratis (sin tarjeta)
-# 2. API Keys → Create API Key → copia la clave (empieza con re_)
-# 3. Para PRUEBAS sin dominio:
-#      MAIL_FROM_ADDRESS=onboarding@resend.dev
-#      Solo puedes enviar a TU correo de cuenta Resend
-# 4. Para PRODUCCIÓN (invitar a cualquier usuario):
-#      Domains → Add domain → añade registros DNS (SPF, DKIM)
-#      MAIL_FROM_ADDRESS=noreply@tudominio.com
-# 5. En Railway → Variables:
+# 1. https://www.brevo.com → cuenta gratis
+# 2. Remitentes → Agregar remitente → brayanalmengorz@gmail.com → Verificado
+# 3. SMTP y API → Claves API → Generar → copia xkeysib-...
+# 4. En Railway → Variables:
 
-MAIL_MAILER=resend
-RESEND_API_KEY=re_tu_clave_aqui
-MAIL_FROM_ADDRESS=onboarding@resend.dev
+MAIL_MAILER=brevo
+BREVO_API_KEY=xkeysib-tu_clave_aqui
+MAIL_FROM_ADDRESS=brayanalmengorz@gmail.com
 MAIL_FROM_NAME=MGF Workspace
 QUEUE_CONNECTION=sync
 
-# Quita o deja sin usar en Railway: MAIL_HOST, MAIL_PASSWORD, MAIL_PORT, MAIL_SCHEME, MAIL_USERNAME
+# Quita o deja sin usar: MAIL_HOST, MAIL_PASSWORD, MAIL_PORT, MAIL_SCHEME, MAIL_USERNAME, RESEND_API_KEY
 
 # =============================================================================
-# LOCAL (desarrollo) — Gmail SMTP (como tu portfolio)
+# LOCAL (desarrollo) — Gmail SMTP
 # =============================================================================
 #
 # MAIL_MAILER=smtp
@@ -43,5 +34,13 @@ QUEUE_CONNECTION=sync
 # MAIL_FROM_ADDRESS=tu_correo@gmail.com
 # MAIL_FROM_NAME=MGF Workspace
 
-# Diagnóstico local con vars de Railway: just prod-mail-diagnose
-# Logs Railway tras deploy: mail-probe: Resend API configurada (HTTPS — funciona en Railway).
+# Diagnóstico: just prod-mail-diagnose
+# Logs Railway: mail-probe: Brevo API configurada (HTTPS — funciona en Railway).
+
+# =============================================================================
+# Alternativa: Resend (requiere dominio propio verificado para cualquier destinatario)
+# =============================================================================
+#
+# MAIL_MAILER=resend
+# RESEND_API_KEY=re_...
+# MAIL_FROM_ADDRESS=invitaciones@tudominio.com

@@ -16,6 +16,7 @@
         "laravel/tinker": "^3.0",
         "resend/resend-php": "^1.7",
         "spatie/laravel-activitylog": "^5.0",
+        "symfony/brevo-mailer": "^8.1",
         "symfony/http-client": "^8.1"
     },
     "require-dev": {

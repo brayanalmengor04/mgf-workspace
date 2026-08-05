@@ -169,7 +169,7 @@ prod-logs:
 # Diagnóstico SMTP con variables MAIL_* de producción (no requiere SSH)
 # Usa Docker local; prueba Gmail con la misma config que Railway.
 prod-mail-diagnose *args:
-    $v = (railway variables --service mgf-workspace --json | ConvertFrom-Json); $keys = @('APP_ENV','APP_URL','APP_BRAND','APP_NAME','APP_KEY','QUEUE_CONNECTION','MAIL_MAILER','MAIL_SCHEME','MAIL_HOST','MAIL_PORT','MAIL_TIMEOUT','MAIL_USERNAME','MAIL_PASSWORD','MAIL_ENCRYPTION','MAIL_FROM_ADDRESS','MAIL_FROM_NAME','RESEND_API_KEY'); $envArgs = @(); foreach ($key in $keys) { $val = $v.$key; if ($null -ne $val -and "$val".Trim() -ne '') { $envArgs += '-e'; $envArgs += ($key + '=' + "$val".Trim().Trim('"')) } }; docker compose exec -T @envArgs app php artisan mgf:mail-diagnose {{args}}
+    $v = (railway variables --service mgf-workspace --json | ConvertFrom-Json); $keys = @('APP_ENV','APP_URL','APP_BRAND','APP_NAME','APP_KEY','QUEUE_CONNECTION','MAIL_MAILER','MAIL_SCHEME','MAIL_HOST','MAIL_PORT','MAIL_TIMEOUT','MAIL_USERNAME','MAIL_PASSWORD','MAIL_ENCRYPTION','MAIL_FROM_ADDRESS','MAIL_FROM_NAME','BREVO_API_KEY','RESEND_API_KEY'); $envArgs = @(); foreach ($key in $keys) { $val = $v.$key; if ($null -ne $val -and "$val".Trim() -ne '') { $envArgs += '-e'; $envArgs += ($key + '=' + "$val".Trim().Trim('"')) } }; docker compose exec -T @envArgs app php artisan mgf:mail-diagnose {{args}}
 
 # Diagnóstico dentro del contenedor Railway (requiere: ssh-keygen + railway ssh keys add)
 prod-mail-diagnose-ssh *args:

@@ -15,6 +15,17 @@ class MailProbeCommand extends Command
     {
         $mailer = (string) config('mail.default');
 
+        if ($mailer === 'brevo') {
+            $configured = filled(config('services.brevo.key'));
+            $message = $configured
+                ? 'Brevo API configurada (HTTPS — funciona en Railway).'
+                : 'BREVO_API_KEY no configurada.';
+
+            $this->line($message);
+
+            return $configured ? self::SUCCESS : self::FAILURE;
+        }
+
         if ($mailer === 'resend') {
             $configured = filled(config('services.resend.key'));
             $message = $configured
@@ -27,8 +38,8 @@ class MailProbeCommand extends Command
         }
 
         if ($this->isRailway() && $mailer === 'smtp') {
-            $this->error('Railway bloquea SMTP saliente (puertos 465/587). Tu portfolio funciona en Netlify, no en Railway.');
-            $this->warn('Solución: MAIL_MAILER=resend + RESEND_API_KEY (ver docs/railway-mail-env.txt).');
+            $this->error('Railway bloquea SMTP saliente (puertos 465/587).');
+            $this->warn('Solución: MAIL_MAILER=brevo + BREVO_API_KEY (ver docs/railway-mail-env.txt).');
 
             return self::FAILURE;
         }
@@ -43,7 +54,7 @@ class MailProbeCommand extends Command
         $this->line($probe['message']);
 
         if (! $probe['ok'] && $this->isRailway()) {
-            $this->warn('Usa Resend en Railway: MAIL_MAILER=resend y RESEND_API_KEY.');
+            $this->warn('Usa Brevo en Railway: MAIL_MAILER=brevo y BREVO_API_KEY.');
         }
 
         return $probe['ok'] ? self::SUCCESS : self::FAILURE;

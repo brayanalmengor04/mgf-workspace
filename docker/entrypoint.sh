@@ -8,7 +8,7 @@ fi
 
 # Local: copia plantilla. Railway: materializa .env desde variables del servicio en cada arranque.
 if [ "$is_railway" = true ] && [ -n "${APP_KEY:-}" ]; then
-    printenv | grep -E '^(APP_|DB_|LOG_|SESSION_|CACHE_|QUEUE_|MAIL_|BROADCAST_|FILESYSTEM_|VITE_|GEMINI_|RESEND_)' | sort -u > .env
+    printenv | grep -E '^(APP_|DB_|LOG_|SESSION_|CACHE_|QUEUE_|MAIL_|BROADCAST_|FILESYSTEM_|VITE_|GEMINI_|RESEND_|BREVO_)' | sort -u > .env
 elif [ ! -f .env ]; then
     if [ -f .env.PRD ]; then
         cp .env.PRD .env

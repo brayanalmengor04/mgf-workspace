@@ -40,6 +40,10 @@ class MailDiagnoseCommand extends Command
             ]);
         }
 
+        if ($mailer === 'brevo') {
+            $rows[] = ['BREVO_API_KEY', $this->maskSecret((string) config('services.brevo.key'))];
+        }
+
         if ($mailer === 'resend') {
             $rows[] = ['RESEND_API_KEY', $this->maskSecret((string) config('services.resend.key'))];
         }
@@ -52,8 +56,8 @@ class MailDiagnoseCommand extends Command
 
             if (! $probe['ok']) {
                 $this->newLine();
-                $this->warn('Railway bloquea SMTP saliente. En producción usa Resend (API HTTPS).');
-                $this->warn('MAIL_MAILER=resend + RESEND_API_KEY — ver docs/railway-mail-env.txt');
+                $this->warn('Railway bloquea SMTP saliente. En producción usa Brevo (API HTTPS).');
+                $this->warn('MAIL_MAILER=brevo + BREVO_API_KEY — ver docs/railway-mail-env.txt');
 
                 return self::FAILURE;
             }
@@ -65,14 +69,20 @@ class MailDiagnoseCommand extends Command
             }
         }
 
+        if ($mailer === 'brevo' && blank(config('services.brevo.key'))) {
+            $this->error('BREVO_API_KEY no está configurada.');
+
+            return self::FAILURE;
+        }
+
         if ($mailer === 'resend' && blank(config('services.resend.key'))) {
             $this->error('RESEND_API_KEY no está configurada.');
 
             return self::FAILURE;
         }
 
-        if (! in_array($mailer, ['smtp', 'resend'], true)) {
-            $this->warn("MAIL_MAILER={$mailer}. Local: smtp. Railway: resend.");
+        if (! in_array($mailer, ['smtp', 'brevo', 'resend'], true)) {
+            $this->warn("MAIL_MAILER={$mailer}. Local: smtp. Railway: brevo.");
 
             return self::FAILURE;
         }

@@ -43,15 +43,15 @@ El token debe pertenecer al mismo proyecto donde está el servicio `mgf-workspac
 
 ### Correo (invitaciones y restablecimiento de contraseña)
 
-**Railway bloquea SMTP saliente** (Gmail/Nodemailer no funciona aunque en Netlify sí). En producción usa **Resend** (API HTTPS). En local, Gmail SMTP.
+**Railway bloquea SMTP saliente** (Gmail/Nodemailer no funciona aunque en Netlify sí). En producción usa **Brevo** (API HTTPS) con tu Gmail verificado. En local, Gmail SMTP.
 
-Guía completa: [`docs/railway-mail-env.txt`](railway-mail-env.txt). Plantilla Railway: [Send Emails Without SMTP — Resend](https://railway.com/deploy/send-emails-on-railway-without-smtp-resend-api-starter--resend-email-railway).
+Guía completa: [`docs/railway-mail-env.txt`](railway-mail-env.txt).
 
 | Variable (Railway) | Notas |
 |----------|--------|
-| `MAIL_MAILER` | `resend` |
-| `RESEND_API_KEY` | API key de [resend.com](https://resend.com) (empieza con `re_`) |
-| `MAIL_FROM_ADDRESS` | `onboarding@resend.dev` (pruebas) o correo de dominio verificado |
+| `MAIL_MAILER` | `brevo` |
+| `BREVO_API_KEY` | API key de [brevo.com](https://www.brevo.com) (`xkeysib-...`) |
+| `MAIL_FROM_ADDRESS` | Gmail verificado en Brevo (ej. `brayanalmengorz@gmail.com`) |
 | `MAIL_FROM_NAME` | `MGF Workspace` |
 | `QUEUE_CONNECTION` | `sync` |
 
