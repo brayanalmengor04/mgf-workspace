@@ -1,5 +1,8 @@
 # Correo en Railway — MGF Workspace
 #
+# Producción: https://mgfapp.up.railway.app
+# Guía completa: docs/correo-produccion.md
+#
 # Railway BLOQUEA SMTP saliente (Gmail 465/587 → Connection timed out).
 # Solución recomendada (gratis): Brevo + Gmail verificado como remitente.
 # Local: sigue usando Gmail SMTP.
@@ -17,6 +20,7 @@ MAIL_MAILER=brevo
 BREVO_API_KEY=xkeysib-tu_clave_aqui
 MAIL_FROM_ADDRESS=brayanalmengorz@gmail.com
 MAIL_FROM_NAME=MGF Workspace
+APP_URL=https://mgfapp.up.railway.app
 QUEUE_CONNECTION=sync
 
 # Quita o deja sin usar: MAIL_HOST, MAIL_PASSWORD, MAIL_PORT, MAIL_SCHEME, MAIL_USERNAME, RESEND_API_KEY

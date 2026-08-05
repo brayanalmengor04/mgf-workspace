@@ -17,6 +17,15 @@ just migrate-seed
 | Panel Filament | http://localhost:8000/admin |
 | MySQL (cliente externo) | `localhost:3309` — base `laravel`, usuario `laravel`, contraseña `secret` |
 
+### Producción (Railway)
+
+| Recurso | URL |
+|---------|-----|
+| App | https://mgfapp.up.railway.app |
+| Panel Filament | https://mgfapp.up.railway.app/admin |
+
+Correo en producción: **Brevo** (API HTTPS). Guía: [docs/correo-produccion.md](docs/correo-produccion.md).
+
 La raíz `/` redirige al login del panel.
 
 ### Usuarios demo (después de `just migrate-seed`)
