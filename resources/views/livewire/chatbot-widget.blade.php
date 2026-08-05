@@ -149,6 +149,34 @@
             border-color: #334155;
         }
 
+        .chatbot-quick-actions {
+            display: flex;
+            flex-wrap: wrap;
+            gap: 8px;
+            margin-top: 12px;
+        }
+        .chatbot-quick-btn {
+            background: #ffffff;
+            border: 1px solid #cbd5e1;
+            color: #0f172a;
+            border-radius: 999px;
+            padding: 8px 14px;
+            font-size: 13px;
+            font-weight: 600;
+            cursor: pointer;
+            transition: all 0.2s ease;
+        }
+        .chatbot-quick-btn:hover {
+            border-color: #2563eb;
+            color: #1d4ed8;
+            background: #eff6ff;
+        }
+        .dark .chatbot-quick-btn {
+            background: #0f172a;
+            border-color: #475569;
+            color: #f8fafc;
+        }
+
         /* Message code formatting */
         .chatbot-bubble pre {
             background-color: #f1f5f9 !important;
@@ -348,7 +376,34 @@
         }
     </style>
 
-    <div class="chatbot-container {{ $isOpen ? 'is-open' : '' }}">
+    <div class="chatbot-container {{ $isOpen ? 'is-open' : '' }}"
+         x-data="{
+            async shareWhatsAppDocument(links) {
+                if (!links) return;
+
+                if (navigator.share) {
+                    try {
+                        const response = await fetch(links.pdf_url);
+                        if (response.ok) {
+                            const blob = await response.blob();
+                            const file = new File([blob], links.filename, { type: 'application/pdf' });
+                            const shareData = { files: [file], text: links.text };
+                            if (!navigator.canShare || navigator.canShare(shareData)) {
+                                await navigator.share(shareData);
+                                return;
+                            }
+                        }
+                    } catch (error) {}
+                }
+
+                const isMobile = /Android|iPhone|iPad|iPod|webOS|BlackBerry|IEMobile|Opera Mini/i.test(navigator.userAgent);
+                window.location.href = isMobile ? links.app : links.app;
+                if (!isMobile) {
+                    setTimeout(() => { window.location.href = links.web; }, 600);
+                }
+            }
+         }"
+         x-on:share-whatsapp-document.window="shareWhatsAppDocument($event.detail?.links)">
         @if($isOpen)
             <div class="chatbot-window">
                 <div class="chatbot-header">
@@ -376,6 +431,20 @@
                                     {{ $msg['content'] }}
                                 @else
                                     {!! Str::markdown($msg['content']) !!}
+                                    @if(!empty($msg['actions']) && !empty($msg['budget_number']))
+                                        <div class="chatbot-quick-actions">
+                                            @foreach($msg['actions'] as $action)
+                                                <button
+                                                    type="button"
+                                                    class="chatbot-quick-btn"
+                                                    wire:click="handleQuickAction('{{ $action['id'] }}', '{{ $msg['budget_number'] }}')"
+                                                    wire:loading.attr="disabled"
+                                                >
+                                                    {{ $action['label'] }}
+                                                </button>
+                                            @endforeach
+                                        </div>
+                                    @endif
                                 @endif
                             </div>
                         </div>
