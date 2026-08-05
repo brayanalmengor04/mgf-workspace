@@ -86,6 +86,8 @@ Configura nombres de servicio en [`scripts/railway.config.json`](../scripts/rail
 | `just prod artisan "migrate:status"` | Cualquier comando artisan |
 | `just prod shell` | Shell en el contenedor |
 | `just prod logs` | Logs del servicio |
+| `just prod-mail-diagnose` | Prueba SMTP con variables de Railway (Docker local, sin SSH) |
+| `just prod-mail-diagnose-ssh` | Igual pero dentro del contenedor (requiere clave SSH en Railway) |
 | `just prod clear` | Limpiar cachés |
 | `just prod filament-user` | Crear usuario admin |
 
