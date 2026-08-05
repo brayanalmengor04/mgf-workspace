@@ -53,6 +53,7 @@ class RoleDataIsolationTest extends TestCase
 
         BudgetPlan::query()->create([
             'title' => 'Presupuesto B',
+            'budget_number' => 'PRE-B-0001',
             'created_by' => $adminB->id,
         ]);
 
@@ -109,6 +110,11 @@ class RoleDataIsolationTest extends TestCase
 
         $this->assertTrue($superAdmin->canViewGlobalData());
         $this->assertSame(2, Quote::query()->forUser($superAdmin)->count());
-        $this->assertSame(1, ActivityLogScope::query()->count());
+        $this->assertTrue(
+            ActivityLogScope::query()
+                ->where('causer_id', $provider->id)
+                ->where('description', 'acción proveedor')
+                ->exists(),
+        );
     }
 }
