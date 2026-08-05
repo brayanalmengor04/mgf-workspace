@@ -93,6 +93,7 @@ Ver [railway-deploy.md](./railway-deploy.md) y [db-squash.md](./db-squash.md).
 | `just prod migrate-seed` | Migrar + seeders |
 | `just prod backup` | Respaldo MySQL de producción |
 | `just prod restore <file>` | Restaurar backup |
-| `just prod-artisan "..."` | Artisan remoto |
+| `just prod-artisan "migrate:status"` | Artisan contra BD de producción |
 | `just prod-doctor` | Verificar esquema en Railway |
+| `just prod-ssh` | Shell SSH en el contenedor |
 | `just prod logs` | Logs del servicio |

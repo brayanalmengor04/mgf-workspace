@@ -137,22 +137,30 @@ db-squash:
     {{app}} php artisan mgf:migrate-doctor
 
 # --- Comandos de Producción (Railway) ---
+# Artisan remoto: Docker local + MySQL TCP proxy (no requiere PHP ni SSH en Windows)
 
-# Ejecutar cualquier comando artisan en producción (ej: just prod-artisan migrate)
+_prod-run-artisan command:
+    $v = (railway variables --service MySQL --json | ConvertFrom-Json); $pass = $v.MYSQLPASSWORD.Trim(); docker compose exec -T -e DB_CONNECTION=mysql -e DB_HOST=$($v.RAILWAY_TCP_PROXY_DOMAIN) -e DB_PORT=$($v.RAILWAY_TCP_PROXY_PORT) -e DB_DATABASE=$($v.MYSQLDATABASE) -e DB_USERNAME=$($v.MYSQLUSER) -e DB_PASSWORD=$pass -e MYSQL_SSL_NO_VERIFY=true app php artisan {{command}}
+
+# Ejecutar cualquier comando artisan contra la BD de producción (ej: just prod-artisan migrate)
 prod-artisan *args:
-    railway run php artisan {{args}}
+    just _prod-run-artisan "{{args}}"
 
 # Ejecutar migraciones en producción
 prod-migrate:
-    railway run php artisan migrate --force
+    just _prod-run-artisan "migrate --force"
 
-# Limpiar cachés en producción
+# Limpiar cachés en producción (contra BD prod; para caché del servidor usa prod-ssh)
 prod-clear:
-    railway run php artisan optimize:clear
+    just _prod-run-artisan "optimize:clear"
 
-# Abrir una terminal bash en el servidor de producción
+# Abrir shell SSH en el contenedor de Railway (requiere: railway ssh keys add)
+prod-ssh:
+    railway ssh -s mgf-workspace
+
+# Alias legacy
 prod-shell:
-    railway shell
+    just prod-ssh
 
 # Ver logs de producción en vivo
 prod-logs:
@@ -160,7 +168,7 @@ prod-logs:
 
 # Verificar esquema de BD en producción
 prod-doctor:
-    railway run php artisan mgf:migrate-doctor
+    just _prod-run-artisan "mgf:migrate-doctor"
 
 # Crear un respaldo (backup) de la base de datos de producción y guardarlo localmente
 prod-backup:

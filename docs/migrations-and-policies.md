@@ -7,7 +7,6 @@ Referencia de esquema y reglas de autorización.
 Tras el squash (agosto 2026), el esquema canónico está en:
 
 - [`database/schema/mysql-schema.sql`](../database/schema/mysql-schema.sql) — baseline para instalaciones nuevas
-- [`database/migrations_archive/`](../database/migrations_archive/) — migraciones incrementales originales (solo referencia)
 
 Runbook completo: [`docs/db-squash.md`](db-squash.md)
 

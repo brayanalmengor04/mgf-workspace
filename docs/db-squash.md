@@ -1,6 +1,6 @@
 # Squash de migraciones (baseline)
 
-El esquema canónico vive en [`database/schema/mysql-schema.sql`](../database/schema/mysql-schema.sql). Las 22 migraciones incrementales originales están archivadas en [`database/migrations_archive/`](../database/migrations_archive/).
+El esquema canónico vive en [`database/schema/mysql-schema.sql`](../database/schema/mysql-schema.sql). Las migraciones PHP históricas ya no están en el repo; si las necesitas, están en el historial de git (`git log -- database/migrations/`).
 
 ## Estado actual
 
@@ -63,6 +63,14 @@ Verificación manual opcional:
 
 ```bash
 just prod-doctor
+```
+
+Conecta a la BD de producción vía Docker + proxy TCP de Railway (no requiere PHP instalado en Windows).
+
+Para shell interactivo en el servidor (requiere `railway ssh keys add`):
+
+```bash
+just prod-ssh
 ```
 
 ## CI (GitHub Actions)
