@@ -9,14 +9,15 @@ use Carbon\Carbon;
 class FinancialContextService
 {
     /**
-     * Generates a 4-month summary of the user's budget plans.
+     * Generates a 4-month summary of the user's own budget plans (never other users' data).
      */
     public function getFourMonthSummary(User $user): string
     {
         $startDate = Carbon::now()->subMonths(4);
 
-        $budgets = BudgetPlan::forUser($user)
+        $budgets = BudgetPlan::query()
             ->with('items')
+            ->where('created_by', $user->id)
             ->where('created_at', '>=', $startDate)
             ->orderBy('created_at', 'desc')
             ->get();
