@@ -19,7 +19,7 @@
                             <tr>
                                 <td align="center" bgcolor="#ffffff" style="background-color:#ffffff;border-radius:18px;padding:10px;line-height:0;">
                                     <img
-                                        src="{{ $message->embed(public_path('images/brand/mgf-icon-512.png')) }}"
+                                        src="{{ asset('images/brand/mgf-icon-512.png') }}"
                                         alt="{{ $appBrand }}"
                                         width="64"
                                         height="64"
