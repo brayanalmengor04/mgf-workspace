@@ -30,8 +30,6 @@
 
         <x-pwa-service-worker-register />
 
-        @livewire('chatbot-widget')
-
         @stack('scripts')
     </body>
 </html>
