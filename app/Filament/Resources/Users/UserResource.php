@@ -35,12 +35,12 @@ class UserResource extends Resource
 
     public static function canAccess(): bool
     {
-        return auth()->user()?->isAdmin() ?? false;
+        return auth()->user()?->isStaff() ?? false;
     }
 
     public static function shouldRegisterNavigation(): bool
     {
-        return auth()->user()?->viewsAsAdmin() ?? false;
+        return auth()->user()?->isStaff() ?? false;
     }
 
     public static function form(Schema $schema): Schema

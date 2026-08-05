@@ -14,7 +14,7 @@ class BudgetItemTemplatePolicy
 
     public function view(User $user, BudgetItemTemplate $budgetItemTemplate): bool
     {
-        return $user->isAdmin() || $budgetItemTemplate->user_id === $user->id;
+        return $user->canViewGlobalData() || $budgetItemTemplate->user_id === $user->id;
     }
 
     public function create(User $user): bool
@@ -24,11 +24,11 @@ class BudgetItemTemplatePolicy
 
     public function update(User $user, BudgetItemTemplate $budgetItemTemplate): bool
     {
-        return $user->isAdmin() || $budgetItemTemplate->user_id === $user->id;
+        return $user->canViewGlobalData() || $budgetItemTemplate->user_id === $user->id;
     }
 
     public function delete(User $user, BudgetItemTemplate $budgetItemTemplate): bool
     {
-        return $user->isAdmin() || $budgetItemTemplate->user_id === $user->id;
+        return $user->canViewGlobalData() || $budgetItemTemplate->user_id === $user->id;
     }
 }

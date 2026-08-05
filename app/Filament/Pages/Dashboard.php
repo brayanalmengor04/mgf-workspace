@@ -40,7 +40,7 @@ class Dashboard extends BaseDashboard
                     ? Heroicon::OutlinedShieldCheck
                     : Heroicon::OutlinedEye)
                 ->color(fn (): string => AdminViewMode::isProviderPreview() ? 'warning' : 'gray')
-                ->visible(fn (): bool => auth()->user()?->isAdmin() ?? false)
+                ->visible(fn (): bool => auth()->user()?->isSuperAdmin() ?? false)
                 ->action(function (): void {
                     AdminViewMode::toggle();
 

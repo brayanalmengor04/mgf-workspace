@@ -21,7 +21,7 @@ class PlatformStatsWidget extends StatsOverviewWidget
 
     public static function canView(): bool
     {
-        return auth()->user()?->viewsAsAdmin() ?? false;
+        return auth()->user()?->isSuperAdmin() ?? false;
     }
 
     protected function getStats(): array

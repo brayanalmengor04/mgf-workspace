@@ -14,7 +14,7 @@ class BudgetPlanPolicy
 
     public function view(User $user, BudgetPlan $budgetPlan): bool
     {
-        return $user->isAdmin() || $budgetPlan->created_by === $user->id;
+        return $user->canViewGlobalData() || $budgetPlan->created_by === $user->id;
     }
 
     public function create(User $user): bool
@@ -24,12 +24,12 @@ class BudgetPlanPolicy
 
     public function update(User $user, BudgetPlan $budgetPlan): bool
     {
-        return $user->isAdmin() || $budgetPlan->created_by === $user->id;
+        return $user->canViewGlobalData() || $budgetPlan->created_by === $user->id;
     }
 
     public function delete(User $user, BudgetPlan $budgetPlan): bool
     {
-        if ($user->isAdmin()) {
+        if ($user->canViewGlobalData()) {
             return true;
         }
 

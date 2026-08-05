@@ -3,6 +3,7 @@
 namespace App\Models;
 
 use App\Enums\UserRole;
+use App\Notifications\UserInvitationNotification;
 use App\Support\AdminViewMode;
 use Database\Factories\UserFactory;
 use Filament\Models\Contracts\FilamentUser;
@@ -41,6 +42,11 @@ class User extends Authenticatable implements FilamentUser
         return $this->is_active;
     }
 
+    public function isSuperAdmin(): bool
+    {
+        return $this->role === UserRole::SuperAdmin;
+    }
+
     public function isAdmin(): bool
     {
         return $this->role === UserRole::Admin;
@@ -51,6 +57,16 @@ class User extends Authenticatable implements FilamentUser
         return $this->role === UserRole::Provider;
     }
 
+    public function isStaff(): bool
+    {
+        return $this->isSuperAdmin() || $this->isAdmin();
+    }
+
+    public function canViewGlobalData(): bool
+    {
+        return $this->isSuperAdmin() && ! AdminViewMode::isProviderPreview();
+    }
+
     public function viewsAsProvider(): bool
     {
         return $this->isProvider() || AdminViewMode::isProviderPreview();
@@ -58,7 +74,7 @@ class User extends Authenticatable implements FilamentUser
 
     public function viewsAsAdmin(): bool
     {
-        return $this->isAdmin() && ! AdminViewMode::isProviderPreview();
+        return $this->canViewGlobalData();
     }
 
     public function quoteTemplates(): HasMany
@@ -79,5 +95,10 @@ class User extends Authenticatable implements FilamentUser
     public function budgetItemTemplates(): HasMany
     {
         return $this->hasMany(BudgetItemTemplate::class);
+    }
+
+    public function sendPasswordResetNotification($token): void
+    {
+        $this->notify(new UserInvitationNotification($token));
     }
 }

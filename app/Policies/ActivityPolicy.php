@@ -14,7 +14,7 @@ class ActivityPolicy
 
     public function view(User $user, Activity $activity): bool
     {
-        if ($user->isAdmin()) {
+        if ($user->canViewGlobalData()) {
             return true;
         }
 
@@ -34,6 +34,6 @@ class ActivityPolicy
 
     public function delete(User $user, Activity $activity): bool
     {
-        return $user->isAdmin();
+        return $user->canViewGlobalData();
     }
 }

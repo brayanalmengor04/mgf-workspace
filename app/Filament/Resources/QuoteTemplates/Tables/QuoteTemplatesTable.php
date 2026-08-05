@@ -30,7 +30,7 @@ class QuoteTemplatesTable
                 TextColumn::make('owner.name')
                     ->label('Proveedor')
                     ->searchable()
-                    ->visible(fn (): bool => auth()->user()?->isAdmin() ?? false),
+                    ->visible(fn (): bool => auth()->user()?->canViewGlobalData() ?? false),
                 TextColumn::make('currency')
                     ->label('Moneda')
                     ->formatStateUsing(fn ($state): string => QuoteCurrency::resolve($state)->label())

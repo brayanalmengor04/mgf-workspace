@@ -14,7 +14,7 @@ class QuotePolicy
 
     public function view(User $user, Quote $quote): bool
     {
-        return $user->isAdmin() || $quote->created_by === $user->id;
+        return $user->canViewGlobalData() || $quote->created_by === $user->id;
     }
 
     public function create(User $user): bool
@@ -24,15 +24,15 @@ class QuotePolicy
 
     public function update(User $user, Quote $quote): bool
     {
-        return $user->isAdmin() || $quote->created_by === $user->id;
+        return $user->canViewGlobalData() || $quote->created_by === $user->id;
     }
 
     public function delete(User $user, Quote $quote): bool
     {
-        if ($user->isAdmin()) {
+        if ($user->canViewGlobalData()) {
             return true;
         }
 
-        return $quote->created_by === $user->id && $quote->isDraft();
+        return $quote->created_by === $user->id;
     }
 }

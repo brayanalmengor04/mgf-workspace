@@ -51,7 +51,7 @@ class BudgetItemTemplatesTable
                 TextColumn::make('owner.name')
                     ->label('Usuario')
                     ->toggleable()
-                    ->visible(fn (): bool => auth()->user()?->isAdmin() ?? false),
+                    ->visible(fn (): bool => auth()->user()?->canViewGlobalData() ?? false),
                 TextColumn::make('updated_at')
                     ->label('Actualizado')
                     ->dateTime('d/m/Y H:i')

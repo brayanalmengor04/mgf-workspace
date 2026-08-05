@@ -12,7 +12,7 @@ class AdminViewMode
     {
         $user = auth()->user();
 
-        if (! $user instanceof User || ! $user->isAdmin()) {
+        if (! $user instanceof User || ! $user->isSuperAdmin()) {
             return false;
         }
 
@@ -21,14 +21,14 @@ class AdminViewMode
 
     public static function enableProviderPreview(): void
     {
-        static::assertAdmin();
+        static::assertSuperAdmin();
 
         session()->put(self::SESSION_KEY, true);
     }
 
     public static function disableProviderPreview(): void
     {
-        static::assertAdmin();
+        static::assertSuperAdmin();
 
         session()->forget(self::SESSION_KEY);
     }
@@ -44,11 +44,11 @@ class AdminViewMode
         static::enableProviderPreview();
     }
 
-    protected static function assertAdmin(): void
+    protected static function assertSuperAdmin(): void
     {
         $user = auth()->user();
 
-        if (! $user instanceof User || ! $user->isAdmin()) {
+        if (! $user instanceof User || ! $user->isSuperAdmin()) {
             abort(403);
         }
     }

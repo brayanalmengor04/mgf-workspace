@@ -14,7 +14,18 @@ class UserSeeder extends Seeder
         User::query()->updateOrCreate(
             ['email' => 'admin@miempresa.com'],
             [
-                'name' => 'Administrador',
+                'name' => 'Super Administrador',
+                'password' => Hash::make('password'),
+                'role' => UserRole::SuperAdmin,
+                'is_active' => true,
+                'email_verified_at' => now(),
+            ],
+        );
+
+        User::query()->updateOrCreate(
+            ['email' => 'operaciones@miempresa.com'],
+            [
+                'name' => 'Administrador Operaciones',
                 'password' => Hash::make('password'),
                 'role' => UserRole::Admin,
                 'is_active' => true,
