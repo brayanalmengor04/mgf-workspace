@@ -1,0 +1,45 @@
+# Variables de correo para Railway (servicio mgf-workspace)
+# Copia cada clave en Railway → Variables. NO subas valores reales al repositorio.
+
+MAIL_MAILER=smtp
+# Valor: smtp
+
+MAIL_SCHEME=smtp
+# Valor: smtp (Gmail puerto 587 con STARTTLS). Alternativa: smtps con puerto 465.
+
+MAIL_HOST=smtp.gmail.com
+# Valor: smtp.gmail.com
+
+MAIL_PORT=587
+# Valor: 587
+
+MAIL_USERNAME=
+# Valor: tu correo Gmail completo (ej. nombre@gmail.com)
+
+MAIL_PASSWORD=
+# Valor: contraseña de aplicación de Google (16 caracteres, sin espacios)
+# Generar en: https://myaccount.google.com/apppasswords
+# Requiere verificación en 2 pasos activada en la cuenta Google.
+
+MAIL_FROM_ADDRESS=
+# Valor: mismo correo que MAIL_USERNAME (recomendado para Gmail)
+
+MAIL_FROM_NAME=
+# Valor: nombre visible del remitente (ej. MGF Workspace)
+# Puede usar la variable APP_NAME si Railway la expande, o el texto literal.
+
+# --- Notas importantes ---
+
+# 1. Gmail NO usa la contraseña normal de la cuenta para SMTP.
+#    Usa siempre una "Contraseña de aplicación" de Google.
+
+# 2. Cola de correos (QUEUE_CONNECTION=database):
+#    Si los correos no llegan, verifica que el worker de cola esté activo
+#    o cambia temporalmente a envío síncrono en desarrollo (MAIL_MAILER=log para pruebas).
+
+# 3. Seguridad:
+#    Rota la contraseña de aplicación si fue expuesta.
+#    Nunca commitees credenciales en el código ni en el repositorio.
+
+# 4. El entrypoint de Docker ya incluye MAIL_* al materializar .env en Railway.
+#    No hace falta modificar docker/entrypoint.sh.

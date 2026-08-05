@@ -8,7 +8,6 @@ use Filament\Forms\Components\TextInput;
 use Filament\Forms\Components\Toggle;
 use Filament\Schemas\Components\Section;
 use Filament\Schemas\Schema;
-use Illuminate\Support\Facades\Hash;
 
 class UserForm
 {
@@ -18,7 +17,7 @@ class UserForm
             ->columns(2)
             ->components([
                 Section::make('Cuenta')
-                    ->description('Datos de acceso al portal.')
+                    ->description('Al crear un usuario se enviará una invitación por correo para activar su acceso.')
                     ->schema([
                         TextInput::make('name')
                             ->label('Nombre')
@@ -30,22 +29,6 @@ class UserForm
                             ->required()
                             ->unique(ignoreRecord: true)
                             ->maxLength(255),
-                        TextInput::make('password')
-                            ->label('Contraseña')
-                            ->password()
-                            ->revealable()
-                            ->confirmed()
-                            ->dehydrateStateUsing(fn (?string $state): ?string => filled($state) ? Hash::make($state) : null)
-                            ->dehydrated(fn (?string $state): bool => filled($state))
-                            ->required(fn (string $operation): bool => $operation === 'create')
-                            ->maxLength(255),
-                        TextInput::make('password_confirmation')
-                            ->label('Confirmar contraseña')
-                            ->password()
-                            ->revealable()
-                            ->dehydrated(false)
-                            ->required(fn (string $operation): bool => $operation === 'create')
-                            ->maxLength(255),
                     ])
                     ->columns(2)
                     ->columnSpanFull(),
@@ -54,10 +37,11 @@ class UserForm
                     ->schema([
                         Select::make('role')
                             ->label('Rol')
-                            ->options(UserRole::options())
+                            ->options(fn (): array => UserRole::assignableOptionsFor(auth()->user()))
                             ->default(UserRole::Provider->value)
                             ->required()
                             ->native(false)
+                            ->disabled(fn (): bool => ! auth()->user()?->isStaff())
                             ->helperText(fn (?string $state): ?string => UserRole::tryFrom((string) $state)?->description()),
                         Toggle::make('is_active')
                             ->label('Cuenta activa')

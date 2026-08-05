@@ -41,6 +41,23 @@ El token debe pertenecer al mismo proyecto donde está el servicio `mgf-workspac
 | `CACHE_STORE` | `database` |
 | `QUEUE_CONNECTION` | `database` |
 
+### Correo (invitaciones y restablecimiento de contraseña)
+
+Para enviar invitaciones al crear usuarios y enlaces de restablecimiento de contraseña, configura las variables `MAIL_*` en Railway. Lista completa con descripciones en [`docs/railway-mail-env.txt`](railway-mail-env.txt).
+
+| Variable | Notas |
+|----------|--------|
+| `MAIL_MAILER` | `smtp` |
+| `MAIL_SCHEME` | `smtp` (puerto 587) o `smtps` (puerto 465) |
+| `MAIL_HOST` | `smtp.gmail.com` |
+| `MAIL_PORT` | `587` |
+| `MAIL_USERNAME` | Correo Gmail completo |
+| `MAIL_PASSWORD` | Contraseña de aplicación de Google (16 caracteres, sin espacios) |
+| `MAIL_FROM_ADDRESS` | Mismo correo que `MAIL_USERNAME` (recomendado) |
+| `MAIL_FROM_NAME` | Nombre del remitente (ej. `MGF Workspace`) |
+
+Con `QUEUE_CONNECTION=database`, los correos se encolan. Asegúrate de tener un worker de cola activo o prueba primero con `MAIL_MAILER=log` en local.
+
 Railway también puede inyectar `MYSQL_URL`, `MYSQLHOST`, etc. si tienes un servicio MySQL en el mismo proyecto; alinea `DB_*` con esos valores.
 
 ### APP_KEY (MissingAppKeyException)

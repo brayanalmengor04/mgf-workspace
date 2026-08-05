@@ -41,6 +41,7 @@ class AdminPanelProvider extends PanelProvider
             ->id('admin')
             ->path('admin')
             ->login(Login::class)
+            ->passwordReset()
             ->brandName(fn (): string => (string) config('app.brand'))
             ->brandLogo(asset('images/brand/mgf-logo.svg'))
             ->darkModeBrandLogo(asset('images/brand/mgf-logo-dark.svg'))
@@ -57,7 +58,7 @@ class AdminPanelProvider extends PanelProvider
                     ->icon(fn () => AdminViewMode::isProviderPreview()
                         ? Heroicon::OutlinedShieldCheck
                         : Heroicon::OutlinedEye)
-                    ->visible(fn (): bool => auth()->user()?->isAdmin() ?? false)
+                    ->visible(fn (): bool => auth()->user()?->isSuperAdmin() ?? false)
                     ->sort(10)
                     ->action(function (): void {
                         AdminViewMode::toggle();
@@ -70,9 +71,9 @@ class AdminPanelProvider extends PanelProvider
                     ->themeColor('#0f172a')
                     ->appTitle((string) config('app.brand')),
                 ActivityLogPlugin::make()
-                    ->label(fn (): string => auth()->user()?->viewsAsProvider() ? 'Mi bitácora' : 'Auditoría')
-                    ->pluralLabel(fn (): string => auth()->user()?->viewsAsProvider() ? 'Mi bitácora' : 'Auditoría')
-                    ->navigationGroup(fn (): string => auth()->user()?->viewsAsProvider() ? 'Cotizaciones' : 'Configuración')
+                    ->label(fn (): string => auth()->user()?->canViewGlobalData() ? 'Auditoría' : 'Mi bitácora')
+                    ->pluralLabel(fn (): string => auth()->user()?->canViewGlobalData() ? 'Auditoría' : 'Mi bitácora')
+                    ->navigationGroup(fn (): string => auth()->user()?->canViewGlobalData() ? 'Configuración' : 'Cotizaciones')
                     ->navigationSort(99),
             ])
             ->discoverResources(in: app_path('Filament/Resources'), for: 'App\Filament\Resources')
