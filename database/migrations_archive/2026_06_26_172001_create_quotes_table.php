@@ -12,6 +12,7 @@ return new class extends Migration
             $table->id();
             $table->foreignId('quote_template_id')->nullable()->constrained()->nullOnDelete();
             $table->string('quote_number')->unique();
+            $table->date('quote_date')->nullable();
             $table->string('status')->default('draft');
             $table->string('issuer_name');
             $table->string('issuer_ruc')->nullable();
@@ -31,6 +32,7 @@ return new class extends Migration
             $table->string('bank_account_number')->nullable();
             $table->string('yappy_id')->nullable();
             $table->text('footer_notes')->nullable();
+            $table->string('currency', 3)->default('PAB');
             $table->decimal('subtotal', 12, 2)->default(0);
             $table->decimal('tax_amount', 12, 2)->default(0);
             $table->decimal('total', 12, 2)->default(0);

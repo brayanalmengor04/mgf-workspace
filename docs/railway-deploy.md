@@ -4,8 +4,10 @@ El workflow [`.github/workflows/railway-deploy.yml`](../.github/workflows/railwa
 
 ## Disparadores
 
-- **Push** a `main`
+- **Push** a `main` (job `verify` → `deploy`)
 - **Manual**: GitHub → Actions → *Deploy to Railway* → *Run workflow*
+
+El job **verify** levanta Docker, corre migraciones, tests y `mgf:migrate-doctor` antes de desplegar.
 
 ## Requisitos en GitHub
 

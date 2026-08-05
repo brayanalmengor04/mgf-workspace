@@ -7,15 +7,37 @@ on:
   workflow_dispatch:
 
 env:
-  # Nombre exacto del servicio en Railway (Settings del servicio).
   RAILWAY_SERVICE: mgf-workspace
-  # ID del servicio (solo referencia / debug; el CLI usa --service con el nombre).
   RAILWAY_SERVICE_ID: 1462a593-56ac-48cd-9fce-4f0af8dfa985
 
 jobs:
-  deploy:
+  verify:
     runs-on: ubuntu-latest
-    # Builds Docker en Railway pueden tardar varios minutos.
+    timeout-minutes: 20
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v4
+
+      - name: Start Docker services
+        env:
+          APP_KEY: base64:dGVzdC1rZXktZm9yLWNpLW9ubHktZG9udC1jb21taXQ=
+        run: docker compose up -d --build --wait
+
+      - name: Install dev dependencies
+        run: docker compose exec -T app composer install --no-interaction
+
+      - name: Run migrations
+        run: docker compose exec -T app php artisan migrate --force --no-interaction
+
+      - name: Run tests
+        run: docker compose exec -T app ./vendor/bin/phpunit
+
+      - name: Verify database schema
+        run: docker compose exec -T app php artisan mgf:migrate-doctor
+
+  deploy:
+    needs: verify
+    runs-on: ubuntu-latest
     timeout-minutes: 30
     container: ghcr.io/railwayapp/cli:latest
     env:

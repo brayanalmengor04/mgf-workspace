@@ -108,7 +108,7 @@ setup:
 
 # Ejecutar tests
 test:
-    {{app}} php artisan test
+    {{app}} ./vendor/bin/phpunit
 
 # Crear un respaldo de la base de datos local (no se sube a git)
 backup:
@@ -123,6 +123,18 @@ restore file:
 # Limpiar cachés de Laravel
 clear:
     {{app}} php artisan optimize:clear
+
+# Verificar esquema de BD (local)
+db-doctor:
+    {{app}} php artisan mgf:migrate-doctor
+
+# Squash de migraciones: backup + fresh seed + schema dump + tests + doctor
+db-squash:
+    just backup
+    {{app}} php artisan migrate:fresh --seed --force
+    {{app}} php artisan schema:dump --prune --database=mysql
+    {{app}} ./vendor/bin/phpunit
+    {{app}} php artisan mgf:migrate-doctor
 
 # --- Comandos de Producción (Railway) ---
 
@@ -145,6 +157,10 @@ prod-shell:
 # Ver logs de producción en vivo
 prod-logs:
     railway logs
+
+# Verificar esquema de BD en producción
+prod-doctor:
+    railway run php artisan mgf:migrate-doctor
 
 # Crear un respaldo (backup) de la base de datos de producción y guardarlo localmente
 prod-backup:

@@ -10,6 +10,7 @@ return new class extends Migration
     {
         Schema::create('quote_templates', function (Blueprint $table) {
             $table->id();
+            $table->foreignId('user_id')->nullable()->constrained()->cascadeOnDelete();
             $table->string('name');
             $table->boolean('is_default')->default(false);
             $table->boolean('is_active')->default(true);
@@ -24,6 +25,8 @@ return new class extends Migration
             $table->string('bank_account_number')->nullable();
             $table->string('yappy_id')->nullable();
             $table->text('footer_notes')->nullable();
+            $table->string('currency', 3)->default('PAB');
+            $table->string('pdf_layout', 20)->default('classic');
             $table->string('logo_path')->nullable();
             $table->string('primary_color', 7)->nullable();
             $table->timestamps();

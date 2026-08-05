@@ -1,28 +1,38 @@
 # Migraciones y políticas
 
-Referencia de cambios de esquema y reglas de autorización del módulo de cotizaciones.
+Referencia de esquema y reglas de autorización.
 
-## Migraciones (dominio cotizaciones)
+## Esquema de base de datos
 
-Ejecutar con:
+Tras el squash (agosto 2026), el esquema canónico está en:
+
+- [`database/schema/mysql-schema.sql`](../database/schema/mysql-schema.sql) — baseline para instalaciones nuevas
+- [`database/migrations_archive/`](../database/migrations_archive/) — migraciones incrementales originales (solo referencia)
+
+Runbook completo: [`docs/db-squash.md`](db-squash.md)
+
+### Comandos
 
 ```bash
-just migrate
-# o desde cero con datos demo:
-just fresh-seed
+just migrate          # migraciones incrementales nuevas
+just fresh-seed       # reset local + seeders demo
+just db-doctor        # verificar esquema
+just prod-doctor      # verificar esquema en Railway
 ```
 
-| Archivo | Qué hace |
-|---------|----------|
-| `2026_06_26_171859_create_activity_log_table.php` | Tabla Spatie `activity_log` para auditoría |
-| `2026_06_26_172000_create_quote_templates_table.php` | Plantillas: emisor, PDF, banco, logo, color |
-| `2026_06_26_172001_create_quotes_table.php` | Cotizaciones: emisor, destinatario, totales, PDF, `created_by` |
-| `2026_06_26_172002_create_quote_items_table.php` | Líneas de cotización (cantidad, precio, ITBMS) |
-| `2026_06_26_180000_add_pdf_layout_to_quote_templates_table.php` | Columna `pdf_layout` (classic/modern/minimal) |
-| `2026_06_26_190000_add_currency_to_quotes_and_templates.php` | Columna `currency` (ISO 4217, default `PAB`) |
-| `2026_06_26_190001_backfill_quote_currency_defaults.php` | Rellena `PAB` en registros existentes sin moneda |
-| `2026_06_26_200000_add_roles_and_ownership.php` | `users.role`, `users.is_active`, `quote_templates.user_id` |
-| `2026_06_26_200001_backfill_roles_and_ownership.php` | Primer usuario → admin; plantillas sin dueño → admin |
+### Tablas del dominio
+
+| Tabla | Descripción |
+|-------|-------------|
+| `users` | Usuarios con `role` (`admin` \| `provider`) e `is_active` |
+| `quote_templates` | Plantillas por proveedor (`user_id`), moneda, PDF |
+| `quotes` | Cotizaciones con `quote_date`, `currency`, `created_by` |
+| `quote_items` | Líneas de cotización |
+| `budget_plans` | Presupuestos con `is_paid`, `pdf_layout`, `primary_color` |
+| `budget_plan_items` | Líneas con `is_paid`, `paid_at` |
+| `budget_item_templates` | Plantillas de conceptos por usuario |
+| `calendar_events` | Eventos del calendario financiero |
+| `activity_log` | Auditoría Spatie |
 
 ### Columnas clave
 
@@ -39,8 +49,14 @@ just fresh-seed
 **quotes**
 
 - `created_by`: dueño de la cotización
+- `quote_date`: fecha de la cotización
 - `currency`: moneda de la cotización
 - `status`: `draft` \| `issued` \| `cancelled`
+
+**budget_plans**
+
+- `is_paid`: sincronizado desde líneas vía `budget:sync-payment-status`
+- `pdf_layout`, `primary_color`
 
 ---
 

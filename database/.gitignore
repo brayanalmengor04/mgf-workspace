@@ -1,3 +1,4 @@
 *.sqlite*
-*.sql
 backups/
+*.sql
+!schema/mysql-schema.sql

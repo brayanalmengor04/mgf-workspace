@@ -12,12 +12,15 @@ return new class extends Migration
             $table->id();
             $table->string('budget_number')->unique();
             $table->string('status')->default('draft');
+            $table->boolean('is_paid')->default(false);
             $table->string('title');
             $table->string('subtitle')->nullable();
             $table->string('period')->default('biweekly');
             $table->decimal('net_income', 12, 2)->default(0);
             $table->string('income_notes')->nullable();
             $table->string('currency', 3)->default('PAB');
+            $table->string('pdf_layout', 20)->default('classic');
+            $table->string('primary_color', 20)->default('#0f172a');
             $table->decimal('total_allocated', 12, 2)->default(0);
             $table->decimal('remaining_balance', 12, 2)->default(0);
             $table->text('footer_notes')->nullable();

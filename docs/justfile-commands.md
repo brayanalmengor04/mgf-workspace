@@ -35,7 +35,9 @@ El proyecto usa [Just](https://github.com/casey/just) como atajo sobre `docker c
 | `just fresh-seed` | Reset BD + seeders |
 | `just artisan config:clear` | Limpiar caché de config |
 | `just clear` | `optimize:clear` (config, route, view, cache) |
-| `just test` | PHPUnit / Pest |
+| `just test` | PHPUnit |
+| `just db-doctor` | Verificar esquema de BD |
+| `just db-squash` | Regenerar baseline (`mysql-schema.sql`) |
 | `just filament-user` | Crear usuario Filament interactivo |
 
 ### Ejemplos artisan
@@ -83,7 +85,7 @@ just clear
 
 ## Producción (Railway)
 
-Ver [railway-deploy.md](./railway-deploy.md). Atajos con Just:
+Ver [railway-deploy.md](./railway-deploy.md) y [db-squash.md](./db-squash.md).
 
 | Comando | Descripción |
 |---------|-------------|
@@ -91,5 +93,6 @@ Ver [railway-deploy.md](./railway-deploy.md). Atajos con Just:
 | `just prod migrate-seed` | Migrar + seeders |
 | `just prod backup` | Respaldo MySQL de producción |
 | `just prod restore <file>` | Restaurar backup |
-| `just prod artisan "..."` | Artisan remoto |
+| `just prod-artisan "..."` | Artisan remoto |
+| `just prod-doctor` | Verificar esquema en Railway |
 | `just prod logs` | Logs del servicio |

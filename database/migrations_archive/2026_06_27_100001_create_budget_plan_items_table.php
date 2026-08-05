@@ -16,6 +16,8 @@ return new class extends Migration
             $table->string('concept');
             $table->string('notes')->nullable();
             $table->decimal('amount', 12, 2)->default(0);
+            $table->boolean('is_paid')->default(false);
+            $table->date('paid_at')->nullable();
             $table->decimal('percentage', 5, 1)->default(0);
             $table->timestamps();
         });
