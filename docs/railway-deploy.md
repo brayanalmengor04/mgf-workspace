@@ -48,7 +48,7 @@ Para enviar invitaciones al crear usuarios y enlaces de restablecimiento de cont
 | Variable | Notas |
 |----------|--------|
 | `MAIL_MAILER` | `smtp` |
-| `MAIL_SCHEME` | `smtp` (puerto 587) o `smtps` (puerto 465) |
+| `MAIL_SCHEME` | `smtp` (puerto 587). También acepta `MAIL_ENCRYPTION=tls` como respaldo |
 | `MAIL_HOST` | `smtp.gmail.com` |
 | `MAIL_PORT` | `587` |
 | `MAIL_USERNAME` | Correo Gmail completo |

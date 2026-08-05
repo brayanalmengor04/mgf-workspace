@@ -166,6 +166,10 @@ prod-shell:
 prod-logs:
     railway logs
 
+# Diagnóstico SMTP en el contenedor de producción
+prod-mail-diagnose *args:
+    railway ssh -s mgf-workspace -- php artisan mgf:mail-diagnose {{args}}
+
 # Verificar esquema de BD en producción
 prod-doctor:
     just _prod-run-artisan "mgf:migrate-doctor"

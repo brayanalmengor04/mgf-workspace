@@ -76,6 +76,7 @@ class UserInvitationService
                 'user_id' => $user->id,
                 'email' => $user->email,
                 'exception' => $exception->getMessage(),
+                'exception_class' => $exception::class,
             ]);
 
             return [

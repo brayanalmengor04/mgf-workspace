@@ -6,11 +6,11 @@ if [ -n "${RAILWAY_ENVIRONMENT_ID:-}" ] || [ -n "${RAILWAY_PROJECT_ID:-}" ] || [
     is_railway=true
 fi
 
-# Local: copia plantilla. Railway: materializa .env desde variables del servicio.
-if [ ! -f .env ]; then
-    if [ "$is_railway" = true ] && [ -n "${APP_KEY:-}" ]; then
-        printenv | grep -E '^(APP_|DB_|LOG_|SESSION_|CACHE_|QUEUE_|MAIL_|BROADCAST_|FILESYSTEM_|VITE_)' | sort -u > .env
-    elif [ -f .env.PRD ]; then
+# Local: copia plantilla. Railway: materializa .env desde variables del servicio en cada arranque.
+if [ "$is_railway" = true ] && [ -n "${APP_KEY:-}" ]; then
+    printenv | grep -E '^(APP_|DB_|LOG_|SESSION_|CACHE_|QUEUE_|MAIL_|BROADCAST_|FILESYSTEM_|VITE_|GEMINI_)' | sort -u > .env
+elif [ ! -f .env ]; then
+    if [ -f .env.PRD ]; then
         cp .env.PRD .env
     elif [ -f .env.example ]; then
         cp .env.example .env

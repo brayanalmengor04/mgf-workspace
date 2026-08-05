@@ -6,6 +6,7 @@ MAIL_MAILER=smtp
 
 MAIL_SCHEME=smtp
 # Valor: smtp (Gmail puerto 587 con STARTTLS). Alternativa: smtps con puerto 465.
+# Si usas MAIL_ENCRYPTION=tls en Railway, Laravel también lo acepta como respaldo.
 
 MAIL_HOST=smtp.gmail.com
 # Valor: smtp.gmail.com
