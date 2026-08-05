@@ -48,15 +48,16 @@ Para enviar invitaciones al crear usuarios y enlaces de restablecimiento de cont
 | Variable | Notas |
 |----------|--------|
 | `MAIL_MAILER` | `smtp` |
-| `MAIL_SCHEME` | `smtp` (puerto 587). También acepta `MAIL_ENCRYPTION=tls` como respaldo |
+| `MAIL_SCHEME` | `smtps` (puerto 465, igual que Nodemailer `service: 'gmail'` en tu portfolio) |
 | `MAIL_HOST` | `smtp.gmail.com` |
-| `MAIL_PORT` | `587` |
-| `MAIL_USERNAME` | Correo Gmail completo |
-| `MAIL_PASSWORD` | Contraseña de aplicación de Google (16 caracteres, sin espacios) |
+| `MAIL_PORT` | `465` |
+| `MAIL_USERNAME` | Correo Gmail completo (equiv. `EMAIL_USER` del portfolio) |
+| `MAIL_PASSWORD` | Contraseña de aplicación de Google (equiv. `EMAIL_PASS`) |
 | `MAIL_FROM_ADDRESS` | Mismo correo que `MAIL_USERNAME` (recomendado) |
 | `MAIL_FROM_NAME` | Nombre del remitente (ej. `MGF Workspace`) |
+| `QUEUE_CONNECTION` | `sync` (recomendado sin worker de cola) |
 
-Con `QUEUE_CONNECTION=database`, los correos se encolan. Asegúrate de tener un worker de cola activo o prueba primero con `MAIL_MAILER=log` en local.
+Si tenías `MAIL_PORT=587` o `MAIL_ENCRYPTION=tls`, cámbialos: la app fuerza 465/smtps para hosts `gmail.com` automáticamente.
 
 Railway también puede inyectar `MYSQL_URL`, `MYSQLHOST`, etc. si tienes un servicio MySQL en el mismo proyecto; alinea `DB_*` con esos valores.
 

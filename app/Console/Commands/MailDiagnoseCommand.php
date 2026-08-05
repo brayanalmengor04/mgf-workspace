@@ -52,9 +52,8 @@ class MailDiagnoseCommand extends Command
 
             if (! $probe['ok']) {
                 $this->newLine();
-                $this->warn('Railway y otros clouds suelen bloquear SMTP a Gmail (puerto 587).');
-                $this->warn('Solución: usa Resend → MAIL_MAILER=resend y RESEND_API_KEY (ver docs/railway-mail-env.txt).');
-                $this->warn('Alternativa: prueba MAIL_PORT=465 y MAIL_SCHEME=smtps.');
+                $this->warn('Gmail en Railway: usa puerto 465 + MAIL_SCHEME=smtps (como Nodemailer en tu portfolio).');
+                $this->warn('Variables: MAIL_HOST=smtp.gmail.com MAIL_PORT=465 MAIL_SCHEME=smtps');
 
                 return self::FAILURE;
             }

@@ -39,14 +39,18 @@ return [
 
         'smtp' => [
             'transport' => 'smtp',
-            'scheme' => env('MAIL_SCHEME') ?: match (strtolower((string) env('MAIL_ENCRYPTION', ''))) {
-                'tls', 'starttls' => 'smtp',
-                'ssl' => 'smtps',
-                default => (int) env('MAIL_PORT', 587) === 465 ? 'smtps' : 'smtp',
-            },
+            'scheme' => \App\Support\GmailSmtpDefaults::scheme(
+                env('MAIL_HOST'),
+                env('MAIL_SCHEME'),
+                (int) (env('MAIL_PORT') ?: \App\Support\GmailSmtpDefaults::port(env('MAIL_HOST'), null)),
+                env('MAIL_ENCRYPTION'),
+            ),
             'url' => env('MAIL_URL'),
             'host' => env('MAIL_HOST', '127.0.0.1'),
-            'port' => env('MAIL_PORT', 2525),
+            'port' => \App\Support\GmailSmtpDefaults::port(
+                env('MAIL_HOST'),
+                env('MAIL_PORT'),
+            ),
             'username' => env('MAIL_USERNAME'),
             'password' => env('MAIL_PASSWORD'),
             'timeout' => (int) env('MAIL_TIMEOUT', 15),

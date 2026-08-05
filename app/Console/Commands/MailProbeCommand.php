@@ -36,7 +36,7 @@ class MailProbeCommand extends Command
         $this->line($probe['message']);
 
         if (! $probe['ok']) {
-            $this->warn('Gmail SMTP suele fallar desde Railway. Usa Resend: MAIL_MAILER=resend + RESEND_API_KEY.');
+            $this->warn('Gmail: configura MAIL_PORT=465 y MAIL_SCHEME=smtps (igual que tu portfolio con Nodemailer).');
         }
 
         return $probe['ok'] ? self::SUCCESS : self::FAILURE;

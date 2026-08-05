@@ -5,7 +5,7 @@ namespace App\Support;
 class MailTransportProbe
 {
     /**
-     * @return array{ok: bool, message: string}
+     * @return array{ok: bool, message: string, port?: int}
      */
     public static function smtpReachable(?string $host = null, ?int $port = null, int $timeoutSeconds = 5): array
     {
@@ -16,10 +16,37 @@ class MailTransportProbe
             return ['ok' => false, 'message' => 'MAIL_HOST o MAIL_PORT no configurados.'];
         }
 
+        $result = self::tryTcp($host, $port, $timeoutSeconds);
+
+        if ($result['ok']) {
+            return $result;
+        }
+
+        if (GmailSmtpDefaults::isGmailHost($host) && $port === 587) {
+            $fallback = self::tryTcp($host, 465, $timeoutSeconds);
+
+            if ($fallback['ok']) {
+                return [
+                    'ok' => false,
+                    'message' => 'Puerto 587 no responde pero 465 sí. Usa MAIL_PORT=465 y MAIL_SCHEME=smtps (como Nodemailer en tu portfolio).',
+                    'port' => 465,
+                ];
+            }
+        }
+
+        return $result;
+    }
+
+    /**
+     * @return array{ok: bool, message: string, port: int}
+     */
+    protected static function tryTcp(string $host, int $port, int $timeoutSeconds): array
+    {
         $errno = 0;
         $errstr = '';
+        $scheme = $port === 465 ? 'ssl' : 'tcp';
         $socket = @stream_socket_client(
-            "tcp://{$host}:{$port}",
+            "{$scheme}://{$host}:{$port}",
             $errno,
             $errstr,
             $timeoutSeconds,
@@ -30,17 +57,16 @@ class MailTransportProbe
             return [
                 'ok' => false,
                 'message' => "No se puede conectar a {$host}:{$port} ({$errno}: {$errstr}).",
+                'port' => $port,
             ];
         }
 
         fclose($socket);
 
-        return ['ok' => true, 'message' => "Conexión TCP a {$host}:{$port} OK."];
-    }
-
-    public static function usesResend(): bool
-    {
-        return filled(config('services.resend.key'))
-            && (string) config('mail.default') === 'resend';
+        return [
+            'ok' => true,
+            'message' => "Conexión a {$host}:{$port} OK.",
+            'port' => $port,
+        ];
     }
 }
