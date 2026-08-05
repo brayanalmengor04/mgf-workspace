@@ -52,14 +52,14 @@ class MailDiagnoseCommand extends Command
 
             if (! $probe['ok']) {
                 $this->newLine();
-                $this->warn('Gmail en Railway: usa puerto 465 + MAIL_SCHEME=smtps (como Nodemailer en tu portfolio).');
-                $this->warn('Variables: MAIL_HOST=smtp.gmail.com MAIL_PORT=465 MAIL_SCHEME=smtps');
+                $this->warn('Railway bloquea SMTP saliente. En producción usa Resend (API HTTPS).');
+                $this->warn('MAIL_MAILER=resend + RESEND_API_KEY — ver docs/railway-mail-env.txt');
 
                 return self::FAILURE;
             }
 
             if (blank($smtp['scheme'] ?? null)) {
-                $this->error('MAIL_SCHEME está vacío. Usa MAIL_SCHEME=smtp.');
+                $this->error('MAIL_SCHEME está vacío.');
 
                 return self::FAILURE;
             }
@@ -72,7 +72,7 @@ class MailDiagnoseCommand extends Command
         }
 
         if (! in_array($mailer, ['smtp', 'resend'], true)) {
-            $this->warn("MAIL_MAILER={$mailer}. Usa smtp (local) o resend (Railway/producción).");
+            $this->warn("MAIL_MAILER={$mailer}. Local: smtp. Railway: resend.");
 
             return self::FAILURE;
         }

@@ -9,7 +9,7 @@ class MailProbeCommand extends Command
 {
     protected $signature = 'mgf:mail-probe';
 
-    protected $description = 'Comprueba conectividad SMTP (sin enviar correo)';
+    protected $description = 'Comprueba conectividad de correo (sin enviar)';
 
     public function handle(): int
     {
@@ -18,7 +18,7 @@ class MailProbeCommand extends Command
         if ($mailer === 'resend') {
             $configured = filled(config('services.resend.key'));
             $message = $configured
-                ? 'Resend API configurada (envío vía HTTPS, recomendado en Railway).'
+                ? 'Resend API configurada (HTTPS — funciona en Railway).'
                 : 'RESEND_API_KEY no configurada.';
 
             $this->line($message);
@@ -26,8 +26,15 @@ class MailProbeCommand extends Command
             return $configured ? self::SUCCESS : self::FAILURE;
         }
 
+        if ($this->isRailway() && $mailer === 'smtp') {
+            $this->error('Railway bloquea SMTP saliente (puertos 465/587). Tu portfolio funciona en Netlify, no en Railway.');
+            $this->warn('Solución: MAIL_MAILER=resend + RESEND_API_KEY (ver docs/railway-mail-env.txt).');
+
+            return self::FAILURE;
+        }
+
         if ($mailer !== 'smtp') {
-            $this->warn("MAIL_MAILER={$mailer}. No se probó conectividad SMTP.");
+            $this->warn("MAIL_MAILER={$mailer}.");
 
             return self::SUCCESS;
         }
@@ -35,10 +42,17 @@ class MailProbeCommand extends Command
         $probe = MailTransportProbe::smtpReachable();
         $this->line($probe['message']);
 
-        if (! $probe['ok']) {
-            $this->warn('Gmail: configura MAIL_PORT=465 y MAIL_SCHEME=smtps (igual que tu portfolio con Nodemailer).');
+        if (! $probe['ok'] && $this->isRailway()) {
+            $this->warn('Usa Resend en Railway: MAIL_MAILER=resend y RESEND_API_KEY.');
         }
 
         return $probe['ok'] ? self::SUCCESS : self::FAILURE;
+    }
+
+    protected function isRailway(): bool
+    {
+        return filled(env('RAILWAY_ENVIRONMENT'))
+            || filled(env('RAILWAY_PROJECT_ID'))
+            || filled(env('RAILWAY_SERVICE_ID'));
     }
 }

@@ -43,21 +43,25 @@ El token debe pertenecer al mismo proyecto donde está el servicio `mgf-workspac
 
 ### Correo (invitaciones y restablecimiento de contraseña)
 
-Para enviar invitaciones al crear usuarios y enlaces de restablecimiento de contraseña, configura las variables `MAIL_*` en Railway. Lista completa con descripciones en [`docs/railway-mail-env.txt`](railway-mail-env.txt).
+**Railway bloquea SMTP saliente** (Gmail/Nodemailer no funciona aunque en Netlify sí). En producción usa **Resend** (API HTTPS). En local, Gmail SMTP.
 
-| Variable | Notas |
+Guía completa: [`docs/railway-mail-env.txt`](railway-mail-env.txt). Plantilla Railway: [Send Emails Without SMTP — Resend](https://railway.com/deploy/send-emails-on-railway-without-smtp-resend-api-starter--resend-email-railway).
+
+| Variable (Railway) | Notas |
+|----------|--------|
+| `MAIL_MAILER` | `resend` |
+| `RESEND_API_KEY` | API key de [resend.com](https://resend.com) (empieza con `re_`) |
+| `MAIL_FROM_ADDRESS` | `onboarding@resend.dev` (pruebas) o correo de dominio verificado |
+| `MAIL_FROM_NAME` | `MGF Workspace` |
+| `QUEUE_CONNECTION` | `sync` |
+
+| Variable (local) | Notas |
 |----------|--------|
 | `MAIL_MAILER` | `smtp` |
-| `MAIL_SCHEME` | `smtps` (puerto 465, igual que Nodemailer `service: 'gmail'` en tu portfolio) |
 | `MAIL_HOST` | `smtp.gmail.com` |
 | `MAIL_PORT` | `465` |
-| `MAIL_USERNAME` | Correo Gmail completo (equiv. `EMAIL_USER` del portfolio) |
-| `MAIL_PASSWORD` | Contraseña de aplicación de Google (equiv. `EMAIL_PASS`) |
-| `MAIL_FROM_ADDRESS` | Mismo correo que `MAIL_USERNAME` (recomendado) |
-| `MAIL_FROM_NAME` | Nombre del remitente (ej. `MGF Workspace`) |
-| `QUEUE_CONNECTION` | `sync` (recomendado sin worker de cola) |
-
-Si tenías `MAIL_PORT=587` o `MAIL_ENCRYPTION=tls`, cámbialos: la app fuerza 465/smtps para hosts `gmail.com` automáticamente.
+| `MAIL_SCHEME` | `smtps` |
+| `MAIL_USERNAME` / `MAIL_PASSWORD` | Gmail + contraseña de aplicación |
 
 Railway también puede inyectar `MYSQL_URL`, `MYSQLHOST`, etc. si tienes un servicio MySQL en el mismo proyecto; alinea `DB_*` con esos valores.
 
