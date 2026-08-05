@@ -53,7 +53,7 @@ class UserInvitationService
                 ['email' => $user->email],
             );
 
-            return match ($status) {
+            $result = match ($status) {
                 Password::RESET_LINK_SENT => [
                     'success' => true,
                     'message' => "Se envió un correo a {$user->email} con las credenciales de acceso.",
@@ -71,6 +71,18 @@ class UserInvitationService
                     'message' => 'No se pudo enviar el correo. Verifica la configuración SMTP.',
                 ],
             };
+
+            if (! $result['success']) {
+                Log::warning('Invitación: sendResetLink no envió correo.', [
+                    'user_id' => $user->id,
+                    'email' => $user->email,
+                    'status' => $status,
+                    'mail_mailer' => config('mail.default'),
+                    'mail_host' => config('mail.mailers.smtp.host'),
+                ]);
+            }
+
+            return $result;
         } catch (Throwable $exception) {
             Log::error('Error al enviar invitación por correo.', [
                 'user_id' => $user->id,

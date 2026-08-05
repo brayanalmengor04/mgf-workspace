@@ -8,7 +8,7 @@ fi
 
 # Local: copia plantilla. Railway: materializa .env desde variables del servicio en cada arranque.
 if [ "$is_railway" = true ] && [ -n "${APP_KEY:-}" ]; then
-    printenv | grep -E '^(APP_|DB_|LOG_|SESSION_|CACHE_|QUEUE_|MAIL_|BROADCAST_|FILESYSTEM_|VITE_|GEMINI_)' | sort -u > .env
+    printenv | grep -E '^(APP_|DB_|LOG_|SESSION_|CACHE_|QUEUE_|MAIL_|BROADCAST_|FILESYSTEM_|VITE_|GEMINI_|RESEND_)' | sort -u > .env
 elif [ ! -f .env ]; then
     if [ -f .env.PRD ]; then
         cp .env.PRD .env
@@ -66,6 +66,8 @@ fi
 
 # Migraciones en segundo plano: Railway hace health check antes de que migrate termine.
 if [ "$is_railway" = true ]; then
+    php artisan mgf:mail-probe 2>&1 | sed 's/^/mail-probe: /' >&2 || true
+
     (
         i=0
         while [ "$i" -lt 30 ]; do

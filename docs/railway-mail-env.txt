@@ -1,46 +1,60 @@
 # Variables de correo para Railway (servicio mgf-workspace)
 # Copia cada clave en Railway → Variables. NO subas valores reales al repositorio.
 
+# =============================================================================
+# OPCIÓN A — Resend (RECOMENDADO en Railway / producción)
+# Gmail SMTP suele dar TIMEOUT desde servidores cloud (puerto 587 bloqueado).
+# Resend usa HTTPS y funciona en Railway.
+# =============================================================================
+#
+# 1. Crea cuenta en https://resend.com
+# 2. API Keys → Create API Key
+# 3. En Railway:
+#
+# MAIL_MAILER=resend
+# RESEND_API_KEY=re_xxxxxxxx
+# MAIL_FROM_ADDRESS=onboarding@resend.dev
+#   (pruebas; luego verifica tu dominio en Resend y usa tu@tudominio.com)
+# MAIL_FROM_NAME=MGF Workspace
+#
+# Diagnóstico: just prod-mail-diagnose
+# Logs al arrancar: busca "mail-probe:" en Deploy Logs
+
+# =============================================================================
+# OPCIÓN B — Gmail SMTP (funciona en local; en Railway a menudo falla)
+# =============================================================================
+
 MAIL_MAILER=smtp
-# Valor: smtp
+# Valor: smtp (local) o resend (Railway)
 
 MAIL_SCHEME=smtp
-# Valor: smtp (Gmail puerto 587 con STARTTLS). Alternativa: smtps con puerto 465.
-# Si usas MAIL_ENCRYPTION=tls en Railway, Laravel también lo acepta como respaldo.
+# Valor: smtp (puerto 587). Alternativa en Railway: smtps + puerto 465
 
 MAIL_HOST=smtp.gmail.com
-# Valor: smtp.gmail.com
-
 MAIL_PORT=587
-# Valor: 587
+MAIL_TIMEOUT=15
 
 MAIL_USERNAME=
-# Valor: tu correo Gmail completo (ej. nombre@gmail.com)
+# Correo Gmail completo
 
 MAIL_PASSWORD=
-# Valor: contraseña de aplicación de Google (16 caracteres, sin espacios)
-# Generar en: https://myaccount.google.com/apppasswords
-# Requiere verificación en 2 pasos activada en la cuenta Google.
+# Contraseña de aplicación Google (16 caracteres)
+# https://myaccount.google.com/apppasswords
 
 MAIL_FROM_ADDRESS=
-# Valor: mismo correo que MAIL_USERNAME (recomendado para Gmail)
+MAIL_FROM_NAME=MGF Workspace
 
-MAIL_FROM_NAME=
-# Valor: nombre visible del remitente (ej. MGF Workspace)
-# Puede usar la variable APP_NAME si Railway la expande, o el texto literal.
+# Si Gmail falla en Railway, prueba antes de Resend:
+# MAIL_SCHEME=smtps
+# MAIL_PORT=465
 
-# --- Notas importantes ---
+QUEUE_CONNECTION=sync
+# En producción sin worker de cola, usa sync para envío inmediato
 
-# 1. Gmail NO usa la contraseña normal de la cuenta para SMTP.
-#    Usa siempre una "Contraseña de aplicación" de Google.
+# --- Notas ---
 
-# 2. Cola de correos (QUEUE_CONNECTION=database):
-#    Si los correos no llegan, verifica que el worker de cola esté activo
-#    o cambia temporalmente a envío síncrono en desarrollo (MAIL_MAILER=log para pruebas).
-
-# 3. Seguridad:
-#    Rota la contraseña de aplicación si fue expuesta.
-#    Nunca commitees credenciales en el código ni en el repositorio.
-
-# 4. El entrypoint de Docker ya incluye MAIL_* al materializar .env en Railway.
-#    No hace falta modificar docker/entrypoint.sh.
+# 1. Sin comillas en los valores de Railway (no uses "false" ni "smtp" entre comillas).
+# 2. Agrega MAIL_SCHEME=smtp (MAIL_ENCRYPTION=tls solo es respaldo).
+# 3. Elimina SESSION_DOMAIN=null si la tienes.
+# 4. Tras cambiar variables: Redeploy.
+# 5. El entrypoint regenera .env en cada arranque con MAIL_* y RESEND_*.
