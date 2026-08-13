@@ -9,3 +9,5 @@
         <div style="margin-top: 8px;">{{ $payload['footer']['notes'] }}</div>
     @endif
 </div>
+
+@include('pdf.partials.branding')

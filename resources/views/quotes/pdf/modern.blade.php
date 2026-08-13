@@ -29,6 +29,7 @@
 </head>
 <body>
     <div class="banner">
+        @include('pdf.partials.header-app-brand', ['brandBackground' => $primaryColor])
         <table class="banner-table">
             <tr>
                 <td style="width: 55%">

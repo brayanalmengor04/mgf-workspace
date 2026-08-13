@@ -38,6 +38,7 @@
         <tr>
             <td class="sidebar">&nbsp;</td>
             <td class="content">
+                @include('pdf.partials.header-app-brand')
                 <h1 class="title">{{ $payload['title'] }}</h1>
                 @if(filled($payload['subtitle'] ?? null))<p class="subtitle">{{ $payload['subtitle'] }}</p>@endif
                 <div class="meta">{{ $payload['period_label'] }} · {{ $payload['budget_number'] }} · {{ \Carbon\Carbon::parse($payload['issued_at'])->format('d/m/Y') }}</div>

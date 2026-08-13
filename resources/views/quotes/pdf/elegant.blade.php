@@ -30,6 +30,7 @@
     <div class="frame">
         <div class="inner-frame">
             <div class="header">
+                @include('pdf.partials.header-app-brand')
                 @if($logoDataUri)
                     <img src="{{ $logoDataUri }}" class="logo" alt="Logo"><br>
                 @endif

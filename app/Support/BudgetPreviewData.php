@@ -111,10 +111,10 @@ class BudgetPreviewData
         ?string $currency = null,
         ?string $primaryColor = null,
     ): string {
-        return view($layout->view(), [
+        return view($layout->view(), array_merge([
             'budgetPlan' => null,
             'payload' => self::samplePayload($currency),
             'primaryColor' => filled($primaryColor) ? $primaryColor : '#0f172a',
-        ])->render();
+        ], \App\Support\PdfBranding::viewData('budget')))->render();
     }
 }

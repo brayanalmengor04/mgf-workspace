@@ -14,149 +14,71 @@ const sharp = (await import('sharp')).default;
 
 const BG = '#0f172a';
 
+function bMonogramGroup(scale, offsetX = 0, offsetY = 0) {
+    return `<g transform="translate(${offsetX}, ${offsetY}) scale(${scale})">
+  <path d="M11 6 L11 42 L11 6 Z" fill="#fffbeb"/>
+  <path d="M13.5 10 C25 8.5 31 14.5 28.5 18.5 C26 21.5 13.5 20.5 13.5 20.5 L13.5 10 Z" fill="#cbd5e1"/>
+  <path d="M13.5 23 C29 22.5 35.5 29 32.5 35 C29.5 40.5 13.5 39 13.5 39 L13.5 23 Z" fill="#fbbf24"/>
+  <path d="M6 25 Q17 21 30 24 T38 27" stroke="rgba(255,251,235,0.45)" stroke-width="1.3" fill="none" stroke-linecap="round"/>
+</g>`;
+}
+
+function bMonogramGroupDark(scale, offsetX = 0, offsetY = 0) {
+    return `<g transform="translate(${offsetX}, ${offsetY}) scale(${scale})">
+  <path d="M11 6 L11 42 L11 6 Z" fill="#1e3347"/>
+  <path d="M13.5 10 C25 8.5 31 14.5 28.5 18.5 C26 21.5 13.5 20.5 13.5 20.5 L13.5 10 Z" fill="#2c4258"/>
+  <path d="M13.5 23 C29 22.5 35.5 29 32.5 35 C29.5 40.5 13.5 39 13.5 39 L13.5 23 Z" fill="#a67c3a"/>
+  <path d="M6 25 Q17 21 30 24 T38 27" stroke="#94a3b8" stroke-width="1.3" fill="none" stroke-linecap="round"/>
+</g>`;
+}
+
 /**
- * Growth-chart monogram. Mobile-first:
+ * B monogram app icon. Mobile-first:
  * - any: full-bleed slate square (Apple/Android home)
- * - maskable: 24% safe padding, no wordmark (survives circular crop)
+ * - maskable: 24% safe padding (survives circular crop)
  */
 function appIconSvg(size, { maskable = false, showWordmark = null } = {}) {
-    const safe = maskable ? 0.24 : 0;
+    const safe = maskable ? 0.24 : 0.08;
     const inset = size * safe;
     const tile = size - inset * 2;
-    const cx = inset + tile / 2;
-    // Bias mark slightly upward so wordmark (if any) fits below
     const includeWordmark = showWordmark ?? (! maskable && size >= 128);
-    const cy = inset + tile * (includeWordmark ? 0.42 : 0.5);
-
-    const barW = tile * (maskable ? 0.14 : 0.13);
-    const gap = tile * 0.06;
-    const baseY = cy + tile * (includeWordmark ? 0.18 : 0.22);
-    const heights = [
-        tile * (maskable ? 0.32 : 0.3),
-        tile * (maskable ? 0.48 : 0.44),
-        tile * (maskable ? 0.64 : 0.58),
-    ];
-    const totalW = barW * 3 + gap * 2;
-    const startX = cx - totalW / 2;
-
-    const bars = heights
-        .map((h, i) => {
-            const x = startX + i * (barW + gap);
-            const y = baseY - h;
-            const r = Math.max(2, barW * 0.3);
-
-            return `<rect x="${x.toFixed(2)}" y="${y.toFixed(2)}" width="${barW.toFixed(2)}" height="${h.toFixed(2)}" rx="${r.toFixed(2)}" fill="url(#amberGrad)"/>`;
-        })
-        .join('');
-
-    const p0x = startX + barW * 0.5;
-    const p0y = baseY - heights[0];
-    const p1x = startX + barW + gap + barW * 0.5;
-    const p1y = baseY - heights[1] - tile * 0.05;
-    const p2x = startX + 2 * (barW + gap) + barW * 0.5;
-    const p2y = baseY - heights[2];
-    const stroke = Math.max(2.5, tile * 0.05);
-
-    const peak = `
-        <path d="M ${p0x.toFixed(2)} ${p0y.toFixed(2)}
-                 L ${p1x.toFixed(2)} ${p1y.toFixed(2)}
-                 L ${p2x.toFixed(2)} ${p2y.toFixed(2)}"
-              fill="none" stroke="#fffbeb" stroke-width="${stroke.toFixed(2)}"
-              stroke-linecap="round" stroke-linejoin="round"/>
-        <circle cx="${p2x.toFixed(2)}" cy="${p2y.toFixed(2)}" r="${(stroke * 0.9).toFixed(2)}" fill="#fffbeb"/>
-    `;
+    const markScale = tile / 48;
+    const markX = inset;
+    const markY = inset + (includeWordmark ? tile * 0.02 : tile * 0.04);
+    const cx = inset + tile / 2;
 
     const label = includeWordmark
-        ? `<text x="${cx}" y="${(inset + tile * 0.88).toFixed(2)}" text-anchor="middle"
+        ? `<text x="${cx}" y="${(inset + tile * 0.9).toFixed(2)}" text-anchor="middle"
                 font-family="ui-sans-serif, system-ui, -apple-system, Segoe UI, sans-serif"
-                font-weight="800" font-size="${(tile * 0.12).toFixed(2)}"
-                letter-spacing="${(tile * 0.05).toFixed(2)}" fill="#fde68a">MGF</text>`
+                font-weight="800" font-size="${(tile * 0.11).toFixed(2)}"
+                letter-spacing="${(tile * 0.045).toFixed(2)}" fill="#fde68a">MGF</text>`
         : '';
 
-    const glowR = tile * 0.5;
-
     return `<svg width="${size}" height="${size}" viewBox="0 0 ${size} ${size}" xmlns="http://www.w3.org/2000/svg">
-  <defs>
-    <linearGradient id="amberGrad" x1="0%" y1="100%" x2="100%" y2="0%">
-      <stop offset="0%" stop-color="#d97706"/>
-      <stop offset="55%" stop-color="#f59e0b"/>
-      <stop offset="100%" stop-color="#fbbf24"/>
-    </linearGradient>
-    <radialGradient id="glow" cx="50%" cy="48%" r="52%">
-      <stop offset="0%" stop-color="#f59e0b" stop-opacity="0.32"/>
-      <stop offset="65%" stop-color="#f59e0b" stop-opacity="0.08"/>
-      <stop offset="100%" stop-color="#f59e0b" stop-opacity="0"/>
-    </radialGradient>
-  </defs>
   <rect width="${size}" height="${size}" fill="${BG}"/>
-  <circle cx="${cx}" cy="${cy}" r="${glowR.toFixed(2)}" fill="url(#glow)"/>
-  ${bars}
-  ${peak}
+  ${bMonogramGroup(markScale, markX, markY)}
   ${label}
 </svg>`;
 }
 
-/** Splash: dark canvas + oversized growth mark (fills the viewport). */
+/** Splash: dark canvas + oversized B monogram. */
 function splashSvg(width, height) {
-    const chartW = Math.round(Math.min(width * 0.9, height * 0.45));
-    const chartH = chartW;
+    const mark = Math.round(Math.min(width * 0.42, height * 0.28));
     const cx = width / 2;
-    const cy = height / 2 - height * 0.03;
-
-    const barW = chartW * 0.18;
-    const gap = chartW * 0.075;
-    const baseY = cy + chartH * 0.3;
-    const heights = [chartH * 0.42, chartH * 0.62, chartH * 0.82];
-    const totalW = barW * 3 + gap * 2;
-    const startX = cx - totalW / 2;
-
-    const bars = heights
-        .map((h, i) => {
-            const x = startX + i * (barW + gap);
-            const y = baseY - h;
-            const r = Math.max(4, barW * 0.32);
-
-            return `<rect x="${x.toFixed(2)}" y="${y.toFixed(2)}" width="${barW.toFixed(2)}" height="${h.toFixed(2)}" rx="${r.toFixed(2)}" fill="url(#splashGrad)"/>`;
-        })
-        .join('');
-
-    const p0x = startX + barW * 0.5;
-    const p0y = baseY - heights[0];
-    const p1x = startX + barW + gap + barW * 0.5;
-    const p1y = baseY - heights[1] - chartH * 0.05;
-    const p2x = startX + 2 * (barW + gap) + barW * 0.5;
-    const p2y = baseY - heights[2];
-    const stroke = Math.max(6, chartW * 0.055);
-
-    const labelY = baseY + chartH * 0.18;
-    const labelSize = Math.round(chartW * 0.15);
+    const cy = height / 2 - height * 0.04;
+    const scale = mark / 48;
+    const markX = cx - mark / 2;
+    const markY = cy - mark / 2;
+    const labelY = cy + mark * 0.62;
+    const labelSize = Math.round(mark * 0.22);
 
     return `<svg width="${width}" height="${height}" viewBox="0 0 ${width} ${height}" xmlns="http://www.w3.org/2000/svg">
-  <defs>
-    <linearGradient id="splashGrad" x1="0%" y1="100%" x2="100%" y2="0%">
-      <stop offset="0%" stop-color="#d97706"/>
-      <stop offset="55%" stop-color="#f59e0b"/>
-      <stop offset="100%" stop-color="#fbbf24"/>
-    </linearGradient>
-    <radialGradient id="splashGlow" cx="50%" cy="46%" r="42%">
-      <stop offset="0%" stop-color="#f59e0b" stop-opacity="0.4"/>
-      <stop offset="60%" stop-color="#f59e0b" stop-opacity="0.1"/>
-      <stop offset="100%" stop-color="#f59e0b" stop-opacity="0"/>
-    </radialGradient>
-  </defs>
   <rect width="${width}" height="${height}" fill="${BG}"/>
-  <circle cx="${cx}" cy="${cy}" r="${(chartW * 0.62).toFixed(2)}" fill="url(#splashGlow)"/>
-  ${bars}
-  <path d="M ${p0x.toFixed(2)} ${p0y.toFixed(2)}
-           L ${p1x.toFixed(2)} ${p1y.toFixed(2)}
-           L ${p2x.toFixed(2)} ${p2y.toFixed(2)}"
-        fill="none" stroke="#fffbeb" stroke-width="${stroke.toFixed(2)}"
-        stroke-linecap="round" stroke-linejoin="round"/>
-  <circle cx="${p2x.toFixed(2)}" cy="${p2y.toFixed(2)}" r="${(stroke * 0.95).toFixed(2)}" fill="#fffbeb"/>
+  ${bMonogramGroup(scale, markX, markY)}
   <text x="${cx}" y="${labelY}" text-anchor="middle"
         font-family="ui-sans-serif, system-ui, -apple-system, Segoe UI, sans-serif"
         font-weight="800" font-size="${labelSize}"
-        letter-spacing="${Math.round(labelSize * 0.3)}" fill="#fde68a">MGF</text>
+        letter-spacing="${Math.round(labelSize * 0.28)}" fill="#fde68a">MGF</text>
 </svg>`;
 }
 
@@ -201,21 +123,9 @@ function openGraphSvg() {
 
 function brandLogoSvg() {
     return `<svg width="220" height="48" viewBox="0 0 220 48" xmlns="http://www.w3.org/2000/svg" role="img" aria-label="MGF Workspace">
-  <defs>
-    <linearGradient id="g" x1="0%" y1="100%" x2="100%" y2="0%">
-      <stop offset="0%" stop-color="#d97706"/>
-      <stop offset="55%" stop-color="#f59e0b"/>
-      <stop offset="100%" stop-color="#fbbf24"/>
-    </linearGradient>
-  </defs>
-  <rect x="0" y="0" width="48" height="48" rx="12" fill="${BG}"/>
-  <rect x="14" y="24" width="5.5" height="12" rx="1.6" fill="url(#g)"/>
-  <rect x="21.5" y="18" width="5.5" height="18" rx="1.6" fill="url(#g)"/>
-  <rect x="29" y="12" width="5.5" height="24" rx="1.6" fill="url(#g)"/>
-  <path d="M16.7 24 L24.2 15.5 L34.5 12" fill="none" stroke="#fffbeb" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round"/>
-  <circle cx="34.5" cy="12" r="2" fill="#fffbeb"/>
+  ${bMonogramGroupDark(1, 0, 0)}
   <text x="60" y="22" font-family="ui-sans-serif, system-ui, -apple-system, Segoe UI, sans-serif"
-        font-weight="800" font-size="16" letter-spacing="0.04em" fill="${BG}">MGF</text>
+        font-weight="800" font-size="16" letter-spacing="0.04em" fill="#0f172a">MGF</text>
   <text x="60" y="38" font-family="ui-sans-serif, system-ui, -apple-system, Segoe UI, sans-serif"
         font-weight="600" font-size="11" letter-spacing="0.12em" fill="#92400e">WORKSPACE</text>
 </svg>`;
@@ -223,19 +133,7 @@ function brandLogoSvg() {
 
 function brandLogoDarkSvg() {
     return `<svg width="220" height="48" viewBox="0 0 220 48" xmlns="http://www.w3.org/2000/svg" role="img" aria-label="MGF Workspace">
-  <defs>
-    <linearGradient id="gd" x1="0%" y1="100%" x2="100%" y2="0%">
-      <stop offset="0%" stop-color="#d97706"/>
-      <stop offset="55%" stop-color="#f59e0b"/>
-      <stop offset="100%" stop-color="#fbbf24"/>
-    </linearGradient>
-  </defs>
-  <rect x="0" y="0" width="48" height="48" rx="12" fill="${BG}"/>
-  <rect x="14" y="24" width="5.5" height="12" rx="1.6" fill="url(#gd)"/>
-  <rect x="21.5" y="18" width="5.5" height="18" rx="1.6" fill="url(#gd)"/>
-  <rect x="29" y="12" width="5.5" height="24" rx="1.6" fill="url(#gd)"/>
-  <path d="M16.7 24 L24.2 15.5 L34.5 12" fill="none" stroke="#fffbeb" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round"/>
-  <circle cx="34.5" cy="12" r="2" fill="#fffbeb"/>
+  ${bMonogramGroup(1, 0, 0)}
   <text x="60" y="22" font-family="ui-sans-serif, system-ui, -apple-system, Segoe UI, sans-serif"
         font-weight="800" font-size="16" letter-spacing="0.04em" fill="#fffbeb">MGF</text>
   <text x="60" y="38" font-family="ui-sans-serif, system-ui, -apple-system, Segoe UI, sans-serif"

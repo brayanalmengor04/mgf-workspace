@@ -9,6 +9,7 @@ use App\Enums\BudgetStatus;
 use App\Enums\QuoteCurrency;
 use App\Models\BudgetPlan;
 use App\Support\ActivityLogSilencer;
+use App\Support\PdfBranding;
 use Barryvdh\DomPDF\Facade\Pdf;
 use Illuminate\Support\Facades\Storage;
 use Illuminate\Support\Str;
@@ -151,11 +152,11 @@ class BudgetPdfService
 
         $layout = BudgetPdfLayout::tryFrom((string) ($budgetPlan->pdf_layout ?? '')) ?? BudgetPdfLayout::Classic;
 
-        $pdf = Pdf::loadView($layout->view(), [
+        $pdf = Pdf::loadView($layout->view(), array_merge([
             'budgetPlan' => $budgetPlan,
             'payload' => $payload,
             'primaryColor' => $budgetPlan->primary_color ?? '#0f172a',
-        ])->setPaper('letter');
+        ], PdfBranding::viewData('budget')))->setPaper('letter');
 
         Storage::disk('local')->put($filename, $pdf->output());
 

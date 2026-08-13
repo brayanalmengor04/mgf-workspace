@@ -26,6 +26,7 @@
 </head>
 <body>
     <div class="header">
+        @include('pdf.partials.header-app-brand')
         <table class="header-table">
             <tr>
                 <td style="width: 60%">

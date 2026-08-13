@@ -27,6 +27,7 @@
 </head>
 <body>
     <div class="header">
+        @include('pdf.partials.header-app-brand')
         @if($logoDataUri)
             <table class="header-top">
                 <tr>

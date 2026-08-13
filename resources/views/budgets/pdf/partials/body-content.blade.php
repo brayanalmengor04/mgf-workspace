@@ -69,3 +69,5 @@
 @endif
 
 <div class="doc-id">{{ $payload['budget_number'] }}</div>
+
+@include('pdf.partials.branding')

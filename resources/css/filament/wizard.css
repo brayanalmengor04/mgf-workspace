@@ -47,3 +47,17 @@
     overscroll-behavior: contain;
     padding-right: 0.25rem;
 }
+
+/* Guardar / Cancelar siempre visibles bajo el wizard (cualquier paso). */
+.fi-main .fi-sc-group > .fi-sc-actions.fi-sticky {
+    position: sticky;
+    bottom: 0;
+    z-index: 20;
+    margin-top: 1rem;
+    padding-top: 1rem;
+    background: linear-gradient(to top, var(--fi-body-bg, #fff) 70%, transparent);
+}
+
+.dark .fi-main .fi-sc-group > .fi-sc-actions.fi-sticky {
+    background: linear-gradient(to top, var(--fi-body-bg, #111827) 70%, transparent);
+}

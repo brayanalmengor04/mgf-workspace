@@ -7,6 +7,7 @@ use App\Enums\QuotePdfLayout;
 use App\Enums\QuoteStatus;
 use App\Models\Quote;
 use App\Support\ActivityLogSilencer;
+use App\Support\PdfBranding;
 use Barryvdh\DomPDF\Facade\Pdf;
 use Illuminate\Support\Facades\Storage;
 use Illuminate\Support\Str;
@@ -138,12 +139,12 @@ class QuotePdfService
         $template = $quote->template;
         $layout = QuotePdfLayout::tryFrom((string) ($template?->pdf_layout ?? '')) ?? QuotePdfLayout::Classic;
 
-        $pdf = Pdf::loadView($layout->view(), [
+        $pdf = Pdf::loadView($layout->view(), array_merge([
             'quote' => $quote,
             'payload' => $payload,
             'primaryColor' => $template?->primary_color ?? '#d97706',
-            'logoDataUri' => $this->resolveLogoDataUri($template?->logo_path),
-        ])->setPaper('letter');
+            'logoDataUri' => $this->resolveLogoDataUri($template?->logo_path) ?? PdfBranding::appLogoDataUri(),
+        ], PdfBranding::viewData('quote')))->setPaper('letter');
 
         Storage::disk('local')->put($filename, $pdf->output());
 

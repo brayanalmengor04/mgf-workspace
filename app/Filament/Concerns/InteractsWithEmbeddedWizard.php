@@ -4,6 +4,7 @@ namespace App\Filament\Concerns;
 
 use Filament\Schemas\Components\Component;
 use Filament\Schemas\Components\EmbeddedSchema;
+use Filament\Schemas\Components\Group;
 use Filament\Schemas\Components\Wizard;
 use Filament\Schemas\Schema;
 
@@ -16,7 +17,15 @@ trait InteractsWithEmbeddedWizard
 
     public function getFormContentComponent(): Component
     {
-        return EmbeddedSchema::make('form');
+        return Group::make([
+            EmbeddedSchema::make('form'),
+            $this->getFormActionsContentComponent(),
+        ]);
+    }
+
+    public function areFormActionsSticky(): bool
+    {
+        return true;
     }
 
     public function form(Schema $schema): Schema
@@ -26,9 +35,9 @@ trait InteractsWithEmbeddedWizard
         foreach ($schema->getComponents(withHidden: true) as $component) {
             if ($component instanceof Wizard) {
                 $component
-                    ->cancelAction($this->getCancelFormAction())
-                    ->submitAction($this->getSubmitFormAction())
-                    ->alpineSubmitHandler("\$wire.{$this->getSubmitFormLivewireMethodName()}()");
+                    ->cancelAction(null)
+                    ->submitAction(null)
+                    ->persistStepInQueryString('step');
             }
         }
 

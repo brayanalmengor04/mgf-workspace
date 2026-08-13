@@ -28,6 +28,7 @@
     </style>
 </head>
 <body>
+    @include('pdf.partials.header-app-brand')
     <h1 class="title">{{ $payload['title'] }}</h1>
     <div class="meta">{{ $payload['period_label'] }} · {{ $payload['budget_number'] }} · {{ \Carbon\Carbon::parse($payload['issued_at'])->format('d/m/Y') }}</div>
     <div class="income-row">

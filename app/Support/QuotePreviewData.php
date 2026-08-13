@@ -111,11 +111,11 @@ class QuotePreviewData
         ?string $primaryColor = null,
         mixed $logoPath = null,
     ): string {
-        return view($layout->view(), [
+        return view($layout->view(), array_merge([
             'quote' => null,
             'payload' => self::samplePayload($currency),
             'primaryColor' => filled($primaryColor) ? $primaryColor : '#d97706',
-            'logoDataUri' => self::resolveLogoDataUri($logoPath),
-        ])->render();
+            'logoDataUri' => self::resolveLogoDataUri($logoPath) ?? \App\Support\PdfBranding::appLogoDataUri(),
+        ], \App\Support\PdfBranding::viewData('quote')))->render();
     }
 }

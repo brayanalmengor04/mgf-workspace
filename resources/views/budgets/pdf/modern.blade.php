@@ -40,6 +40,7 @@
 </head>
 <body>
     <div class="banner">
+        @include('pdf.partials.header-app-brand', ['brandBackground' => $primaryColor])
         <h1 class="title">{{ $payload['title'] }}</h1>
         @if(filled($payload['subtitle'] ?? null))
             <p class="subtitle">{{ $payload['subtitle'] }}</p>

@@ -34,6 +34,7 @@
             <td class="sidebar">&nbsp;</td>
             <td class="content">
                 <div class="header">
+                    @include('pdf.partials.header-app-brand')
                     <table class="header-table">
                         <tr>
                             <td>
