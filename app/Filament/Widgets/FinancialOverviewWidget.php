@@ -11,9 +11,9 @@ class FinancialOverviewWidget extends StatsOverviewWidget
 {
     protected static ?int $sort = 1;
 
-    protected ?string $heading = 'Métricas financieras';
+    protected ?string $heading = 'Resumen del período';
 
-    protected ?string $description = 'Saldo disponible = ingreso neto no asignado del presupuesto (no es saldo bancario).';
+    protected ?string $description = 'Lo esencial del último presupuesto emitido. El saldo disponible es margen del plan, no saldo bancario.';
 
     public static function canView(): bool
     {
@@ -41,20 +41,6 @@ class FinancialOverviewWidget extends StatsOverviewWidget
         $incomeDescription = $this->incomeDeltaDescription($metrics, $currency);
 
         return [
-            Stat::make('Ingresos totales', MoneyFormatter::format($metrics['total_income'], $currency))
-                ->description($metrics['issued_plans_count'] > 0
-                    ? 'Suma de ingresos netos · '.$metrics['issued_plans_count'].' presupuestos emitidos'
-                    : 'Sin presupuestos emitidos')
-                ->descriptionIcon('heroicon-m-banknotes')
-                ->color('success'),
-
-            Stat::make('Gastos totales', MoneyFormatter::format($metrics['total_expenses'], $currency))
-                ->description($metrics['issued_plans_count'] > 0
-                    ? 'Gastos fijos + otros · todos los emitidos'
-                    : 'Sin presupuestos emitidos')
-                ->descriptionIcon('heroicon-m-shopping-cart')
-                ->color('danger'),
-
             Stat::make('Saldo disponible', MoneyFormatter::format($metrics['available_balance'], $currency))
                 ->description($availableDescription['text'])
                 ->descriptionIcon($availableDescription['icon'])
@@ -71,17 +57,17 @@ class FinancialOverviewWidget extends StatsOverviewWidget
                 ->chart($metrics['net_income_sparkline'] ?: null)
                 ->chartColor($incomeDescription['color']),
 
-            Stat::make('Presupuestos pagados', (string) $metrics['paid_plans_count'])
-                ->description('Monto pagado: '.MoneyFormatter::format($metrics['paid_amount'], $currency))
-                ->descriptionIcon('heroicon-m-check-badge')
-                ->color('success')
-                ->chart($metrics['payment_sparkline'] ?: null)
-                ->chartColor('success'),
-
             Stat::make('Cumplimiento de pagos', $metrics['payment_compliance_percent'].'%')
                 ->description($metrics['paid_items_count'].' de '.$metrics['total_items_count'].' ítems pagados')
                 ->descriptionIcon('heroicon-m-clipboard-document-check')
                 ->color($metrics['payment_compliance_percent'] >= 70 ? 'success' : ($metrics['payment_compliance_percent'] >= 40 ? 'warning' : 'danger')),
+
+            Stat::make('Pagado en presupuestos', MoneyFormatter::format($metrics['paid_amount'], $currency))
+                ->description($metrics['paid_plans_count'].' presupuesto(s) con pagos registrados')
+                ->descriptionIcon('heroicon-m-check-badge')
+                ->color('success')
+                ->chart($metrics['payment_sparkline'] ?: null)
+                ->chartColor('success'),
         ];
     }
 

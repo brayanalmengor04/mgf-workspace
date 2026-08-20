@@ -10,6 +10,7 @@ use App\Filament\Resources\BudgetItemTemplates\BudgetItemTemplateResource;
 use App\Filament\Resources\BudgetPlans\BudgetPlanResource;
 use App\Models\BudgetItemTemplate;
 use App\Models\BudgetPlan;
+use App\Models\SavingsAccount;
 use App\Services\Budgets\BudgetCalculator;
 use App\Services\Budgets\BudgetItemTemplateSync;
 use App\Support\MoneyFormatter;
@@ -447,6 +448,8 @@ class BudgetPlanForm
      */
     private static function categoryRepeater(BudgetCategoryType $category): array
     {
+        $isSavings = $category === BudgetCategoryType::Savings;
+
         return [
             Repeater::make("items_{$category->value}")
                 ->label($category->label())
@@ -467,6 +470,10 @@ class BudgetPlanForm
                     return "{$concept} · ".number_format($amount, 2);
                 })
                 ->schema([
+                    TextInput::make('id')
+                        ->hidden()
+                        ->dehydrated()
+                        ->numeric(),
                     TextInput::make('concept')
                         ->label('Concepto')
                         ->required()
@@ -510,6 +517,28 @@ class BudgetPlanForm
                         ->visible(fn (Get $get): bool => $get('is_paid') === true)
                         ->required(fn (Get $get): bool => $get('is_paid') === true)
                         ->columnSpan(2),
+                    Select::make('savings_account_id')
+                        ->label('Depositar en cuenta')
+                        ->options(function (): array {
+                            $user = auth()->user();
+
+                            if ($user === null) {
+                                return [];
+                            }
+
+                            return SavingsAccount::query()
+                                ->forUser($user)
+                                ->active()
+                                ->orderBy('name')
+                                ->pluck('name', 'id')
+                                ->all();
+                        })
+                        ->searchable()
+                        ->nullable()
+                        ->native(false)
+                        ->helperText('Al marcar pagado, se registrará un depósito en esta cuenta.')
+                        ->visible($isSavings)
+                        ->columnSpan(3),
                     Select::make('category_type')
                         ->default($category->value)
                         ->dehydrated(true)
@@ -601,12 +630,16 @@ class BudgetPlanForm
                 }
 
                 $items[] = [
+                    'id' => filled($row['id'] ?? null) ? (int) $row['id'] : null,
                     'category_type' => $category->value,
                     'concept' => (string) $row['concept'],
                     'notes' => filled($row['notes'] ?? null) ? (string) $row['notes'] : null,
                     'amount' => (float) ($row['amount'] ?? 0),
                     'is_paid' => (bool) ($row['is_paid'] ?? false),
                     'paid_at' => filled($row['paid_at'] ?? null) ? (string) $row['paid_at'] : null,
+                    'savings_account_id' => filled($row['savings_account_id'] ?? null)
+                        ? (int) $row['savings_account_id']
+                        : null,
                 ];
             }
         }

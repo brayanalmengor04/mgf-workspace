@@ -4,29 +4,12 @@ namespace App\Filament\Widgets;
 
 class PaidAmountTrendChartWidget extends FinancialTrendChartWidget
 {
-    protected static ?int $sort = 7;
+    protected static bool $isDiscovered = false;
 
-    protected ?string $heading = 'Tendencia · Monto pagado';
+    public string $metric = 'paid_amount';
 
-    protected int | string | array $columnSpan = 1;
-
-    protected function seriesKey(): string
+    public static function canView(): bool
     {
-        return 'paid_amount';
-    }
-
-    protected function seriesLabel(): string
-    {
-        return 'Monto pagado';
-    }
-
-    protected function borderColor(): string
-    {
-        return '#3b82f6';
-    }
-
-    protected function fillColor(): string
-    {
-        return 'rgba(59, 130, 246, 0.12)';
+        return false;
     }
 }

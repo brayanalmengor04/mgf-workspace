@@ -5,6 +5,7 @@ namespace Tests\Unit;
 use App\Enums\UserRole;
 use App\Models\BudgetPlan;
 use App\Models\Quote;
+use App\Models\SavingsAccount;
 use App\Models\User;
 use App\Support\ActivityLogScope;
 use Illuminate\Foundation\Testing\RefreshDatabase;
@@ -62,6 +63,22 @@ class RoleDataIsolationTest extends TestCase
         $this->assertSame(1, Quote::query()->forUser($adminA)->count());
         $this->assertSame(0, BudgetPlan::query()->forUser($adminA)->count());
         $this->assertFalse($adminA->canViewGlobalData());
+    }
+
+    public function test_admin_cannot_see_other_admin_savings_accounts(): void
+    {
+        $adminA = User::factory()->create(['role' => UserRole::Admin]);
+        $adminB = User::factory()->create(['role' => UserRole::Admin]);
+
+        SavingsAccount::query()->create([
+            'user_id' => $adminB->id,
+            'name' => 'Fondo B',
+        ]);
+
+        $this->actingAs($adminA);
+
+        $this->assertSame(0, SavingsAccount::query()->forUser($adminA)->count());
+        $this->assertFalse($adminA->can('view', SavingsAccount::query()->first()));
     }
 
     public function test_admin_can_manage_users_and_assign_super_admin_role(): void

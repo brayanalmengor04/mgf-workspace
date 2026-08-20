@@ -7,6 +7,7 @@ use App\Enums\BudgetStatus;
 use App\Filament\Concerns\InteractsWithEmbeddedWizard;
 use App\Filament\Resources\BudgetPlans\BudgetPlanResource;
 use App\Filament\Resources\BudgetPlans\Concerns\RecalculatesBudgetTotals;
+use App\Filament\Resources\BudgetPlans\Concerns\SyncsBudgetPlanItems;
 use App\Filament\Resources\BudgetPlans\Schemas\BudgetPlanForm;
 use App\Filament\Support\DocumentShareActions;
 use App\Models\BudgetPlan;
@@ -27,6 +28,7 @@ class EditBudgetPlan extends EditRecord
 {
     use InteractsWithEmbeddedWizard;
     use RecalculatesBudgetTotals;
+    use SyncsBudgetPlanItems;
 
     protected static string $resource = BudgetPlanResource::class;
 
@@ -40,11 +42,13 @@ class EditBudgetPlan extends EditRecord
                 ->filter(fn ($item) => $item->category_type === $category)
                 ->values()
                 ->map(fn ($item) => [
+                    'id' => $item->id,
                     'concept' => $item->concept,
                     'notes' => $item->notes,
                     'amount' => (float) $item->amount,
                     'is_paid' => (bool) $item->is_paid,
                     'paid_at' => $item->paid_at?->format('Y-m-d'),
+                    'savings_account_id' => $item->savings_account_id,
                     'category_type' => $category->value,
                 ])
                 ->all();
@@ -57,30 +61,6 @@ class EditBudgetPlan extends EditRecord
     {
         $this->syncItemsFromForm();
         $this->recalculateBudgetTotals($this->record->refresh());
-    }
-
-    protected function syncItemsFromForm(): void
-    {
-        /** @var BudgetPlan $record */
-        $record = $this->record;
-        $state = $this->form->getRawState();
-        $items = BudgetPlanForm::collectItemsFromState($state);
-
-        $record->items()->delete();
-
-        foreach ($items as $index => $item) {
-            $record->items()->create([
-                'category_type' => $item['category_type'],
-                'concept' => $item['concept'],
-                'notes' => $item['notes'],
-                'amount' => $item['amount'],
-                'is_paid' => $item['is_paid'],
-                'paid_at' => $item['paid_at'] ?? null,
-                'sort_order' => $index,
-            ]);
-        }
-
-        $record->syncPaymentStatus();
     }
 
     protected function getHeaderActions(): array

@@ -7,12 +7,12 @@
     $description = $this->getDescription();
     $filters = $this->getFilters();
     $rangeOptions = $this->getRangeOptions();
-    $metricOptions = method_exists($this, 'getMetricOptions') ? $this->getMetricOptions() : [];
+    $seriesOptions = $this->getSeriesOptions();
     $isCollapsible = $this->isCollapsible();
     $type = $this->getType();
     $filter = $this->filter ?? 'line';
-    $range = $this->range ?? '50';
-    $metric = $this->metric ?? 'available_balance';
+    $range = $this->range ?? '12';
+    $series = $this->series ?? 'balance';
     $maxHeight = $this->getMaxHeight();
     $hasMaxHeight = filled($maxHeight) && $maxHeight !== '100%';
     $cachedData = $this->getCachedData();
@@ -43,25 +43,23 @@
                 class="fi-wi-financial-trend-filters"
                 style="display: flex; flex-wrap: wrap; align-items: center; gap: 0.5rem;"
             >
-                @if ($metricOptions !== [])
-                    <x-filament::input.wrapper
+                <x-filament::input.wrapper
+                    inline-prefix
+                    wire:target="series"
+                    class="fi-wi-financial-trend-filter"
+                    style="width: auto; min-width: 9rem; margin: 0; flex: 1 1 9rem;"
+                >
+                    <x-filament::input.select
                         inline-prefix
-                        wire:target="metric"
-                        class="fi-wi-financial-trend-filter"
-                        style="width: auto; min-width: 9rem; margin: 0; flex: 1 1 9rem;"
+                        wire:model.live="series"
                     >
-                        <x-filament::input.select
-                            inline-prefix
-                            wire:model.live="metric"
-                        >
-                            @foreach ($metricOptions as $value => $label)
-                                <option value="{{ $value }}">
-                                    {{ $label }}
-                                </option>
-                            @endforeach
-                        </x-filament::input.select>
-                    </x-filament::input.wrapper>
-                @endif
+                        @foreach ($seriesOptions as $value => $label)
+                            <option value="{{ $value }}">
+                                {{ $label }}
+                            </option>
+                        @endforeach
+                    </x-filament::input.select>
+                </x-filament::input.wrapper>
 
                 <x-filament::input.wrapper
                     inline-prefix
@@ -103,7 +101,7 @@
             </div>
         </div>
 
-        <div wire:key="financial-trend-{{ $metric }}-{{ $filter }}-{{ $range }}">
+        <div wire:key="savings-trend-{{ $series }}-{{ $filter }}-{{ $range }}">
             <div style="position: relative;">
                 <div
                     x-load
@@ -140,7 +138,7 @@
 
                 @if (count($pointDeltas) > 0 && $pointCount > 1)
                     <div
-                        aria-label="Variaciones entre presupuestos"
+                        aria-label="Variaciones entre meses"
                         style="
                             position: absolute;
                             left: 3%;

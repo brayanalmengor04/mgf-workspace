@@ -281,7 +281,7 @@ return [
     */
     'widgets' => [
         'enabled' => true,
-        'dashboard' => true,
+        'dashboard' => false,
         'widgets' => [
             \App\Filament\Widgets\Activity\ScopedActivityChartWidget::class,
             \App\Filament\Widgets\Activity\ScopedActivityHeatmapWidget::class,

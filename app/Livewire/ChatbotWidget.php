@@ -107,8 +107,14 @@ class ChatbotWidget extends Component
 
             $user = Auth::user();
             $financialSummary = $user ? $contextService->getFourMonthSummary($user) : 'No hay datos de usuario disponibles.';
+            $savingsSummary = $user ? $contextService->getSavingsSummary($user) : '';
 
-            $systemInstruction = $promptService->getSystemInstruction($user)."\n\nResumen Histórico del Usuario (solo sus presupuestos):\n".$financialSummary;
+            $systemInstruction = $promptService->getSystemInstruction($user)
+                ."\n\nResumen Histórico del Usuario (solo sus presupuestos):\n".$financialSummary;
+
+            if ($savingsSummary !== '') {
+                $systemInstruction .= "\n\n".$savingsSummary;
+            }
 
             $response = $geminiService->generateContent($apiHistory, $systemInstruction);
 

@@ -9,6 +9,7 @@ use App\Enums\QuoteCurrency;
 use App\Filament\Concerns\InteractsWithEmbeddedWizard;
 use App\Filament\Resources\BudgetPlans\BudgetPlanResource;
 use App\Filament\Resources\BudgetPlans\Concerns\RecalculatesBudgetTotals;
+use App\Filament\Resources\BudgetPlans\Concerns\SyncsBudgetPlanItems;
 use App\Filament\Resources\BudgetPlans\Schemas\BudgetPlanForm;
 use App\Models\BudgetPlan;
 use App\Services\Budgets\BudgetNumberGenerator;
@@ -18,6 +19,7 @@ class CreateBudgetPlan extends CreateRecord
 {
     use InteractsWithEmbeddedWizard;
     use RecalculatesBudgetTotals;
+    use SyncsBudgetPlanItems;
 
     protected static string $resource = BudgetPlanResource::class;
 
@@ -41,27 +43,5 @@ class CreateBudgetPlan extends CreateRecord
     {
         $this->syncItemsFromForm();
         $this->recalculateBudgetTotals($this->record);
-    }
-
-    protected function syncItemsFromForm(): void
-    {
-        /** @var BudgetPlan $record */
-        $record = $this->record;
-        $state = $this->form->getRawState();
-        $items = BudgetPlanForm::collectItemsFromState($state);
-
-        foreach ($items as $index => $item) {
-            $record->items()->create([
-                'category_type' => $item['category_type'],
-                'concept' => $item['concept'],
-                'notes' => $item['notes'],
-                'amount' => $item['amount'],
-                'is_paid' => $item['is_paid'],
-                'paid_at' => $item['paid_at'] ?? null,
-                'sort_order' => $index,
-            ]);
-        }
-
-        $record->syncPaymentStatus();
     }
 }

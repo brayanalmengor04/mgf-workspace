@@ -26,7 +26,11 @@ class Dashboard extends BaseDashboard
      */
     public function getColumns(): int | array
     {
-        return 2;
+        return [
+            'default' => 1,
+            'sm' => 2,
+            'xl' => 4,
+        ];
     }
 
     protected function getHeaderActions(): array

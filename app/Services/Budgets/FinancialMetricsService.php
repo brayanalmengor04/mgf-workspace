@@ -8,6 +8,7 @@ use App\Enums\QuoteCurrency;
 use App\Models\BudgetPlan;
 use App\Models\BudgetPlanItem;
 use App\Models\User;
+use App\Services\Savings\SavingsLedgerService;
 use Illuminate\Support\Collection;
 
 class FinancialMetricsService
@@ -157,6 +158,18 @@ class FinancialMetricsService
             'paid_amount' => $issued->map(fn (BudgetPlan $plan): float => $this->paidAmountForPlan($plan))->values()->all(),
             'currency' => QuoteCurrency::resolve($latest?->currency),
         ];
+    }
+
+    /**
+     * @return array{
+     *     total_balance: float,
+     *     pending_replenishment: float,
+     *     active_accounts: int
+     * }
+     */
+    public function savingsLedgerSummaryFor(User $user): array
+    {
+        return app(SavingsLedgerService::class)->summaryForUser($user);
     }
 
     /**

@@ -25,6 +25,7 @@ class BudgetPlanItem extends Model
         'percentage',
         'is_paid',
         'paid_at',
+        'savings_account_id',
     ];
 
     protected function casts(): array
@@ -41,5 +42,10 @@ class BudgetPlanItem extends Model
     public function budgetPlan(): BelongsTo
     {
         return $this->belongsTo(BudgetPlan::class);
+    }
+
+    public function savingsAccount(): BelongsTo
+    {
+        return $this->belongsTo(SavingsAccount::class);
     }
 }

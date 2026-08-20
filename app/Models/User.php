@@ -97,6 +97,11 @@ class User extends Authenticatable implements FilamentUser
         return $this->hasMany(BudgetItemTemplate::class);
     }
 
+    public function savingsAccounts(): HasMany
+    {
+        return $this->hasMany(SavingsAccount::class);
+    }
+
     public function sendPasswordResetNotification($token): void
     {
         $this->notify(new UserInvitationNotification($token));

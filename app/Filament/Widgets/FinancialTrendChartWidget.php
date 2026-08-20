@@ -8,7 +8,7 @@ use App\Support\MoneyFormatter;
 use Filament\Widgets\ChartWidget;
 use Illuminate\Contracts\Support\Htmlable;
 
-abstract class FinancialTrendChartWidget extends ChartWidget
+class FinancialTrendChartWidget extends ChartWidget
 {
     protected string $view = 'filament.widgets.financial-trend-chart';
 
@@ -18,6 +18,8 @@ abstract class FinancialTrendChartWidget extends ChartWidget
 
     public string $range = '50';
 
+    public string $metric = 'available_balance';
+
     protected int | string | array $columnSpan = 'full';
 
     public function updatedFilter(): void
@@ -26,6 +28,11 @@ abstract class FinancialTrendChartWidget extends ChartWidget
     }
 
     public function updatedRange(): void
+    {
+        $this->cachedData = null;
+    }
+
+    public function updatedMetric(): void
     {
         $this->cachedData = null;
     }
@@ -59,13 +66,64 @@ abstract class FinancialTrendChartWidget extends ChartWidget
         ];
     }
 
-    abstract protected function seriesKey(): string;
+    /**
+     * @return array<string, string>
+     */
+    protected function getMetricOptions(): array
+    {
+        return [
+            'available_balance' => 'Saldo disponible',
+            'net_income' => 'Ingresos netos',
+            'paid_amount' => 'Monto pagado',
+        ];
+    }
 
-    abstract protected function seriesLabel(): string;
+    /**
+     * @return array{key: string, label: string, border: string, fill: string}
+     */
+    protected function resolvedMetric(): array
+    {
+        return match ($this->metric) {
+            'net_income' => [
+                'key' => 'net_income',
+                'label' => 'Ingresos netos',
+                'border' => '#3b82f6',
+                'fill' => 'rgba(59, 130, 246, 0.12)',
+            ],
+            'paid_amount' => [
+                'key' => 'paid_amount',
+                'label' => 'Monto pagado',
+                'border' => '#f59e0b',
+                'fill' => 'rgba(245, 158, 11, 0.12)',
+            ],
+            default => [
+                'key' => 'available_balance',
+                'label' => 'Saldo disponible',
+                'border' => '#10b981',
+                'fill' => 'rgba(16, 185, 129, 0.12)',
+            ],
+        };
+    }
 
-    abstract protected function borderColor(): string;
+    protected function seriesKey(): string
+    {
+        return $this->resolvedMetric()['key'];
+    }
 
-    abstract protected function fillColor(): string;
+    protected function seriesLabel(): string
+    {
+        return $this->resolvedMetric()['label'];
+    }
+
+    protected function borderColor(): string
+    {
+        return $this->resolvedMetric()['border'];
+    }
+
+    protected function fillColor(): string
+    {
+        return $this->resolvedMetric()['fill'];
+    }
 
     public static function canView(): bool
     {

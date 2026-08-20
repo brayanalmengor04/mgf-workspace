@@ -3,6 +3,7 @@
 namespace App\Filament\Widgets;
 
 use App\Enums\UserRole;
+use App\Support\AdminViewMode;
 use App\Filament\Resources\QuoteTemplates\QuoteTemplateResource;
 use App\Filament\Resources\Quotes\QuoteResource;
 use App\Filament\Resources\Users\UserResource;
@@ -21,7 +22,9 @@ class PlatformStatsWidget extends StatsOverviewWidget
 
     public static function canView(): bool
     {
-        return auth()->user()?->isSuperAdmin() ?? false;
+        $user = auth()->user();
+
+        return ($user?->isSuperAdmin() ?? false) && ! AdminViewMode::isProviderPreview();
     }
 
     protected function getStats(): array

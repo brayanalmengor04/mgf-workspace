@@ -8,8 +8,6 @@ use App\Filament\Pages\Dashboard;
 use App\Filament\Widgets\AvailableBalanceTrendChartWidget;
 use App\Filament\Widgets\FinancialHealthWidget;
 use App\Filament\Widgets\FinancialOverviewWidget;
-use App\Filament\Widgets\NetIncomeTrendChartWidget;
-use App\Filament\Widgets\PaidAmountTrendChartWidget;
 use App\Filament\Widgets\PlatformStatsWidget;
 use App\Filament\Widgets\ProviderOnboardingWidget;
 use App\Filament\Widgets\QuotesOverviewWidget;
@@ -22,6 +20,7 @@ use Filament\Http\Middleware\DispatchServingFilamentEvent;
 use Filament\Panel;
 use Filament\PanelProvider;
 use Filament\Support\Colors\Color;
+use Filament\Support\Enums\Width;
 use Filament\Support\Icons\Heroicon;
 use Filament\View\PanelsRenderHook;
 use Illuminate\Cookie\Middleware\AddQueuedCookiesToResponse;
@@ -42,6 +41,7 @@ class AdminPanelProvider extends PanelProvider
             ->path('admin')
             ->login(Login::class)
             ->passwordReset()
+            ->simplePageMaxContentWidth(Width::Full)
             ->brandName(fn (): string => (string) config('app.brand'))
             ->brandLogo(asset('images/brand/mgf-logo.svg'))
             ->darkModeBrandLogo(asset('images/brand/mgf-logo-dark.svg'))
@@ -87,9 +87,7 @@ class AdminPanelProvider extends PanelProvider
                 ProviderOnboardingWidget::class,
                 FinancialOverviewWidget::class,
                 FinancialHealthWidget::class,
-                NetIncomeTrendChartWidget::class,
                 AvailableBalanceTrendChartWidget::class,
-                PaidAmountTrendChartWidget::class,
                 QuotesOverviewWidget::class,
             ])
             ->middleware([
@@ -115,18 +113,22 @@ class AdminPanelProvider extends PanelProvider
             ->renderHook(
                 PanelsRenderHook::HEAD_END,
                 fn (): string => '<meta name="robots" content="noindex, nofollow">'
-                    .'<link rel="stylesheet" href="'.asset('css/filament-wizard.css?v=5').'">',
+                    .'<link rel="stylesheet" href="'.asset('css/filament-wizard.css?v=5').'">'
+                    .(request()->is('admin/login')
+                        ? '<link rel="stylesheet" href="'.asset('css/filament-login.css?v=3').'">'
+                        : ''),
             )
             ->renderHook(
                 PanelsRenderHook::BODY_END,
                 function (): string {
                     $html = '';
-                    if (request()->is('admin/login')) {
-                        $html .= view('filament.pwa.install-snippet')->render();
-                    } else {
+
+                    if (! request()->is('admin/login')) {
                         $html .= \Illuminate\Support\Facades\Blade::render("@livewire('chatbot-widget')");
                     }
+
                     $html .= view('filament.pwa.service-worker')->render();
+
                     return $html;
                 }
             );
