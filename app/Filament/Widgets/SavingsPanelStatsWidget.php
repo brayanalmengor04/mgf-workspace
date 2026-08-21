@@ -18,6 +18,8 @@ class SavingsPanelStatsWidget extends StatsOverviewWidget
 
     protected int | string | array $columnSpan = 'full';
 
+    protected static ?int $sort = 2;
+
     protected function getStats(): array
     {
         $user = auth()->user();
@@ -49,13 +51,6 @@ class SavingsPanelStatsWidget extends StatsOverviewWidget
                 ->descriptionIcon('heroicon-m-arrow-up-circle')
                 ->chart($analytics['trend']['withdrawals'] !== [] ? $analytics['trend']['withdrawals'] : null)
                 ->color('danger'),
-
-            Stat::make('Por reponer', MoneyFormatter::format($summary['pending_replenishment']))
-                ->description($summary['pending_replenishment'] > 0
-                    ? 'Faltan '.MoneyFormatter::format($summary['pending_replenishment']).' por reponer'
-                    : 'Sin retiros pendientes')
-                ->descriptionIcon('heroicon-m-exclamation-triangle')
-                ->color($summary['pending_replenishment'] > 0 ? 'warning' : 'gray'),
         ];
     }
 }

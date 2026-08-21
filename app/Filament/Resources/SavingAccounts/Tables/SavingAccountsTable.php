@@ -4,6 +4,7 @@ namespace App\Filament\Resources\SavingAccounts\Tables;
 
 use App\Enums\BudgetPeriod;
 use App\Enums\QuoteCurrency;
+use App\Filament\Resources\SavingAccounts\Actions\SavingsTransactionActions;
 use Filament\Actions\BulkActionGroup;
 use Filament\Actions\DeleteAction;
 use Filament\Actions\DeleteBulkAction;
@@ -28,6 +29,11 @@ class SavingAccountsTable
                     ->money(fn ($record): string => QuoteCurrency::resolve($record->currency)->value)
                     ->sortable()
                     ->color('success'),
+                TextColumn::make('goal_amount')
+                    ->label('Meta total')
+                    ->money(fn ($record): string => QuoteCurrency::resolve($record->currency)->value)
+                    ->placeholder('—')
+                    ->sortable(),
                 TextColumn::make('target_per_period')
                     ->label('Meta / período')
                     ->formatStateUsing(function ($state, $record): string {
@@ -48,15 +54,6 @@ class SavingAccountsTable
                     ->money(fn ($record): string => QuoteCurrency::resolve($record->currency)->value)
                     ->color(fn ($state): string => (float) $state > 0 ? 'warning' : 'gray')
                     ->sortable(),
-                TextColumn::make('goal_amount')
-                    ->label('Meta total')
-                    ->money(fn ($record): string => QuoteCurrency::resolve($record->currency)->value)
-                    ->placeholder('—')
-                    ->toggleable(),
-                TextColumn::make('bank_alias')
-                    ->label('Alias banco')
-                    ->placeholder('—')
-                    ->toggleable(isToggledHiddenByDefault: true),
                 IconColumn::make('is_active')
                     ->label('Activa')
                     ->boolean()
@@ -75,6 +72,8 @@ class SavingAccountsTable
                     ->falseLabel('Archivadas'),
             ])
             ->recordActions([
+                SavingsTransactionActions::withdrawForRecord(),
+                SavingsTransactionActions::replenishForRecord(),
                 EditAction::make(),
                 DeleteAction::make(),
             ])

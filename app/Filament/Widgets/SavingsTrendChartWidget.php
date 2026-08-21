@@ -2,6 +2,7 @@
 
 namespace App\Filament\Widgets;
 
+use App\Filament\Widgets\Concerns\InteractsWithSelectedSavingAccount;
 use App\Filament\Widgets\Concerns\OnlyOnSavingAccountsList;
 use App\Services\Savings\SavingsLedgerService;
 use App\Support\MoneyFormatter;
@@ -10,6 +11,7 @@ use Illuminate\Contracts\Support\Htmlable;
 
 abstract class SavingsTrendChartWidget extends ChartWidget
 {
+    use InteractsWithSelectedSavingAccount;
     use OnlyOnSavingAccountsList;
 
     protected static bool $isDiscovered = false;
@@ -25,6 +27,11 @@ abstract class SavingsTrendChartWidget extends ChartWidget
     public string $range = '12';
 
     public string $series = 'balance';
+
+    public function boot(): void
+    {
+        $this->bootInteractsWithSelectedSavingAccount();
+    }
 
     public function updatedFilter(): void
     {
@@ -253,6 +260,13 @@ abstract class SavingsTrendChartWidget extends ChartWidget
      */
     protected function resolvedTrend(): array
     {
+        $limit = in_array((int) $this->range, [3, 6, 12], true) ? (int) $this->range : 12;
+        $account = $this->selectedSavingsAccount();
+
+        if ($account !== null) {
+            return app(SavingsLedgerService::class)->trendForAccount($account, $limit);
+        }
+
         $user = auth()->user();
 
         if ($user === null) {
@@ -265,7 +279,6 @@ abstract class SavingsTrendChartWidget extends ChartWidget
         }
 
         $trend = app(SavingsLedgerService::class)->analyticsForUser($user)['trend'];
-        $limit = in_array((int) $this->range, [3, 6, 12], true) ? (int) $this->range : 12;
 
         if ($trend['labels'] === []) {
             return $trend;
