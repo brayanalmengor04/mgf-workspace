@@ -2,7 +2,7 @@
   "frameCount": 80,
   "fps": 20,
   "width": 720,
-  "gif": "/animations/budget-scan-pen/hero.gif",
+  "gif": "/animations/budget-scan-pen/budget-scan-pen-hero.gif",
   "framesBase": "/animations/budget-scan-pen/frames/frame_",
   "framesExt": ".webp"
 }

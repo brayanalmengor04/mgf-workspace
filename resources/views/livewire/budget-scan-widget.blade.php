@@ -113,7 +113,7 @@
                     <img
                         class="mgf-crm-ai-scan-banner__hero-gif"
                         data-pen-gif
-                        src="{{ asset('animations/budget-scan-pen/hero.gif') }}"
+                        src="{{ asset('animations/budget-scan-pen/budget-scan-pen-hero.gif') }}"
                         alt=""
                         width="720"
                         height="405"

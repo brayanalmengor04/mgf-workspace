@@ -20,7 +20,7 @@ const FRAME_WIDTH = 720;
 const WEBP_QUALITY = 82;
 
 mkdirSync(framesOut, { recursive: true });
-copyFileSync(gifSrc, join(outRoot, 'hero.gif'));
+copyFileSync(gifSrc, join(outRoot, 'budget-scan-pen-hero.gif'));
 
 const files = readdirSync(framesSrc)
     .filter((file) => file.endsWith('.png'))
@@ -48,7 +48,7 @@ writeFileSync(
             frameCount: outputIndex,
             fps: 20,
             width: FRAME_WIDTH,
-            gif: '/animations/budget-scan-pen/hero.gif',
+            gif: '/animations/budget-scan-pen/budget-scan-pen-hero.gif',
             framesBase: '/animations/budget-scan-pen/frames/frame_',
             framesExt: '.webp',
         },
@@ -57,4 +57,4 @@ writeFileSync(
     ),
 );
 
-console.log(`\nDone: ${outputIndex} WebP frames + hero.gif`);
+console.log(`\nDone: ${outputIndex} WebP frames + budget-scan-pen-hero.gif`);
