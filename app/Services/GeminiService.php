@@ -13,6 +13,8 @@ class GeminiService
 
     protected string $thinkingLevel;
 
+    protected string $visionModel;
+
     protected string $baseUrl = 'https://generativelanguage.googleapis.com/v1beta/models';
 
     public function __construct(
@@ -21,6 +23,20 @@ class GeminiService
         $this->apiKey = (string) config('services.gemini.api_key', '');
         $this->model = (string) config('services.gemini.model', 'gemini-3.1-flash-lite');
         $this->thinkingLevel = (string) config('services.gemini.thinking_level', 'minimal');
+        $this->visionModel = (string) config('services.gemini.vision_model', 'gemini-2.0-flash');
+    }
+
+    public function isConfigured(): bool
+    {
+        return $this->apiKey !== '';
+    }
+
+    public function missingKeyMessage(): string
+    {
+        return '⚠️ **El asistente IA no está configurado en este entorno.** '
+            .'Agrega `GEMINI_API_KEY` en tu archivo `.env` (local) o en las variables de Railway (producción). '
+            .'Obtén una key gratuita en [Google AI Studio](https://aistudio.google.com/apikey). '
+            .'Después reinicia el contenedor: `docker compose up -d`.';
     }
 
     /**
@@ -28,10 +44,10 @@ class GeminiService
      */
     public function generateContent(array $chatHistory, ?string $systemInstruction = null, string $purpose = 'chat'): string
     {
-        if ($this->apiKey === '') {
+        if (! $this->isConfigured()) {
             Log::error('Gemini API key is not set.');
 
-            return 'Error: Gemini API key no configurada.';
+            return $this->missingKeyMessage();
         }
 
         $url = "{$this->baseUrl}/{$this->model}:generateContent?key={$this->apiKey}";
@@ -99,6 +115,96 @@ class GeminiService
         }
 
         return $text;
+    }
+
+    public function generateContentFromImage(
+        string $imagePath,
+        string $prompt,
+        ?string $systemInstruction = null,
+        string $purpose = 'vision',
+    ): string {
+        if (! $this->isConfigured()) {
+            Log::error('Gemini API key is not set.');
+
+            return json_encode(['error' => $this->missingKeyMessage()]);
+        }
+
+        if (! is_readable($imagePath)) {
+            return json_encode(['error' => 'No se pudo leer la imagen subida.']);
+        }
+
+        $mime = mime_content_type($imagePath) ?: 'image/jpeg';
+        $encoded = base64_encode((string) file_get_contents($imagePath));
+
+        $url = "{$this->baseUrl}/{$this->visionModel}:generateContent?key={$this->apiKey}";
+
+        $payload = [
+            'contents' => [
+                [
+                    'role' => 'user',
+                    'parts' => [
+                        ['text' => $prompt],
+                        [
+                            'inline_data' => [
+                                'mime_type' => $mime,
+                                'data' => $encoded,
+                            ],
+                        ],
+                    ],
+                ],
+            ],
+            'generationConfig' => [
+                'temperature' => 0.2,
+                'responseMimeType' => 'application/json',
+            ],
+        ];
+
+        if ($systemInstruction) {
+            $payload['systemInstruction'] = [
+                'parts' => [
+                    ['text' => $systemInstruction],
+                ],
+            ];
+        }
+
+        $startedAt = microtime(true);
+
+        $response = Http::timeout(90)
+            ->withHeaders(['Content-Type' => 'application/json'])
+            ->post($url, $payload);
+
+        $durationMs = (microtime(true) - $startedAt) * 1000;
+
+        if (! $response->successful()) {
+            $this->usageLogger->recordError(
+                $this->visionModel,
+                $purpose,
+                $response->status(),
+                $response->body(),
+                $durationMs,
+            );
+
+            Log::error('Gemini Vision API Error', [
+                'status' => $response->status(),
+                'body' => $response->body(),
+                'model' => $this->visionModel,
+            ]);
+
+            return json_encode(['error' => 'No se pudo analizar la imagen. Intenta con mejor iluminación o una foto más nítida.']);
+        }
+
+        $data = $response->json();
+        $text = $this->extractVisibleText($data);
+
+        $this->usageLogger->record(
+            $this->visionModel,
+            $purpose,
+            is_array($data) ? ($data['usageMetadata'] ?? null) : null,
+            $response->status(),
+            $durationMs,
+        );
+
+        return $text !== '' ? $text : json_encode(['error' => 'La IA no devolvió datos legibles de la imagen.']);
     }
 
     public function translateToSpanish(string $text): string
