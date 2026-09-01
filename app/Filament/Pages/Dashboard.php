@@ -2,7 +2,9 @@
 
 namespace App\Filament\Pages;
 
+use App\Services\Crm\CrmDashboardService;
 use App\Support\AdminViewMode;
+use App\Support\CrmNavigation;
 use Filament\Actions\Action;
 use Filament\Pages\Dashboard as BaseDashboard;
 use Filament\Support\Icons\Heroicon;
@@ -10,7 +12,49 @@ use Illuminate\Contracts\Support\Htmlable;
 
 class Dashboard extends BaseDashboard
 {
+    protected string $view = 'filament.pages.crm-dashboard';
+
     protected static ?string $navigationLabel = 'Escritorio';
+
+    protected static ?int $navigationSort = 1;
+
+    public static function getNavigationGroup(): ?string
+    {
+        return CrmNavigation::INICIO;
+    }
+
+    public string $trendMetric = 'available_balance';
+
+    /** @var array<string, mixed> */
+    public array $crm = [];
+
+    public function mount(): void
+    {
+        $this->loadCrmData();
+    }
+
+    public function updatedTrendMetric(): void
+    {
+        $trend = $this->crm['trend'] ?? [];
+        $data = match ($this->trendMetric) {
+            'net_income' => $trend['net_income'] ?? [],
+            'paid_amount' => $trend['paid_amount'] ?? [],
+            default => $trend['available_balance'] ?? [],
+        };
+
+        $deltas = match ($this->trendMetric) {
+            'net_income' => $this->crm['trend_point_deltas']['net_income'] ?? [],
+            'paid_amount' => $this->crm['trend_point_deltas']['paid_amount'] ?? [],
+            default => $this->crm['trend_point_deltas']['available_balance'] ?? [],
+        };
+        $labels = $trend['labels'] ?? [];
+
+        $this->dispatch('crm-trend-changed', labels: $labels, data: $data, label: match ($this->trendMetric) {
+            'net_income' => 'Ingreso neto',
+            'paid_amount' => 'Pagado',
+            default => 'Saldo disponible',
+        }, deltas: $deltas, pointCount: max(count($labels), count($deltas) + 1));
+    }
 
     public function getTitle(): string|Htmlable
     {
@@ -18,19 +62,22 @@ class Dashboard extends BaseDashboard
             return 'Escritorio (vista proveedor)';
         }
 
-        return 'Escritorio';
+        return 'CRM presupuestal';
     }
 
-    /**
-     * @return int | array<string, ?int>
-     */
-    public function getColumns(): int | array
+    public function getHeaderWidgetsColumns(): int|array
     {
-        return [
-            'default' => 1,
-            'sm' => 2,
-            'xl' => 4,
-        ];
+        return 1;
+    }
+
+    public function getWidgets(): array
+    {
+        return [];
+    }
+
+    public function getVisibleWidgets(): array
+    {
+        return [];
     }
 
     protected function getHeaderActions(): array
@@ -51,5 +98,18 @@ class Dashboard extends BaseDashboard
                     $this->redirect(static::getUrl(), navigate: true);
                 }),
         ];
+    }
+
+    protected function loadCrmData(): void
+    {
+        $user = auth()->user();
+
+        if ($user === null) {
+            $this->crm = [];
+
+            return;
+        }
+
+        $this->crm = app(CrmDashboardService::class)->forUser($user);
     }
 }

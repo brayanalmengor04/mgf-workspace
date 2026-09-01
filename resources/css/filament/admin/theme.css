@@ -1,0 +1,120 @@
+@import 'tailwindcss';
+
+@source '../../../../app/Filament/**/*.php';
+@source '../../../../resources/views/filament/**/*.blade.php';
+@source '../../../../resources/views/components/**/*.blade.php';
+
+@import './crm-components.css';
+
+/* Shell TailAdmin-inspired overrides for Filament */
+.fi-body {
+    font-family: 'Instrument Sans', ui-sans-serif, system-ui, sans-serif;
+    background-color: #f1f5f9 !important;
+}
+
+.dark .fi-body {
+    background-color: #030712 !important;
+}
+
+/* Sidebar claro estilo CRM (TailAdmin) */
+.fi-sidebar {
+    background: linear-gradient(180deg, #ffffff 0%, #f8fafc 100%) !important;
+    border-right: 1px solid #e2e8f0 !important;
+    box-shadow: 1px 0 0 rgb(15 23 42 / 0.03);
+}
+
+.dark .fi-sidebar {
+    background: linear-gradient(180deg, #111827 0%, #0b1220 100%) !important;
+    border-color: #1f2937 !important;
+    box-shadow: none;
+}
+
+.fi-sidebar .fi-sidebar-item-label {
+    color: #475569;
+    font-weight: 500;
+}
+
+.dark .fi-sidebar .fi-sidebar-item-label {
+    color: #cbd5e1;
+}
+
+.fi-sidebar .fi-sidebar-group-label {
+    color: #94a3b8;
+    font-size: 0.6875rem;
+    font-weight: 700;
+    letter-spacing: 0.06em;
+    text-transform: uppercase;
+}
+
+.dark .fi-sidebar .fi-sidebar-group-label {
+    color: #64748b;
+}
+
+.fi-sidebar .fi-sidebar-item-btn {
+    border-radius: 0.625rem;
+    margin-inline: 0.35rem;
+}
+
+.fi-sidebar .fi-sidebar-item.fi-active > .fi-sidebar-item-btn {
+    background: linear-gradient(90deg, rgb(70 95 255 / 0.14), rgb(70 95 255 / 0.04)) !important;
+    box-shadow: inset 3px 0 0 #465fff;
+}
+
+.dark .fi-sidebar .fi-sidebar-item.fi-active > .fi-sidebar-item-btn {
+    background: rgb(70 95 255 / 0.18) !important;
+    box-shadow: inset 3px 0 0 #6b7fff;
+}
+
+.fi-sidebar .fi-sidebar-item.fi-active .fi-sidebar-item-label {
+    color: #465fff !important;
+    font-weight: 600;
+}
+
+.dark .fi-sidebar .fi-sidebar-item.fi-active .fi-sidebar-item-label {
+    color: #ffffff !important;
+}
+
+.fi-sidebar .fi-sidebar-item-icon {
+    color: #64748b;
+}
+
+.fi-sidebar .fi-sidebar-item.fi-active .fi-sidebar-item-icon {
+    color: #465fff;
+}
+
+.dark .fi-sidebar .fi-sidebar-item.fi-active .fi-sidebar-item-icon {
+    color: #93a0ff;
+}
+
+.fi-topbar {
+    background-color: #ffffff !important;
+    border-bottom: 1px solid #e2e8f0 !important;
+    box-shadow: 0 1px 2px rgb(15 23 42 / 0.04);
+}
+
+.dark .fi-topbar {
+    background-color: #111827 !important;
+    border-color: #1f2937 !important;
+}
+
+.fi-main-ctn {
+    padding-top: 1rem;
+}
+
+.fi-section,
+.fi-wi-stats-overview-stat,
+.fi-ta-ctn {
+    border-radius: 1rem !important;
+}
+
+.fi-page .fi-header-heading {
+    font-weight: 700;
+    letter-spacing: -0.02em;
+}
+
+.fi-ta-table > thead > tr > th {
+    font-size: 0.75rem;
+    text-transform: uppercase;
+    letter-spacing: 0.04em;
+    color: #64748b;
+}

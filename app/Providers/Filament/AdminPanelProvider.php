@@ -5,18 +5,16 @@ namespace App\Providers\Filament;
 use AlizHarb\ActivityLog\ActivityLogPlugin;
 use App\Filament\Auth\Login;
 use App\Filament\Pages\Dashboard;
-use App\Filament\Widgets\AvailableBalanceTrendChartWidget;
-use App\Filament\Widgets\FinancialHealthWidget;
-use App\Filament\Widgets\FinancialOverviewWidget;
 use App\Filament\Widgets\PlatformStatsWidget;
 use App\Filament\Widgets\ProviderOnboardingWidget;
-use App\Filament\Widgets\QuotesOverviewWidget;
 use App\Support\AdminViewMode;
+use App\Support\CrmNavigation;
 use Filament\Actions\Action;
 use Filament\Http\Middleware\Authenticate;
 use Filament\Http\Middleware\AuthenticateSession;
 use Filament\Http\Middleware\DisableBladeIconComponents;
 use Filament\Http\Middleware\DispatchServingFilamentEvent;
+use Filament\Navigation\NavigationGroup;
 use Filament\Panel;
 use Filament\PanelProvider;
 use Filament\Support\Colors\Color;
@@ -48,7 +46,18 @@ class AdminPanelProvider extends PanelProvider
             ->brandLogoHeight('2.25rem')
             ->favicon(asset('favicon.ico'))
             ->colors([
-                'primary' => Color::Amber,
+                'primary' => Color::hex('#465fff'),
+                'success' => Color::hex('#10b981'),
+                'warning' => Color::hex('#f59e0b'),
+                'danger' => Color::hex('#ef4444'),
+            ])
+            ->navigationGroups([
+                NavigationGroup::make(CrmNavigation::INICIO),
+                NavigationGroup::make(CrmNavigation::MODULO_PRESUPUESTO),
+                NavigationGroup::make(CrmNavigation::MODULO_AHORROS),
+                NavigationGroup::make(CrmNavigation::MODULO_COTIZACIONES),
+                NavigationGroup::make(CrmNavigation::CONFIGURACION)
+                    ->collapsed(),
             ])
             ->userMenuItems([
                 Action::make('toggleViewMode')
@@ -68,12 +77,14 @@ class AdminPanelProvider extends PanelProvider
             ])
             ->plugins([
                 FilamentPwaPlugin::make()
-                    ->themeColor('#0f172a')
+                    ->themeColor('#465fff')
                     ->appTitle((string) config('app.brand')),
                 ActivityLogPlugin::make()
                     ->label(fn (): string => auth()->user()?->canViewGlobalData() ? 'Auditoría' : 'Mi bitácora')
                     ->pluralLabel(fn (): string => auth()->user()?->canViewGlobalData() ? 'Auditoría' : 'Mi bitácora')
-                    ->navigationGroup(fn (): string => auth()->user()?->canViewGlobalData() ? 'Configuración' : 'Cotizaciones')
+                    ->navigationGroup(fn (): string => auth()->user()?->canViewGlobalData()
+                        ? CrmNavigation::CONFIGURACION
+                        : CrmNavigation::MODULO_COTIZACIONES)
                     ->navigationSort(99),
             ])
             ->discoverResources(in: app_path('Filament/Resources'), for: 'App\Filament\Resources')
@@ -85,10 +96,6 @@ class AdminPanelProvider extends PanelProvider
             ->widgets([
                 PlatformStatsWidget::class,
                 ProviderOnboardingWidget::class,
-                FinancialOverviewWidget::class,
-                FinancialHealthWidget::class,
-                AvailableBalanceTrendChartWidget::class,
-                QuotesOverviewWidget::class,
             ])
             ->middleware([
                 EncryptCookies::class,
@@ -113,6 +120,7 @@ class AdminPanelProvider extends PanelProvider
             ->renderHook(
                 PanelsRenderHook::HEAD_END,
                 fn (): string => '<meta name="robots" content="noindex, nofollow">'
+                    .view('filament.admin.theme-assets')->render()
                     .'<link rel="stylesheet" href="'.asset('css/filament-wizard.css?v=5').'">'
                     .(request()->is('admin/login')
                         ? '<link rel="stylesheet" href="'.asset('css/filament-login.css?v=3').'">'
