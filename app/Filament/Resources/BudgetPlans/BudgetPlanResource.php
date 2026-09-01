@@ -8,9 +8,12 @@ use App\Filament\Resources\BudgetPlans\Pages\CreateBudgetPlan;
 use App\Filament\Resources\BudgetPlans\Pages\EditBudgetPlan;
 use App\Filament\Resources\BudgetPlans\Pages\ListBudgetPlans;
 use App\Filament\Resources\BudgetPlans\Pages\PreviewBudgetPlan;
+use App\Filament\Resources\BudgetPlans\Pages\ReviewBudgetScan;
+use App\Filament\Resources\BudgetPlans\Pages\ViewBudgetPlan;
 use App\Filament\Resources\BudgetPlans\Schemas\BudgetPlanForm;
 use App\Filament\Resources\BudgetPlans\Tables\BudgetPlansTable;
 use App\Models\BudgetPlan;
+use App\Support\CrmNavigation;
 use BackedEnum;
 use Filament\Resources\Resource;
 use Filament\Schemas\Schema;
@@ -25,7 +28,7 @@ class BudgetPlanResource extends Resource
 
     protected static string|BackedEnum|null $navigationIcon = Heroicon::OutlinedCalculator;
 
-    protected static string|UnitEnum|null $navigationGroup = 'Finanzas personales';
+    protected static string|UnitEnum|null $navigationGroup = CrmNavigation::MODULO_PRESUPUESTO;
 
     protected static ?int $navigationSort = 1;
 
@@ -42,7 +45,7 @@ class BudgetPlanResource extends Resource
         $query = parent::getEloquentQuery();
         $user = auth()->user();
 
-        return $user ? $query->forUser($user) : $query;
+        return $user ? $query->forUser($user)->with('items') : $query;
     }
 
     public static function form(Schema $schema): Schema
@@ -67,6 +70,8 @@ class BudgetPlanResource extends Resource
         return [
             'index' => ListBudgetPlans::route('/'),
             'create' => CreateBudgetPlan::route('/create'),
+            'review-scan' => ReviewBudgetScan::route('/review-scan'),
+            'view' => ViewBudgetPlan::route('/{record}'),
             'edit' => EditBudgetPlan::route('/{record}/edit'),
             'preview' => PreviewBudgetPlan::route('/{record}/preview'),
             'charts' => ChartsBudgetPlan::route('/{record}/charts'),

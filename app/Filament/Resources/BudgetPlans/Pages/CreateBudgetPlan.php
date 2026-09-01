@@ -7,6 +7,7 @@ use App\Enums\BudgetPdfLayout;
 use App\Enums\BudgetStatus;
 use App\Enums\QuoteCurrency;
 use App\Filament\Concerns\InteractsWithEmbeddedWizard;
+use App\Filament\Resources\BudgetPlans\Concerns\ImportsBudgetFromScan;
 use App\Filament\Resources\BudgetPlans\BudgetPlanResource;
 use App\Filament\Resources\BudgetPlans\Concerns\RecalculatesBudgetTotals;
 use App\Filament\Resources\BudgetPlans\Concerns\SyncsBudgetPlanItems;
@@ -17,11 +18,19 @@ use Filament\Resources\Pages\CreateRecord;
 
 class CreateBudgetPlan extends CreateRecord
 {
+    use ImportsBudgetFromScan;
     use InteractsWithEmbeddedWizard;
     use RecalculatesBudgetTotals;
     use SyncsBudgetPlanItems;
 
     protected static string $resource = BudgetPlanResource::class;
+
+    protected function getHeaderActions(): array
+    {
+        return [
+            $this->importBudgetFromPhotoAction(),
+        ];
+    }
 
     protected function mutateFormDataBeforeCreate(array $data): array
     {
