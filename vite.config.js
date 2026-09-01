@@ -12,7 +12,16 @@ const faviconAssets = readdirSync(join(process.cwd(), 'resources/favicon'))
 export default defineConfig({
     plugins: [
         laravel({
-            input: ['resources/css/app.css', 'resources/js/app.js', 'resources/js/pwa-install.js', ...faviconAssets],
+            input: [
+                'resources/css/app.css',
+                'resources/css/filament/admin/theme.css',
+                'resources/js/crm-echarts.js',
+                'resources/js/crm-table-view.js',
+                'resources/js/budget-scan-pen-hero.js',
+                'resources/js/app.js',
+                'resources/js/pwa-install.js',
+                ...faviconAssets,
+            ],
             refresh: true,
             fonts: [
                 bunny('Instrument Sans', {

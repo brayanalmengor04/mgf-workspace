@@ -5,7 +5,10 @@
     "scripts": {
         "build": "vite build",
         "dev": "vite",
-        "pwa:icons": "node scripts/generate-pwa-icons.mjs"
+        "pwa:icons": "node scripts/generate-pwa-icons.mjs",
+        "lottie:budget-scan": "python scripts/generate-budget-scan-lottie.py",
+        "pen:assets": "node scripts/prepare-budget-scan-pen-assets.mjs",
+        "video:remove-bg": "node scripts/remove-video-background.mjs"
     },
     "devDependencies": {
         "@tailwindcss/vite": "^4.0.0",
@@ -13,5 +16,8 @@
         "sharp": "^0.34.5",
         "tailwindcss": "^4.0.0",
         "vite": "^8.0.0"
+    },
+    "dependencies": {
+        "echarts": "^6.1.0"
     }
 }
