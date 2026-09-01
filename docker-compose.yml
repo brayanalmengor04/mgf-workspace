@@ -13,6 +13,10 @@ services:
       APP_ENV: local
       APP_DEBUG: "true"
       APP_URL: http://localhost:8000
+      GEMINI_API_KEY: ${GEMINI_API_KEY:-}
+      GEMINI_MODEL: ${GEMINI_MODEL:-gemini-3.1-flash-lite}
+      GEMINI_THINKING_LEVEL: ${GEMINI_THINKING_LEVEL:-minimal}
+      GEMINI_TRANSLATE_FALLBACK: ${GEMINI_TRANSLATE_FALLBACK:-true}
       CACHE_STORE: file
       SESSION_DRIVER: file
       DB_CONNECTION: mysql

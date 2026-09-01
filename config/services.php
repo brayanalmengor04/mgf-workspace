@@ -50,6 +50,20 @@ return [
             'tpm' => (int) env('GEMINI_RATE_LIMIT_TPM', 250_000),
             'rpd' => (int) env('GEMINI_RATE_LIMIT_RPD', 1_500),
         ],
+        'chat' => [
+            'max_conversations' => (int) env('GEMINI_CHAT_MAX_CONVERSATIONS', 5),
+            'max_api_messages' => (int) env('GEMINI_CHAT_MAX_API_MESSAGES', 8),
+            'summarize_after_messages' => (int) env('GEMINI_CHAT_SUMMARIZE_AFTER', 12),
+            'context_cache_ttl' => (int) env('GEMINI_CHAT_CONTEXT_CACHE_TTL', 300),
+            'response_cache_ttl' => (int) env('GEMINI_CHAT_RESPONSE_CACHE_TTL', 3600),
+        ],
+        'vision_model' => env('GEMINI_VISION_MODEL', 'gemini-2.0-flash'),
+    ],
+
+    'budget_scan' => [
+        'max_mb' => (int) env('BUDGET_SCAN_MAX_MB', 8),
+        'rate_limit_per_hour' => (int) env('BUDGET_SCAN_RATE_LIMIT_PER_HOUR', 3),
+        'delete_image_after' => env('BUDGET_SCAN_DELETE_IMAGE_AFTER', true),
     ],
 
 ];
