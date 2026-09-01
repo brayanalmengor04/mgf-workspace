@@ -13,6 +13,11 @@
 /.phpunit.cache
 /.vscode
 /.zed
+# Caché local del Salesforce CLI (no es parte de este proyecto Laravel)
+.sf/
+# Assets fuente de animación (copias locales; los publicados van en public/animations/)
+/Pero_sin_los_numeros_porfa_deb_processed_frames_inspyrenet - copia/
+/Pero_sin_los_numeros_porfa_deb_processed_inspyrenet_q80_t95 - copia.gif
 /auth.json
 /node_modules
 /public/build
