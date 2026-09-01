@@ -1,4 +1,11 @@
-<div class="mgf-crm-ai-scan-banner">
+<div
+    class="mgf-crm-ai-scan-banner"
+    x-data="{ uploadProgress: 0, isUploading: false }"
+    x-on:livewire-upload-start="isUploading = true; uploadProgress = 0"
+    x-on:livewire-upload-finish="isUploading = false; uploadProgress = 100"
+    x-on:livewire-upload-error="isUploading = false; uploadProgress = 0"
+    x-on:livewire-upload-progress="uploadProgress = $event.detail.progress"
+>
     <div class="mgf-crm-ai-scan-banner__aurora" aria-hidden="true"></div>
 
     <div class="mgf-crm-ai-scan-banner__layout">
@@ -75,13 +82,45 @@
                     </button>
                 </div>
 
-                <p
-                    class="mgf-crm-ai-scan-banner__status mgf-crm-ai-scan-banner__status--muted"
-                    wire:loading
-                    wire:target="scanImage"
+                <div
+                    class="mgf-crm-ai-scan-banner__upload-progress"
+                    x-show="isUploading"
+                    x-cloak
+                    role="progressbar"
+                    :aria-valuenow="uploadProgress"
+                    aria-valuemin="0"
+                    aria-valuemax="100"
+                    aria-label="Progreso de subida de la foto"
                 >
-                    Subiendo la imagen — en móvil puede tardar un momento. No cierres la página.
-                </p>
+                    <div class="mgf-crm-ai-scan-banner__upload-progress-header">
+                        <span>Subiendo foto…</span>
+                        <span x-text="`${uploadProgress}%`"></span>
+                    </div>
+                    <div class="mgf-crm-ai-scan-banner__upload-progress-track">
+                        <div
+                            class="mgf-crm-ai-scan-banner__upload-progress-fill"
+                            :style="`width: ${uploadProgress}%`"
+                        ></div>
+                    </div>
+                    <p class="mgf-crm-ai-scan-banner__upload-progress-hint">
+                        En móvil puede tardar un momento. No cierres la página.
+                    </p>
+                </div>
+
+                <div
+                    class="mgf-crm-ai-scan-banner__upload-progress mgf-crm-ai-scan-banner__upload-progress--indeterminate"
+                    wire:loading
+                    wire:target="processScan"
+                    role="status"
+                    aria-label="Analizando foto con IA"
+                >
+                    <div class="mgf-crm-ai-scan-banner__upload-progress-header">
+                        <span>Analizando con IA…</span>
+                    </div>
+                    <div class="mgf-crm-ai-scan-banner__upload-progress-track">
+                        <div class="mgf-crm-ai-scan-banner__upload-progress-fill"></div>
+                    </div>
+                </div>
 
                 @if ($scanImage)
                     <p class="mgf-crm-ai-scan-banner__status mgf-crm-ai-scan-banner__status--ok">Imagen lista — pulsa «Analizar con IA».</p>
