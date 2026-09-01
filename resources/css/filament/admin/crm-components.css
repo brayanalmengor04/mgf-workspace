@@ -1191,6 +1191,7 @@
 }
 
 .mgf-crm-ai-scan-banner__status--ok { color: var(--mgf-crm-success); }
+.mgf-crm-ai-scan-banner__status--muted { color: var(--mgf-crm-muted); }
 .mgf-crm-ai-scan-banner__status--error { color: var(--mgf-crm-danger); }
 
 @media (min-width: 901px) {

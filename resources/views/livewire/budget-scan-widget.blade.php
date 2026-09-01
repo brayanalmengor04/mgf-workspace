@@ -66,12 +66,22 @@
                         class="mgf-crm-ai-scan-banner__btn mgf-crm-ai-scan-banner__btn--primary"
                         wire:click="processScan"
                         wire:loading.attr="disabled"
+                        wire:target="processScan"
                         @disabled($isProcessing || ! $scanImage)
                     >
-                        <span wire:loading.remove wire:target="processScan,scanImage">Analizar con IA</span>
-                        <span wire:loading wire:target="processScan,scanImage">Analizando…</span>
+                        <span wire:loading.remove wire:target="scanImage,processScan">Analizar con IA</span>
+                        <span wire:loading wire:target="scanImage">Subiendo foto…</span>
+                        <span wire:loading wire:target="processScan">Analizando con IA…</span>
                     </button>
                 </div>
+
+                <p
+                    class="mgf-crm-ai-scan-banner__status mgf-crm-ai-scan-banner__status--muted"
+                    wire:loading
+                    wire:target="scanImage"
+                >
+                    Subiendo la imagen — en móvil puede tardar un momento. No cierres la página.
+                </p>
 
                 @if ($scanImage)
                     <p class="mgf-crm-ai-scan-banner__status mgf-crm-ai-scan-banner__status--ok">Imagen lista — pulsa «Analizar con IA».</p>
