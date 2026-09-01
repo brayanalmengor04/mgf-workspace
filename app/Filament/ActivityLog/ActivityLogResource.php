@@ -8,6 +8,16 @@ use Illuminate\Database\Eloquent\Builder;
 
 class ActivityLogResource extends BaseActivityLogResource
 {
+    public static function canAccess(): bool
+    {
+        return auth()->user()?->isSuperAdmin() ?? false;
+    }
+
+    public static function shouldRegisterNavigation(): bool
+    {
+        return static::canAccess();
+    }
+
     public static function getEloquentQuery(): Builder
     {
         return ActivityLogScope::apply(parent::getEloquentQuery());

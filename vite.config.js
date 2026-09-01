@@ -18,6 +18,7 @@ export default defineConfig({
                 'resources/js/crm-echarts.js',
                 'resources/js/crm-table-view.js',
                 'resources/js/budget-scan-pen-hero.js',
+                'resources/js/budget-scan-upload.js',
                 'resources/js/app.js',
                 'resources/js/pwa-install.js',
                 ...faviconAssets,

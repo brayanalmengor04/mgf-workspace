@@ -2,7 +2,7 @@
 
 namespace App\Filament\Resources\Quotes;
 
-use AlizHarb\ActivityLog\RelationManagers\ActivitiesRelationManager;
+use App\Filament\RelationManagers\SuperAdminActivitiesRelationManager;
 use App\Filament\Resources\Quotes\Pages\CreateQuote;
 use App\Filament\Resources\Quotes\Pages\EditQuote;
 use App\Filament\Resources\Quotes\Pages\ListQuotes;
@@ -58,7 +58,7 @@ class QuoteResource extends Resource
     public static function getRelations(): array
     {
         return [
-            ActivitiesRelationManager::class,
+            SuperAdminActivitiesRelationManager::class,
         ];
     }
 

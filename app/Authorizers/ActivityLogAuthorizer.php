@@ -8,6 +8,6 @@ class ActivityLogAuthorizer
 {
     public function __invoke(User $user): bool
     {
-        return $user->is_active;
+        return $user->is_active && $user->isSuperAdmin();
     }
 }

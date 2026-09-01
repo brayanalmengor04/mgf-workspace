@@ -116,5 +116,132 @@
     font-size: 0.75rem;
     text-transform: uppercase;
     letter-spacing: 0.04em;
-    color: #64748b;
+    color: var(--mgf-crm-muted);
+}
+
+/* Filament tables — dark mode */
+.dark .fi-ta-ctn {
+    background-color: var(--mgf-crm-card-bg) !important;
+    border: 1px solid var(--mgf-crm-card-border);
+    box-shadow: var(--mgf-crm-shadow);
+}
+
+.dark .fi-ta-header-ctn {
+    border-color: var(--mgf-crm-card-border);
+}
+
+.dark .fi-ta-table > thead > tr > th {
+    color: var(--mgf-crm-muted);
+    background-color: color-mix(in oklab, var(--mgf-crm-card-bg) 88%, #000);
+    border-color: var(--mgf-crm-card-border);
+}
+
+.dark .fi-ta-table > tbody > tr > td {
+    color: var(--mgf-crm-heading);
+    border-color: var(--mgf-crm-card-border);
+}
+
+.dark .fi-ta-table > tbody > tr:hover > td {
+    background-color: var(--mgf-crm-table-hover);
+}
+
+.dark .fi-ta-table > tbody > tr.fi-selected > td {
+    background-color: color-mix(in oklab, var(--mgf-crm-accent) 12%, var(--mgf-crm-card-bg));
+}
+
+.dark .fi-ta-empty-state-heading {
+    color: var(--mgf-crm-heading);
+}
+
+.dark .fi-ta-empty-state-description {
+    color: var(--mgf-crm-muted);
+}
+
+.dark .fi-ta-pagination {
+    border-color: var(--mgf-crm-card-border);
+}
+
+.dark .fi-ta-filters {
+    border-color: var(--mgf-crm-card-border);
+}
+
+.dark .fi-ta-ctn .fi-input-wrp,
+.dark .fi-ta-ctn .fi-select-input {
+    background-color: color-mix(in oklab, var(--mgf-crm-card-bg) 92%, #fff);
+    border-color: var(--mgf-crm-card-border);
+    color: var(--mgf-crm-heading);
+}
+
+/* Filament cards & forms — CRM dark palette */
+.dark .fi-section:not(.fi-section-not-contained):not(.fi-aside),
+.dark .fi-wi-stats-overview-stat,
+.dark .fi-sc-wizard.fi-contained,
+.dark .fi-fo-repeater .fi-fo-repeater-item,
+.dark .fi-wi-chart .fi-section:not(.fi-section-not-contained):not(.fi-aside) {
+    background-color: var(--mgf-crm-card-bg) !important;
+    border: 1px solid var(--mgf-crm-card-border) !important;
+    box-shadow: var(--mgf-crm-shadow) !important;
+    --tw-ring-color: transparent !important;
+}
+
+.dark .fi-section-header-heading,
+.dark .fi-wi-stats-overview-stat-value,
+.dark .fi-wi-stats-overview-stat-label,
+.dark .fi-fo-repeater-item-header-label {
+    color: var(--mgf-crm-heading) !important;
+}
+
+.dark .fi-wi-stats-overview-stat-description,
+.dark .fi-section-header-description,
+.dark .fi-sc-wizard-header-step-label {
+    color: var(--mgf-crm-muted) !important;
+}
+
+.dark .fi-sc-wizard.fi-contained .fi-sc-wizard-header,
+.dark .fi-sc-wizard.fi-contained .fi-sc-wizard-footer,
+.dark .fi-section:not(.fi-section-not-contained) > .fi-section-content-ctn > .fi-section-footer {
+    border-color: var(--mgf-crm-card-border) !important;
+}
+
+.dark .fi-sc-wizard-header-step-icon-ctn {
+    background-color: color-mix(in oklab, var(--mgf-crm-accent) 14%, var(--mgf-crm-card-bg)) !important;
+    color: var(--mgf-crm-accent) !important;
+}
+
+.dark .fi-sc-wizard-header-step.fi-active .fi-sc-wizard-header-step-icon-ctn {
+    background-color: var(--mgf-crm-accent) !important;
+    color: #fff !important;
+}
+
+.dark .fi-sc-wizard-header-step.fi-completed .fi-sc-wizard-header-step-icon-ctn {
+    background-color: color-mix(in oklab, var(--mgf-crm-success) 20%, var(--mgf-crm-card-bg)) !important;
+    color: var(--mgf-crm-success) !important;
+}
+
+.dark .fi-input-wrp,
+.dark .fi-select-input,
+.dark .fi-fo-text-input input,
+.dark .fi-fo-textarea textarea {
+    background-color: color-mix(in oklab, var(--mgf-crm-card-bg) 94%, #fff) !important;
+    border-color: var(--mgf-crm-card-border) !important;
+    color: var(--mgf-crm-heading) !important;
+}
+
+.dark .fi-fo-field-wrp-label,
+.dark .fi-fo-placeholder {
+    color: var(--mgf-crm-muted) !important;
+}
+
+/* Wizard create/edit — pasos y pie en dark */
+.dark .fi-sc-wizard.fi-contained .fi-sc-wizard-header-step-btn:hover {
+    background: color-mix(in oklab, var(--mgf-crm-accent) 6%, transparent);
+}
+
+.dark .fi-sc-wizard-header-step-separator {
+    background-color: var(--mgf-crm-card-border) !important;
+}
+
+.dark .fi-main .fi-sc-group > .fi-sc-actions.fi-sticky,
+.dark .fi-main .fi-sc-wizard .fi-sc-wizard-footer {
+    background: linear-gradient(to top, var(--mgf-crm-card-bg) 70%, transparent) !important;
 }

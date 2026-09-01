@@ -15,6 +15,7 @@ class BudgetScanPipeline
         private readonly BudgetImageExtractionService $extractionService,
         private readonly BudgetScanNormalizer $normalizer,
         private readonly BudgetScanSession $session,
+        private readonly BudgetScanImageOptimizer $imageOptimizer,
     ) {}
 
     /**
@@ -48,7 +49,15 @@ class BudgetScanPipeline
     {
         $this->rateLimiter->ensure($user);
 
-        $raw = $this->extractionService->extract($absolutePath, $user);
+        $optimizedPath = $this->imageOptimizer->optimize($absolutePath);
+
+        try {
+            $raw = $this->extractionService->extract($optimizedPath, $user);
+        } finally {
+            if ($optimizedPath !== $absolutePath && File::exists($optimizedPath)) {
+                File::delete($optimizedPath);
+            }
+        }
 
         if (isset($raw['error'])) {
             throw new RuntimeException((string) $raw['error']);

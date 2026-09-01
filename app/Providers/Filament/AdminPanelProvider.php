@@ -80,11 +80,9 @@ class AdminPanelProvider extends PanelProvider
                     ->themeColor('#465fff')
                     ->appTitle((string) config('app.brand')),
                 ActivityLogPlugin::make()
-                    ->label(fn (): string => auth()->user()?->canViewGlobalData() ? 'Auditoría' : 'Mi bitácora')
-                    ->pluralLabel(fn (): string => auth()->user()?->canViewGlobalData() ? 'Auditoría' : 'Mi bitácora')
-                    ->navigationGroup(fn (): string => auth()->user()?->canViewGlobalData()
-                        ? CrmNavigation::CONFIGURACION
-                        : CrmNavigation::MODULO_COTIZACIONES)
+                    ->label('Auditoría')
+                    ->pluralLabel('Auditoría')
+                    ->navigationGroup(CrmNavigation::CONFIGURACION)
                     ->navigationSort(99),
             ])
             ->discoverResources(in: app_path('Filament/Resources'), for: 'App\Filament\Resources')

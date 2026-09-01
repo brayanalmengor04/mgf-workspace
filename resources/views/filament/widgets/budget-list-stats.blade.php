@@ -3,12 +3,11 @@
 @endphp
 
 <div class="mgf-crm mgf-crm-budget-list-stats">
-    <div class="mgf-crm-stat-section">
-        <div class="mgf-crm-stat-section__header">
-            <h2 class="mgf-crm-stat-section__title">Resumen de presupuestos</h2>
-            <p class="mgf-crm-stat-section__subtitle">Estado general de tus comprobantes y pagos pendientes</p>
-        </div>
-        <div class="mgf-crm-grid mgf-crm-grid--stats">
+    <div class="mgf-crm-budget-list-stats__intro">
+        <h2 class="mgf-crm-stat-section__title">Resumen de presupuestos</h2>
+        <p class="mgf-crm-stat-section__subtitle">Estado general de tus comprobantes y pagos pendientes</p>
+    </div>
+    <div class="mgf-crm-grid mgf-crm-grid--stats">
             <div class="mgf-crm-stat mgf-crm-stat--accent">
                 <div class="mgf-crm-stat__icon" aria-hidden="true">
                     <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M9 12l2 2 4-4m6 2a9 9 0 11-18 0 9 9 0 0118 0z"/></svg>
@@ -44,6 +43,5 @@
                 <div class="mgf-crm-stat__value">{{ $stats['total'] ?? 0 }}</div>
                 <div class="mgf-crm-stat__hint">Incluye archivados</div>
             </div>
-        </div>
     </div>
 </div>

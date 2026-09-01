@@ -14,6 +14,11 @@ class ScopedActivityHeatmapWidget extends BaseActivityHeatmapWidget
 
     protected int | string | array $columnSpan = 'full';
 
+    public static function canView(): bool
+    {
+        return auth()->user()?->isSuperAdmin() ?? false;
+    }
+
     public static function getSort(): int
     {
         return -10;

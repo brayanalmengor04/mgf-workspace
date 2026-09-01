@@ -9,17 +9,12 @@ class ActivityPolicy
 {
     public function viewAny(User $user): bool
     {
-        return $user->is_active;
+        return $user->is_active && $user->isSuperAdmin();
     }
 
     public function view(User $user, Activity $activity): bool
     {
-        if ($user->canViewGlobalData()) {
-            return true;
-        }
-
-        return $activity->causer_type === $user->getMorphClass()
-            && $activity->causer_id === $user->id;
+        return $user->is_active && $user->isSuperAdmin();
     }
 
     public function create(User $user): bool
@@ -34,6 +29,6 @@ class ActivityPolicy
 
     public function delete(User $user, Activity $activity): bool
     {
-        return $user->canViewGlobalData();
+        return $user->is_active && $user->isSuperAdmin();
     }
 }

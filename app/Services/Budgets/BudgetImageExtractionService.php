@@ -62,7 +62,7 @@ class BudgetImageExtractionService
             ->forUser($user)
             ->active()
             ->orderBy('sort_order')
-            ->limit(30)
+            ->limit(12)
             ->get()
             ->map(fn (BudgetItemTemplate $template): string => sprintf(
                 '- [%s] %s (monto ref: %s)',
@@ -83,43 +83,19 @@ class BudgetImageExtractionService
             : 'Sin presupuestos previos.';
 
         return <<<PROMPT
-Analiza la imagen de un presupuesto personal (puede estar escrito a mano, impreso o ser una foto).
-Extrae la información en JSON con este esquema exacto:
+Extrae el presupuesto de la imagen. Devuelve SOLO JSON válido con este esquema:
 
-{
-  "title": "string",
-  "period": "weekly|biweekly|monthly|custom",
-  "currency": "PAB|USD",
-  "net_income": number|null,
-  "income_notes": "string|null",
-  "extraction_confidence": number,
-  "items": [
-    {
-      "concept": "string",
-      "amount": number|null,
-      "category_type": "fixed_expense|savings|other",
-      "notes": "string|null",
-      "confidence": number,
-      "needs_amount": boolean
-    }
-  ],
-  "warnings": ["string"]
-}
+{"title":"string","period":"weekly|biweekly|monthly|custom","currency":"PAB|USD","net_income":number|null,"income_notes":"string|null","extraction_confidence":number,"items":[{"concept":"string","amount":number|null,"category_type":"fixed_expense|savings|other","notes":"string|null","confidence":number,"needs_amount":boolean}],"warnings":["string"]}
 
-Reglas:
-- Usa secciones típicas MGF: A=gastos fijos, B=ahorros, C=otros.
-- Si un monto es ilegible, usa null y needs_amount=true.
-- confidence entre 0 y 1 por ítem y extraction_confidence global.
-- No inventes conceptos que no aparezcan en la imagen.
-- Moneda PAB si ves B/. o sin indicar en Panamá.
+Reglas: A=fixed_expense, B=savings, C=other. Monto ilegible → null y needs_amount=true. No inventes conceptos. PAB por defecto en Panamá.
 
 Categorías:
 {$categories}
 
-Conceptos frecuentes del usuario (prioriza estos nombres si coinciden):
+Conceptos del usuario (prioriza si coinciden):
 {$templates}
 
-Contexto: {$lastPlanSummary}
+{$lastPlanSummary}
 PROMPT;
     }
 }

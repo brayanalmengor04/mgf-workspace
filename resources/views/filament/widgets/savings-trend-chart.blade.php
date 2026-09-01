@@ -21,7 +21,7 @@
     $pointCount = max(count($cachedData['labels'] ?? []), count($pointDeltas) + 1);
 @endphp
 
-<x-filament-widgets::widget class="fi-wi-chart">
+<x-filament-widgets::widget class="fi-wi-chart mgf-crm">
     <x-filament::section
         :heading="$heading"
         :collapsible="$isCollapsible"

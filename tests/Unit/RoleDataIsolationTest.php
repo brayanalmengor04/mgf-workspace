@@ -7,6 +7,7 @@ use App\Models\BudgetPlan;
 use App\Models\Quote;
 use App\Models\SavingsAccount;
 use App\Models\User;
+use App\Policies\ActivityPolicy;
 use App\Support\ActivityLogScope;
 use Illuminate\Foundation\Testing\RefreshDatabase;
 use Spatie\Activitylog\Models\Activity;
@@ -16,21 +17,16 @@ class RoleDataIsolationTest extends TestCase
 {
     use RefreshDatabase;
 
-    public function test_provider_cannot_see_other_provider_activity_log(): void
+    public function test_only_super_admin_can_access_audit_log(): void
     {
-        $providerA = User::factory()->create(['role' => UserRole::Provider]);
-        $providerB = User::factory()->create(['role' => UserRole::Provider]);
+        $provider = User::factory()->create(['role' => UserRole::Provider]);
+        $admin = User::factory()->create(['role' => UserRole::Admin]);
+        $superAdmin = User::factory()->create(['role' => UserRole::SuperAdmin]);
+        $policy = new ActivityPolicy;
 
-        Activity::query()->create([
-            'log_name' => 'default',
-            'description' => 'acción de B',
-            'causer_type' => User::class,
-            'causer_id' => $providerB->id,
-        ]);
-
-        $this->actingAs($providerA);
-
-        $this->assertSame(0, ActivityLogScope::query()->count());
+        $this->assertFalse($policy->viewAny($provider));
+        $this->assertFalse($policy->viewAny($admin));
+        $this->assertTrue($policy->viewAny($superAdmin));
     }
 
     public function test_admin_cannot_see_other_admin_quotes_or_budgets(): void

@@ -2,7 +2,7 @@
     display: none !important;
 }
 
-.mgf-crm {
+:root {
     --mgf-crm-radius: 1rem;
     --mgf-crm-card-bg: #ffffff;
     --mgf-crm-card-border: #e2e8f0;
@@ -12,13 +12,23 @@
     --mgf-crm-success: #10b981;
     --mgf-crm-warning: #f59e0b;
     --mgf-crm-danger: #ef4444;
+    --mgf-crm-shadow: 0 1px 2px rgb(15 23 42 / 0.04);
+    --mgf-crm-toggle-shadow: 0 1px 3px rgb(15 23 42 / 0.08);
+    --mgf-crm-table-hover: color-mix(in oklab, var(--mgf-crm-accent) 5%, var(--mgf-crm-card-bg));
 }
 
-.dark .mgf-crm {
+.dark {
     --mgf-crm-card-bg: #111827;
     --mgf-crm-card-border: #1f2937;
     --mgf-crm-muted: #94a3b8;
     --mgf-crm-heading: #f8fafc;
+    --mgf-crm-shadow: 0 1px 2px rgb(0 0 0 / 0.25);
+    --mgf-crm-toggle-shadow: 0 1px 3px rgb(0 0 0 / 0.4);
+    --mgf-crm-table-hover: color-mix(in oklab, var(--mgf-crm-accent) 10%, var(--mgf-crm-card-bg));
+}
+
+.mgf-crm {
+    color: var(--mgf-crm-heading);
 }
 
 .mgf-crm-grid {
@@ -39,7 +49,7 @@
     border: 1px solid var(--mgf-crm-card-border);
     border-radius: var(--mgf-crm-radius);
     padding: 1.25rem 1.35rem;
-    box-shadow: 0 1px 2px rgb(15 23 42 / 0.04);
+    box-shadow: var(--mgf-crm-shadow);
 }
 
 .mgf-crm-stat__top {
@@ -121,7 +131,7 @@
     background: var(--mgf-crm-card-bg);
     border: 1px solid var(--mgf-crm-card-border);
     border-radius: var(--mgf-crm-radius);
-    box-shadow: 0 1px 2px rgb(15 23 42 / 0.04);
+    box-shadow: var(--mgf-crm-shadow);
     overflow: hidden;
 }
 
@@ -242,6 +252,10 @@
     border-bottom: none;
 }
 
+.mgf-crm-table tbody tr:hover td {
+    background: var(--mgf-crm-table-hover);
+}
+
 /* Vista tabla / tarjetas (móvil) */
 .mgf-crm-data-view__toggle {
     display: none;
@@ -282,7 +296,7 @@
 .mgf-crm-data-view__toggle-btn.is-active {
     background: var(--mgf-crm-card-bg);
     color: var(--mgf-crm-accent);
-    box-shadow: 0 1px 3px rgb(15 23 42 / 0.08);
+    box-shadow: var(--mgf-crm-toggle-shadow);
 }
 
 .mgf-crm-data-view__scroll {
@@ -299,7 +313,7 @@
     border-radius: 0.75rem;
     border: 1px solid var(--mgf-crm-card-border);
     background: color-mix(in oklab, var(--mgf-crm-accent) 3%, var(--mgf-crm-card-bg));
-    box-shadow: 0 1px 2px rgb(15 23 42 / 0.04);
+    box-shadow: var(--mgf-crm-shadow);
 }
 
 .mgf-crm-data-card__row {
@@ -378,10 +392,10 @@
         display: block;
         margin-bottom: 0.75rem;
         padding: 0.85rem 0.9rem;
-        border: 1px solid var(--mgf-crm-card-border, #e2e8f0);
+        border: 1px solid var(--mgf-crm-card-border);
         border-radius: 0.75rem;
-        background: var(--mgf-crm-card-bg, #fff);
-        box-shadow: 0 1px 2px rgb(15 23 42 / 0.04);
+        background: var(--mgf-crm-card-bg);
+        box-shadow: var(--mgf-crm-shadow);
     }
 
     .fi-ta-ctn.mgf-filament-table--cards .fi-ta-table tbody tr:last-child {
@@ -395,7 +409,7 @@
         align-items: start;
         padding: 0.45rem 0;
         border: none;
-        border-bottom: 1px solid color-mix(in oklab, var(--mgf-crm-card-border, #e2e8f0) 80%, transparent);
+        border-bottom: 1px solid color-mix(in oklab, var(--mgf-crm-card-border) 80%, transparent);
     }
 
     .fi-ta-ctn.mgf-filament-table--cards .fi-ta-table td:last-child {
@@ -408,7 +422,7 @@
         font-weight: 700;
         text-transform: uppercase;
         letter-spacing: 0.04em;
-        color: #64748b;
+        color: var(--mgf-crm-muted);
     }
 
     .fi-ta-ctn.mgf-filament-table--cards .fi-ta-header-ctn {
@@ -419,15 +433,6 @@
     .fi-ta-ctn.mgf-filament-table--table .fi-ta-content {
         overflow-x: auto;
     }
-}
-
-.dark .fi-ta-ctn.mgf-filament-table--cards .fi-ta-table tbody tr {
-    background: #111827;
-    border-color: #1f2937;
-}
-
-.dark .fi-ta-ctn.mgf-filament-table--cards .fi-ta-table td::before {
-    color: #94a3b8;
 }
 
 .mgf-crm-tabs {
@@ -484,9 +489,44 @@
 .mgf-crm-badge--warning { background: #fef3c7; color: #b45309; }
 .mgf-crm-badge--gray { background: #f1f5f9; color: #475569; }
 
+.dark .mgf-crm-badge--success {
+    background: rgb(16 185 129 / 0.16);
+    color: #6ee7b7;
+}
+
+.dark .mgf-crm-badge--warning {
+    background: rgb(245 158 11 / 0.16);
+    color: #fcd34d;
+}
+
+.dark .mgf-crm-badge--gray {
+    background: #1f2937;
+    color: #cbd5e1;
+}
+
 /* Budget list stats */
 .mgf-crm-budget-list-stats {
-    margin-bottom: 0.25rem;
+    display: flex;
+    flex-direction: column;
+    gap: 0.65rem;
+    margin-bottom: 0;
+}
+
+.mgf-crm-budget-list-stats__intro {
+    display: flex;
+    flex-direction: column;
+    gap: 0.15rem;
+}
+
+.mgf-budget-plans-list-page .fi-header-widgets,
+.mgf-budget-plans-list-page .fi-page-header-widgets {
+    gap: 0.5rem !important;
+    margin-bottom: 0.35rem !important;
+}
+
+.mgf-budget-plans-list-page .fi-wi-widget,
+.mgf-budget-plans-list-page .fi-wi {
+    margin-bottom: 0 !important;
 }
 
 .mgf-crm-stat--accent {
@@ -529,6 +569,11 @@
     color: #b45309;
 }
 
+.dark .mgf-crm-stat__icon--warning {
+    background: rgb(245 158 11 / 0.16);
+    color: #fcd34d;
+}
+
 .mgf-crm-stat__hint {
     margin-top: 0.35rem;
     font-size: 0.6875rem;
@@ -541,8 +586,171 @@
 }
 
 .mgf-budget-plans-list-page .fi-ta-ctn {
-    border: 1px solid var(--mgf-crm-card-border, #e2e8f0);
-    box-shadow: 0 1px 2px rgb(15 23 42 / 0.04);
+    border: 1px solid var(--mgf-crm-card-border);
+    box-shadow: var(--mgf-crm-shadow);
+    background: var(--mgf-crm-card-bg);
+}
+
+/* Savings accounts — metric cards & callouts */
+.mgf-savings-mini-card {
+    border: 1px solid var(--mgf-crm-card-border);
+    border-radius: 0.65rem;
+    padding: 0.75rem;
+    background: color-mix(in oklab, var(--mgf-crm-accent) 3%, var(--mgf-crm-card-bg));
+}
+
+.mgf-savings-mini-card__value {
+    font-size: 1.125rem;
+    font-weight: 600;
+    color: var(--mgf-crm-heading);
+}
+
+.mgf-savings-field-label {
+    font-size: 0.875rem;
+    font-weight: 500;
+    color: var(--mgf-crm-heading);
+}
+
+.mgf-savings-field-hint {
+    font-size: 0.75rem;
+    color: var(--mgf-crm-muted);
+}
+
+.mgf-savings-balance-value {
+    font-size: 1.5rem;
+    font-weight: 700;
+    color: var(--mgf-crm-heading);
+    line-height: 1.2;
+}
+
+.mgf-savings-mini-card--info {
+    border-color: color-mix(in oklab, var(--mgf-crm-accent) 30%, var(--mgf-crm-card-border));
+    background: color-mix(in oklab, var(--mgf-crm-accent) 8%, var(--mgf-crm-card-bg));
+}
+
+.mgf-savings-mini-card--success {
+    border-color: color-mix(in oklab, var(--mgf-crm-success) 30%, var(--mgf-crm-card-border));
+    background: color-mix(in oklab, var(--mgf-crm-success) 8%, var(--mgf-crm-card-bg));
+}
+
+.mgf-savings-callout {
+    border-radius: 0.75rem;
+    padding: 1rem;
+    border: 1px dashed var(--mgf-crm-card-border);
+    background: color-mix(in oklab, var(--mgf-crm-muted) 6%, var(--mgf-crm-card-bg));
+}
+
+.mgf-savings-callout--pace {
+    border-style: solid;
+    border-color: color-mix(in oklab, var(--mgf-crm-accent) 35%, var(--mgf-crm-card-border));
+    background: color-mix(in oklab, var(--mgf-crm-accent) 8%, var(--mgf-crm-card-bg));
+}
+
+.mgf-savings-callout--warning {
+    border-style: solid;
+    border-color: color-mix(in oklab, var(--mgf-crm-warning) 40%, var(--mgf-crm-card-border));
+    background: color-mix(in oklab, var(--mgf-crm-warning) 8%, var(--mgf-crm-card-bg));
+}
+
+.mgf-savings-callout__title {
+    font-size: 0.875rem;
+    font-weight: 600;
+    color: var(--mgf-crm-heading);
+}
+
+.mgf-savings-callout__text {
+    margin: 0;
+    font-size: 0.875rem;
+    line-height: 1.5;
+    color: var(--mgf-crm-muted);
+}
+
+.mgf-savings-callout__text strong {
+    color: var(--mgf-crm-heading);
+}
+
+.mgf-savings-progress-track {
+    height: 0.55rem;
+    border-radius: 9999px;
+    background: color-mix(in oklab, var(--mgf-crm-muted) 25%, transparent);
+    overflow: hidden;
+    margin-bottom: 0.5rem;
+}
+
+.mgf-savings-progress-track--lg {
+    height: 0.65rem;
+    margin-bottom: 0.65rem;
+}
+
+.mgf-savings-progress-fill {
+    height: 100%;
+    border-radius: 9999px;
+}
+
+.mgf-savings-progress-fill--accent {
+    background: var(--mgf-crm-accent);
+}
+
+.mgf-savings-progress-fill--warning {
+    background: var(--mgf-crm-warning);
+}
+
+.mgf-savings-health-ring__inner {
+    width: 3.4rem;
+    height: 3.4rem;
+    border-radius: 9999px;
+    background: var(--mgf-crm-card-bg);
+    border: 1px solid var(--mgf-crm-card-border);
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    justify-content: center;
+    line-height: 1;
+}
+
+.mgf-savings-health-score {
+    font-size: 0.875rem;
+    font-weight: 700;
+    color: var(--mgf-crm-heading);
+}
+
+.mgf-savings-health-label {
+    font-size: 0.55rem;
+    text-transform: uppercase;
+    letter-spacing: 0.04em;
+    color: var(--mgf-crm-muted);
+}
+
+.mgf-savings-projection-box {
+    width: min(100%, 36rem);
+    padding: 0.875rem 1rem;
+    border-radius: 0.75rem;
+    border: 1px solid var(--mgf-crm-card-border);
+    background: color-mix(in oklab, var(--mgf-crm-accent) 6%, var(--mgf-crm-card-bg));
+    text-align: center;
+}
+
+.mgf-savings-projection-box__eyebrow {
+    margin: 0 0 0.35rem;
+    font-size: 0.75rem;
+    font-weight: 600;
+    text-transform: uppercase;
+    letter-spacing: 0.04em;
+    color: var(--mgf-crm-accent);
+}
+
+.mgf-savings-projection-box__title {
+    margin: 0 0 0.35rem;
+    font-size: 1rem;
+    font-weight: 600;
+    color: var(--mgf-crm-heading);
+}
+
+.mgf-savings-projection-box__text {
+    margin: 0;
+    font-size: 0.875rem;
+    line-height: 1.5;
+    color: var(--mgf-crm-muted);
 }
 
 /* Financial calendar */
@@ -1296,6 +1504,11 @@
     min-width: 8rem;
 }
 
+.dark .mgf-crm-review-scan__input option {
+    background: var(--mgf-crm-card-bg);
+    color: var(--mgf-crm-heading);
+}
+
 .mgf-crm-review-scan__error {
     display: block;
     font-size: 0.6875rem;
@@ -1304,7 +1517,11 @@
 }
 
 .mgf-crm-review-scan__row--warn {
-    background: color-mix(in oklab, var(--mgf-crm-warning) 8%, transparent);
+    background: color-mix(in oklab, var(--mgf-crm-warning) 8%, var(--mgf-crm-card-bg));
+}
+
+.dark .mgf-crm-review-scan__row--warn {
+    background: color-mix(in oklab, var(--mgf-crm-warning) 14%, var(--mgf-crm-card-bg));
 }
 
 .mgf-crm-review-scan__card--warn {

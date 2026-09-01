@@ -2,7 +2,7 @@
 
 namespace App\Filament\Resources\BudgetPlans;
 
-use AlizHarb\ActivityLog\RelationManagers\ActivitiesRelationManager;
+use App\Filament\RelationManagers\SuperAdminActivitiesRelationManager;
 use App\Filament\Resources\BudgetPlans\Pages\ChartsBudgetPlan;
 use App\Filament\Resources\BudgetPlans\Pages\CreateBudgetPlan;
 use App\Filament\Resources\BudgetPlans\Pages\EditBudgetPlan;
@@ -61,7 +61,7 @@ class BudgetPlanResource extends Resource
     public static function getRelations(): array
     {
         return [
-            ActivitiesRelationManager::class,
+            SuperAdminActivitiesRelationManager::class,
         ];
     }
 

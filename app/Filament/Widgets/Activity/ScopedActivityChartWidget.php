@@ -12,6 +12,11 @@ class ScopedActivityChartWidget extends BaseActivityChartWidget
 {
     protected int | string | array $columnSpan = 'full';
 
+    public static function canView(): bool
+    {
+        return auth()->user()?->isSuperAdmin() ?? false;
+    }
+
     public static function getSort(): int
     {
         return (int) config('filament-activity-log.widgets.activity_chart.sort', 8);

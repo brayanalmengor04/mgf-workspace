@@ -57,13 +57,19 @@ return [
             'context_cache_ttl' => (int) env('GEMINI_CHAT_CONTEXT_CACHE_TTL', 300),
             'response_cache_ttl' => (int) env('GEMINI_CHAT_RESPONSE_CACHE_TTL', 3600),
         ],
-        'vision_model' => env('GEMINI_VISION_MODEL', 'gemini-2.0-flash'),
+        'vision_model' => env('GEMINI_VISION_MODEL', 'gemini-3.1-flash-lite'),
+        'vision_model_fallbacks' => array_values(array_filter(array_map(
+            'trim',
+            explode(',', (string) env('GEMINI_VISION_MODEL_FALLBACKS', 'gemini-3.6-flash'))
+        ))),
     ],
 
     'budget_scan' => [
         'max_mb' => (int) env('BUDGET_SCAN_MAX_MB', 8),
         'rate_limit_per_hour' => (int) env('BUDGET_SCAN_RATE_LIMIT_PER_HOUR', 3),
         'delete_image_after' => env('BUDGET_SCAN_DELETE_IMAGE_AFTER', true),
+        'optimize_max_dimension' => (int) env('BUDGET_SCAN_OPTIMIZE_MAX_DIMENSION', 1600),
+        'optimize_jpeg_quality' => (int) env('BUDGET_SCAN_OPTIMIZE_JPEG_QUALITY', 82),
     ],
 
 ];

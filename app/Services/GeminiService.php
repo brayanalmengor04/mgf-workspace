@@ -23,7 +23,7 @@ class GeminiService
         $this->apiKey = (string) config('services.gemini.api_key', '');
         $this->model = (string) config('services.gemini.model', 'gemini-3.1-flash-lite');
         $this->thinkingLevel = (string) config('services.gemini.thinking_level', 'minimal');
-        $this->visionModel = (string) config('services.gemini.vision_model', 'gemini-2.0-flash');
+        $this->visionModel = (string) config('services.gemini.vision_model', 'gemini-3.1-flash-lite');
     }
 
     public function isConfigured(): bool
@@ -136,8 +136,6 @@ class GeminiService
         $mime = mime_content_type($imagePath) ?: 'image/jpeg';
         $encoded = base64_encode((string) file_get_contents($imagePath));
 
-        $url = "{$this->baseUrl}/{$this->visionModel}:generateContent?key={$this->apiKey}";
-
         $payload = [
             'contents' => [
                 [
@@ -156,6 +154,7 @@ class GeminiService
             'generationConfig' => [
                 'temperature' => 0.2,
                 'responseMimeType' => 'application/json',
+                'maxOutputTokens' => 2048,
             ],
         ];
 
@@ -167,17 +166,70 @@ class GeminiService
             ];
         }
 
+        $models = $this->visionModelsToTry();
+        $lastError = 'No se pudo analizar la imagen. Intenta con mejor iluminación o una foto más nítida.';
+
+        foreach ($models as $model) {
+            $result = $this->requestVisionContent($model, $payload, $purpose);
+
+            if ($result['ok']) {
+                return $result['text'];
+            }
+
+            $lastError = $result['error'];
+
+            if (! $result['retryable']) {
+                break;
+            }
+        }
+
+        return json_encode(['error' => $lastError]);
+    }
+
+    /**
+     * @return array<int, string>
+     */
+    protected function visionModelsToTry(): array
+    {
+        $models = array_merge(
+            [$this->visionModel],
+            (array) config('services.gemini.vision_model_fallbacks', []),
+        );
+
+        return array_values(array_unique(array_filter($models)));
+    }
+
+    /**
+     * @param  array<string, mixed>  $payload
+     * @return array{ok: bool, text?: string, error: string, retryable: bool}
+     */
+    protected function requestVisionContent(string $model, array $payload, string $purpose): array
+    {
+        $url = "{$this->baseUrl}/{$model}:generateContent?key={$this->apiKey}";
         $startedAt = microtime(true);
 
-        $response = Http::timeout(90)
-            ->withHeaders(['Content-Type' => 'application/json'])
-            ->post($url, $payload);
+        try {
+            $response = Http::timeout(120)
+                ->withHeaders(['Content-Type' => 'application/json'])
+                ->post($url, $payload);
+        } catch (\Illuminate\Http\Client\ConnectionException $e) {
+            Log::warning('Gemini Vision connection error', [
+                'model' => $model,
+                'message' => $e->getMessage(),
+            ]);
+
+            return [
+                'ok' => false,
+                'error' => 'La IA tardó demasiado en responder. Intenta de nuevo en unos segundos.',
+                'retryable' => true,
+            ];
+        }
 
         $durationMs = (microtime(true) - $startedAt) * 1000;
 
         if (! $response->successful()) {
             $this->usageLogger->recordError(
-                $this->visionModel,
+                $model,
                 $purpose,
                 $response->status(),
                 $response->body(),
@@ -187,24 +239,61 @@ class GeminiService
             Log::error('Gemini Vision API Error', [
                 'status' => $response->status(),
                 'body' => $response->body(),
-                'model' => $this->visionModel,
+                'model' => $model,
             ]);
 
-            return json_encode(['error' => 'No se pudo analizar la imagen. Intenta con mejor iluminación o una foto más nítida.']);
+            $retryable = in_array($response->status(), [404, 429, 500, 502, 503, 504], true);
+
+            return [
+                'ok' => false,
+                'error' => $this->visionErrorMessage($response->status(), $response->body()),
+                'retryable' => $retryable,
+            ];
         }
 
         $data = $response->json();
         $text = $this->extractVisibleText($data);
 
         $this->usageLogger->record(
-            $this->visionModel,
+            $model,
             $purpose,
             is_array($data) ? ($data['usageMetadata'] ?? null) : null,
             $response->status(),
             $durationMs,
         );
 
-        return $text !== '' ? $text : json_encode(['error' => 'La IA no devolvió datos legibles de la imagen.']);
+        if ($text === '') {
+            return [
+                'ok' => false,
+                'error' => 'La IA no devolvió datos legibles de la imagen.',
+                'retryable' => true,
+            ];
+        }
+
+        return [
+            'ok' => true,
+            'text' => $text,
+            'error' => '',
+            'retryable' => false,
+        ];
+    }
+
+    protected function visionErrorMessage(int $status, string $body): string
+    {
+        if (app()->hasDebugModeEnabled()) {
+            $decoded = json_decode($body, true);
+            $apiMessage = is_array($decoded) ? ($decoded['error']['message'] ?? null) : null;
+
+            if (is_string($apiMessage) && $apiMessage !== '') {
+                return "Error de visión ({$status}): {$apiMessage}";
+            }
+        }
+
+        return match ($status) {
+            429 => 'Demasiadas solicitudes a la IA. Espera un momento e intenta de nuevo.',
+            503, 504 => 'La IA está ocupada en este momento. Intenta de nuevo en unos segundos.',
+            default => 'No se pudo analizar la imagen. Intenta con mejor iluminación o una foto más nítida.',
+        };
     }
 
     public function translateToSpanish(string $text): string

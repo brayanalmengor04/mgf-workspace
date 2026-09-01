@@ -1,10 +1,6 @@
 <div
     class="mgf-crm-ai-scan-banner"
-    x-data="{ uploadProgress: 0, isUploading: false }"
-    x-on:livewire-upload-start="isUploading = true; uploadProgress = 0"
-    x-on:livewire-upload-finish="isUploading = false; uploadProgress = 100"
-    x-on:livewire-upload-error="isUploading = false; uploadProgress = 0"
-    x-on:livewire-upload-progress="uploadProgress = $event.detail.progress"
+    x-data="budgetScanBanner()"
 >
     <div class="mgf-crm-ai-scan-banner__aurora" aria-hidden="true"></div>
 
@@ -42,8 +38,9 @@
                             type="file"
                             accept="image/jpeg,image/png,image/webp"
                             capture="environment"
-                            wire:model="scanImage"
                             wire:loading.attr="disabled"
+                            wire:target="scanImage,processScan"
+                            @change="pickFile($event, $wire)"
                             style="display:none;"
                         >
                         <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" aria-hidden="true">
@@ -57,8 +54,9 @@
                         <input
                             type="file"
                             accept="image/jpeg,image/png,image/webp"
-                            wire:model="scanImage"
                             wire:loading.attr="disabled"
+                            wire:target="scanImage,processScan"
+                            @change="pickFile($event, $wire)"
                             style="display:none;"
                         >
                         <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" aria-hidden="true">
@@ -103,7 +101,7 @@
                         ></div>
                     </div>
                     <p class="mgf-crm-ai-scan-banner__upload-progress-hint">
-                        En móvil puede tardar un momento. No cierres la página.
+                        Optimizamos la foto antes de subirla para que el análisis sea más rápido.
                     </p>
                 </div>
 
@@ -120,6 +118,9 @@
                     <div class="mgf-crm-ai-scan-banner__upload-progress-track">
                         <div class="mgf-crm-ai-scan-banner__upload-progress-fill"></div>
                     </div>
+                    <p class="mgf-crm-ai-scan-banner__upload-progress-hint">
+                        Suele tardar unos segundos. No cierres la página.
+                    </p>
                 </div>
 
                 @if ($scanImage)

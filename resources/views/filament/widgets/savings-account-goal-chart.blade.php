@@ -21,7 +21,7 @@
     $goalProjection = $goalProjection ?? null;
 @endphp
 
-<x-filament-widgets::widget class="fi-wi-chart fi-wi-savings-goal-hero">
+<x-filament-widgets::widget class="fi-wi-chart fi-wi-savings-goal-hero mgf-crm">
     <x-filament::section :heading="$heading" :collapsible="$isCollapsible">
         <div style="display: flex; flex-direction: column; align-items: center; gap: 1rem;">
             @if ($accountName)
@@ -123,26 +123,16 @@
             @endif
 
             @if (filled($goalProjection['label_detail'] ?? null))
-                <div
-                    style="
-                        width: min(100%, 36rem);
-                        padding: 0.875rem 1rem;
-                        border-radius: 0.75rem;
-                        border: 1px solid rgb(229 231 235);
-                        background: rgb(249 250 251);
-                        text-align: center;
-                    "
-                    class="dark:border-gray-700 dark:bg-gray-900/40"
-                >
+                <div class="mgf-savings-projection-box">
                     @if (filled($goalProjection['estimated_date'] ?? null) && ($goalProjection['confidence'] ?? 'none') !== 'complete')
-                        <p class="text-xs font-semibold uppercase tracking-wide text-primary-600 dark:text-primary-400" style="margin: 0 0 0.35rem;">
+                        <p class="mgf-savings-projection-box__eyebrow">
                             Proyección {{ $goalProjection['cadence_label'] ?? 'Quincenal' }}
                         </p>
-                        <p class="text-base font-semibold text-gray-900 dark:text-white" style="margin: 0 0 0.35rem;">
+                        <p class="mgf-savings-projection-box__title">
                             Meta hacia {{ $goalProjection['estimated_date'] }}
                         </p>
                     @endif
-                    <p class="text-sm text-gray-600 dark:text-gray-300" style="margin: 0; line-height: 1.5;">
+                    <p class="mgf-savings-projection-box__text">
                         {{ $goalProjection['label_detail'] }}
                     </p>
                 </div>
