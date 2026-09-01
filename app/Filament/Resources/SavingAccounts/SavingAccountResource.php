@@ -9,6 +9,7 @@ use App\Filament\Resources\SavingAccounts\RelationManagers\TransactionsRelationM
 use App\Filament\Resources\SavingAccounts\Schemas\SavingAccountForm;
 use App\Filament\Resources\SavingAccounts\Tables\SavingAccountsTable;
 use App\Models\SavingsAccount;
+use App\Support\CrmNavigation;
 use BackedEnum;
 use Filament\Resources\Resource;
 use Filament\Schemas\Schema;
@@ -23,9 +24,9 @@ class SavingAccountResource extends Resource
 
     protected static string|BackedEnum|null $navigationIcon = Heroicon::OutlinedCircleStack;
 
-    protected static string|UnitEnum|null $navigationGroup = 'Finanzas personales';
+    protected static string|UnitEnum|null $navigationGroup = CrmNavigation::MODULO_AHORROS;
 
-    protected static ?int $navigationSort = 3;
+    protected static ?int $navigationSort = 2;
 
     protected static ?string $modelLabel = 'cuenta de ahorro';
 

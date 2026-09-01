@@ -5,7 +5,7 @@
     $projectionCadence = $projection_cadence ?? 'biweekly';
 @endphp
 
-<x-filament-widgets::widget class="fi-wi-savings-metrics">
+<x-filament-widgets::widget class="fi-wi-savings-metrics mgf-crm">
     <x-filament::section>
         <div style="display: flex; flex-direction: column; gap: 1.25rem;">
             <div

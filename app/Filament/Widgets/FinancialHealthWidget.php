@@ -16,7 +16,7 @@ class FinancialHealthWidget extends StatsOverviewWidget
 
     public static function canView(): bool
     {
-        return auth()->check();
+        return false;
     }
 
     protected function getStats(): array

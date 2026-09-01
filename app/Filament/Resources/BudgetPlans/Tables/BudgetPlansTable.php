@@ -10,6 +10,7 @@ use App\Models\BudgetPlan;
 use App\Services\Budgets\BudgetPdfService;
 use App\Services\Budgets\BudgetPlanDuplicator;
 use Filament\Actions\Action;
+use Filament\Actions\ActionGroup;
 use Filament\Actions\BulkActionGroup;
 use Filament\Actions\DeleteBulkAction;
 use Filament\Actions\EditAction;
@@ -32,19 +33,13 @@ class BudgetPlansTable
     {
         return $table
             ->columns([
-                TextColumn::make('budget_number')
-                    ->label('Número')
-                    ->searchable()
-                    ->sortable(),
                 TextColumn::make('title')
-                    ->label('Título')
-                    ->searchable()
-                    ->limit(40),
-                TextColumn::make('period')
-                    ->label('Periodo')
-                    ->formatStateUsing(fn (BudgetPeriod $state): string => $state->label())
-                    ->badge()
-                    ->color('gray'),
+                    ->label('Presupuesto')
+                    ->description(fn (BudgetPlan $record): string => $record->budget_number)
+                    ->searchable(['title', 'budget_number'])
+                    ->sortable()
+                    ->limit(42)
+                    ->url(fn (BudgetPlan $record): string => BudgetPlanResource::getUrl('view', ['record' => $record])),
                 TextColumn::make('status')
                     ->label('Estado')
                     ->badge()
@@ -54,12 +49,14 @@ class BudgetPlansTable
                         BudgetStatus::Issued => 'success',
                         BudgetStatus::Archived => 'warning',
                     }),
-                IconColumn::make('is_paid')
-                    ->label('Pagado')
-                    ->boolean()
-                    ->sortable(),
+                TextColumn::make('period')
+                    ->label('Periodo')
+                    ->formatStateUsing(fn (BudgetPeriod $state): string => $state->label())
+                    ->badge()
+                    ->color('gray')
+                    ->toggleable(),
                 TextColumn::make('net_income')
-                    ->label('Ingreso neto')
+                    ->label('Ingreso')
                     ->money(fn (BudgetPlan $record): string => QuoteCurrency::resolve($record->currency)->value)
                     ->sortable(),
                 TextColumn::make('remaining_balance')
@@ -67,16 +64,47 @@ class BudgetPlansTable
                     ->money(fn (BudgetPlan $record): string => QuoteCurrency::resolve($record->currency)->value)
                     ->color(fn (BudgetPlan $record): string => (float) $record->remaining_balance < 0 ? 'danger' : 'success')
                     ->sortable(),
+                TextColumn::make('payment_progress')
+                    ->label('Cumplimiento')
+                    ->state(function (BudgetPlan $record): float {
+                        $total = (float) $record->items->sum('amount');
+
+                        if ($total <= 0) {
+                            return 0.0;
+                        }
+
+                        $paid = (float) $record->items->where('is_paid', true)->sum('amount');
+
+                        return round(($paid / $total) * 100, 1);
+                    })
+                    ->formatStateUsing(fn (float $state): string => number_format($state, 0).'%')
+                    ->badge()
+                    ->color(fn (float $state): string => match (true) {
+                        $state >= 100 => 'success',
+                        $state >= 50 => 'warning',
+                        default => 'gray',
+                    })
+                    ->sortable(false),
+                IconColumn::make('is_paid')
+                    ->label('Liquidado')
+                    ->boolean()
+                    ->sortable()
+                    ->toggleable(isToggledHiddenByDefault: true),
                 TextColumn::make('issued_at')
                     ->label('Emitido')
-                    ->dateTime('d/m/Y H:i')
+                    ->date('d/m/Y')
                     ->sortable()
-                    ->toggleable(),
+                    ->toggleable(isToggledHiddenByDefault: true),
                 TextColumn::make('creator.name')
                     ->label('Creado por')
-                    ->toggleable(),
+                    ->toggleable(isToggledHiddenByDefault: true),
             ])
             ->defaultSort('created_at', 'desc')
+            ->striped()
+            ->paginated([10, 25, 50])
+            ->emptyStateHeading('Sin presupuestos')
+            ->emptyStateDescription('Crea tu primer comprobante para comenzar a planificar tus finanzas.')
+            ->emptyStateIcon('heroicon-o-calculator')
             ->filters([
                 SelectFilter::make('status')
                     ->label('Estado')
@@ -93,11 +121,16 @@ class BudgetPlansTable
                     ->falseLabel('Pendientes'),
             ])
             ->recordActions([
-                Action::make('charts')
-                    ->label('Ver métricas')
-                    ->icon('heroicon-o-chart-pie')
-                    ->color('warning')
-                    ->url(fn (BudgetPlan $record): string => BudgetPlanResource::getUrl('charts', ['record' => $record])),
+                Action::make('view')
+                    ->label('Abrir')
+                    ->icon('heroicon-o-eye')
+                    ->color('primary')
+                    ->url(fn (BudgetPlan $record): string => BudgetPlanResource::getUrl('view', ['record' => $record])),
+                ActionGroup::make([
+                    Action::make('charts')
+                        ->label('Métricas')
+                        ->icon('heroicon-o-chart-pie')
+                        ->url(fn (BudgetPlan $record): string => BudgetPlanResource::getUrl('view', ['record' => $record, 'tab' => 'summary'])),
                 Action::make('duplicate')
                     ->label('Duplicar')
                     ->icon('heroicon-o-document-duplicate')
@@ -202,7 +235,8 @@ class BudgetPlansTable
                             ->success()
                             ->send();
                     }),
-                EditAction::make(),
+                    EditAction::make(),
+                ]),
             ])
             ->toolbarActions([
                 BulkActionGroup::make([

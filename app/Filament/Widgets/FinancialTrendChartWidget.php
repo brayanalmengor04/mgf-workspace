@@ -127,7 +127,7 @@ class FinancialTrendChartWidget extends ChartWidget
 
     public static function canView(): bool
     {
-        return auth()->check();
+        return false;
     }
 
     /**

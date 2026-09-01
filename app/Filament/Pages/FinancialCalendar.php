@@ -2,9 +2,14 @@
 
 namespace App\Filament\Pages;
 
+use App\Support\CrmNavigation;
 use Filament\Pages\Page;
 
+use App\Models\BudgetPlanItem;
 use App\Models\CalendarEvent;
+use App\Enums\BudgetStatus;
+use App\Enums\QuoteCurrency;
+use App\Support\MoneyFormatter;
 use Illuminate\Support\Facades\Auth;
 use Filament\Actions\Action;
 use Filament\Forms\Components\TextInput;
@@ -28,6 +33,70 @@ class FinancialCalendar extends Page
     public function getTitle(): string|\Illuminate\Contracts\Support\Htmlable
     {
         return 'Calendario Financiero';
+    }
+
+    public function getSubheading(): ?string
+    {
+        return 'Agenda pagos, vencimientos y revisa partidas pendientes de tus presupuestos.';
+    }
+
+    /**
+     * @return array<string, mixed>
+     */
+    public function getCalendarStatsProperty(): array
+    {
+        $user = Auth::user();
+        if ($user === null) {
+            return [];
+        }
+
+        $now = now();
+        $events = CalendarEvent::query()->where('user_id', $user->id);
+
+        $thisMonth = (clone $events)
+            ->whereBetween('start_date', [$now->copy()->startOfMonth(), $now->copy()->endOfMonth()])
+            ->count();
+
+        $upcoming = (clone $events)
+            ->where('start_date', '>=', $now->startOfDay())
+            ->count();
+
+        $pendingTotal = BudgetPlanItem::query()
+            ->where('is_paid', false)
+            ->where('amount', '>', 0)
+            ->whereHas('budgetPlan', fn ($query) => $query->forUser($user)->where('status', BudgetStatus::Issued))
+            ->sum('amount');
+
+        return [
+            'this_month' => $thisMonth,
+            'upcoming' => $upcoming,
+            'pending_total' => 'B/. '.number_format((float) $pendingTotal, 2),
+            'pending_count' => count($this->pendingBudgetItems),
+        ];
+    }
+
+    /**
+     * @return array<int, array{date: string, title: string, meta: string}>
+     */
+    public function getUpcomingEventsListProperty(): array
+    {
+        return CalendarEvent::query()
+            ->where('user_id', Auth::id())
+            ->where('start_date', '>=', now()->startOfDay())
+            ->orderBy('start_date')
+            ->limit(6)
+            ->get()
+            ->map(function (CalendarEvent $event): array {
+                $amount = $event->amount ? 'B/. '.number_format((float) $event->amount, 2) : 'Sin monto';
+
+                return [
+                    'date' => $event->start_date->translatedFormat('d M'),
+                    'title' => $event->title,
+                    'meta' => $amount,
+                    'id' => $event->id,
+                ];
+            })
+            ->all();
     }
 
     protected function getHeaderActions(): array
@@ -108,11 +177,51 @@ class FinancialCalendar extends Page
             });
     }
 
-    public static function getNavigationSort(): ?int
+    public static function getNavigationGroup(): ?string
     {
-        return 1;
+        return CrmNavigation::INICIO;
     }
 
+    public static function getNavigationSort(): ?int
+    {
+        return 2;
+    }
+
+
+    public function getPendingBudgetItemsProperty(): array
+    {
+        $user = Auth::user();
+
+        if ($user === null) {
+            return [];
+        }
+
+        return BudgetPlanItem::query()
+            ->with('budgetPlan:id,budget_number,title')
+            ->where('is_paid', false)
+            ->where('amount', '>', 0)
+            ->whereHas('budgetPlan', fn ($query) => $query->forUser($user)->where('status', BudgetStatus::Issued))
+            ->orderByDesc('amount')
+            ->limit(8)
+            ->get()
+            ->map(function (BudgetPlanItem $item): array {
+                $plan = $item->budgetPlan;
+                $currency = QuoteCurrency::resolve($plan?->currency);
+
+                return [
+                    'concept' => (string) $item->concept,
+                    'amount' => MoneyFormatter::format((float) $item->amount, $currency),
+                    'budget' => $plan?->budget_number ?? 'Presupuesto',
+                    'url' => $plan
+                        ? \App\Filament\Resources\BudgetPlans\BudgetPlanResource::getUrl('view', [
+                            'record' => $plan,
+                            'tab' => 'items',
+                        ])
+                        : null,
+                ];
+            })
+            ->all();
+    }
 
     public function getEventsProperty()
     {

@@ -9,6 +9,7 @@ use App\Filament\Resources\QuoteTemplates\Pages\PreviewQuoteTemplate;
 use App\Filament\Resources\QuoteTemplates\Schemas\QuoteTemplateForm;
 use App\Filament\Resources\QuoteTemplates\Tables\QuoteTemplatesTable;
 use App\Models\QuoteTemplate;
+use App\Support\CrmNavigation;
 use BackedEnum;
 use Filament\Resources\Resource;
 use Filament\Schemas\Schema;
@@ -23,7 +24,7 @@ class QuoteTemplateResource extends Resource
 
     protected static string|BackedEnum|null $navigationIcon = Heroicon::OutlinedDocumentDuplicate;
 
-    protected static string|UnitEnum|null $navigationGroup = 'Cotizaciones';
+    protected static string|UnitEnum|null $navigationGroup = CrmNavigation::MODULO_COTIZACIONES;
 
     protected static ?int $navigationSort = 2;
 

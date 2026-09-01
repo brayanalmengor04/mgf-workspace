@@ -4,7 +4,6 @@ namespace App\Filament\Widgets;
 
 use App\Enums\QuoteCurrency;
 use App\Enums\QuoteStatus;
-use App\Enums\UserRole;
 use App\Filament\Resources\QuoteTemplates\QuoteTemplateResource;
 use App\Filament\Resources\Quotes\QuoteResource;
 use App\Models\Quote;
@@ -22,15 +21,7 @@ class QuotesOverviewWidget extends TableWidget
 
     public static function canView(): bool
     {
-        $user = auth()->user();
-
-        if ($user === null) {
-            return false;
-        }
-
-        return $user->viewsAsProvider()
-            || $user->isSuperAdmin()
-            || $user->role === UserRole::Provider;
+        return false;
     }
 
     public function table(Table $table): Table

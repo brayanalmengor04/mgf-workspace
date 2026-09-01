@@ -8,6 +8,7 @@ use App\Filament\Resources\BudgetItemTemplates\Pages\ListBudgetItemTemplates;
 use App\Filament\Resources\BudgetItemTemplates\Schemas\BudgetItemTemplateForm;
 use App\Filament\Resources\BudgetItemTemplates\Tables\BudgetItemTemplatesTable;
 use App\Models\BudgetItemTemplate;
+use App\Support\CrmNavigation;
 use BackedEnum;
 use Filament\Resources\Resource;
 use Filament\Schemas\Schema;
@@ -22,9 +23,9 @@ class BudgetItemTemplateResource extends Resource
 
     protected static string|BackedEnum|null $navigationIcon = Heroicon::OutlinedBookmarkSquare;
 
-    protected static string|UnitEnum|null $navigationGroup = 'Finanzas personales';
+    protected static string|UnitEnum|null $navigationGroup = CrmNavigation::MODULO_PRESUPUESTO;
 
-    protected static ?int $navigationSort = 2;
+    protected static ?int $navigationSort = 3;
 
     protected static ?string $modelLabel = 'concepto frecuente';
 

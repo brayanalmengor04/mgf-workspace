@@ -2,6 +2,7 @@
 
 namespace App\Filament\Resources\Quotes\Tables;
 
+use App\Filament\Resources\Quotes\QuoteResource;
 use App\Enums\QuoteCurrency;
 use App\Enums\QuoteStatus;
 use App\Models\Quote;
@@ -64,6 +65,11 @@ class QuotesTable
                     )),
             ])
             ->recordActions([
+                Action::make('view')
+                    ->label('Abrir')
+                    ->icon('heroicon-o-eye')
+                    ->color('primary')
+                    ->url(fn (Quote $record): string => QuoteResource::getUrl('view', ['record' => $record])),
                 Action::make('download')
                     ->label('PDF')
                     ->icon('heroicon-o-arrow-down-tray')
